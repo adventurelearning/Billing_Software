@@ -67,7 +67,7 @@ const BillingSystem = ({
         <html>
           <head>
             <title>Bill ${billData.billNumber}</title>
-            // <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+            <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
           </head>
           <body>
             <div id="print-root"></div>
@@ -75,8 +75,8 @@ const BillingSystem = ({
               window.onload = function() {
                  window.print();
                 setTimeout(() => {
-                  // window.print();
-                  // setTimeout(() => window.close(), 500);
+                  window.print();
+                  setTimeout(() => window.close(), 500);
                 }, 500);
               };
             </script>
