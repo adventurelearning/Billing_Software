@@ -417,9 +417,9 @@ const BillingReport = ({ user }) => {
       }}
     >
       <div className="min-h-screen bg-gray-100 p-6 font-inter">
-        <div className="max-w-7xl mx-auto">
+       
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900 mb-4 md:mb-0">
+            <h1 className="text-xl font-semibold text-gray-900 mb-4 ">
               Billing Report & Analytics
             </h1>
             <div className="flex items-center space-x-2 text-gray-600">
@@ -731,8 +731,7 @@ const BillingReport = ({ user }) => {
               </div>
             )}
           </Modal>
-        </div>
-      </div>
+        </div>  
     </ConfigProvider>
   );
 };

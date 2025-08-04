@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FiHome, FiCreditCard, FiUsers, FiPackage, FiFileText, FiArchive,
-  FiDollarSign, FiPieChart, FiSettings, FiUser, FiCloud,
-  FiChevronLeft, FiChevronRight, FiLogOut
+  FiHome, FiCreditCard, FiUsers, FiPackage,  FiArchive,
+  FiDollarSign, FiPieChart, FiUser, 
+  FiChevronLeft, FiChevronRight, FiLogOut, FiUpload,  
 } from 'react-icons/fi';
-import { GiExpense, GiProfit } from "react-icons/gi";
+import { BsCreditCard } from "react-icons/bs";
+import { MdOutlineInventory, MdAssessment } from "react-icons/md";
 import api from '../service/api';
 
 // NavItem component for individual navigation links
@@ -50,17 +51,16 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
   // Define navigation items
   const navItems = [
     { icon: FiHome, label: 'Dashboard' },
+    { icon: MdAssessment, label: 'Billing Reports' },
+    { icon: BsCreditCard, label: 'Credit Dues' },
+    { icon: FiPackage, label: 'Products' },
+    { icon: MdOutlineInventory, label: 'Product Stock List' },
+    { icon: FiDollarSign, label: 'Stock Summary' },
+    { icon: FiUpload, label: 'Seller Bills uploaded' },
     { icon: FiCreditCard, label: 'Billing / Invoices' },
     { icon: FiUsers, label: 'Customers' },
-    { icon: FiCloud, label: 'Credit Dues' },
-    { icon: FiPackage, label: 'Products' },
-    { icon: FiArchive, label: 'Product Stock List' },
-    { icon: FiDollarSign, label: 'Stock Summary' },
-    { icon: GiProfit, label: 'ProfitReport' },
-    { icon: GiExpense, label: 'Expense Menu' },
-    { icon: FiPieChart, label: 'Billing Reports' },
-    { icon: FiPieChart, label: 'Seller Bills uploaded' },
-    // { icon: FiSettings, label: 'Settings' },
+    { icon: FiPieChart, label: 'ProfitReport' },
+    { icon: FiArchive, label: 'Expense Menu' },
     { icon: FiUser, label: 'Admin Management' },
   ];
 
@@ -70,11 +70,10 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
   };
 
   return (
-    <aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out ${collapsed ? 'w-20 items-center' : 'w-60'}`}>
-
+    <aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out ${collapsed ? 'w-20 items-center' : 'w-56'}`}>
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto mt-2">
-        <ul className="space-y-2 px-3 py-2">
+      <nav className="flex-1 overflow-y-auto  scrollbar-hide">
+        <ul className="px-1 ">
           {navItems.map(({ icon, label }) => (
             <NavItem
               key={label}
@@ -87,7 +86,7 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
           ))}
 
           {/* Logout */}
-          <li className="pt-3 border-t border-gray-400">
+          <li className="pt-2 border-t border-gray-400 ">
             <button
               onClick={handleLogout}
               className={`flex items-center justify-center w-full px-3 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out`}
@@ -101,7 +100,7 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
 
         {/* Footer with company name */}
         {!collapsed && (
-          <div className="text-xs text-gray-100  text-center">
+          <div className="text-xs text-gray-100 text-center pb-1">
             &copy; {new Date().getFullYear()} {company.businessName}
           </div>
         )}
@@ -110,11 +109,22 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
       {/* Collapse/Expand Button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className={`absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full text-blue-600 bg-white shadow-lg  focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${collapsed ? '-right-5' : '-right-5'}`}
+        className={`absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full text-blue-600 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${collapsed ? '-right-5' : '-right-5'}`}
         title={collapsed ? 'Expand' : 'Collapse'}
       >
         {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
       </button>
+
+      {/* Add CSS to hide scrollbar */}
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;  /* IE and Edge */
+          scrollbar-width: none;  /* Firefox */
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;  /* Chrome, Safari and Opera */
+        }
+      `}</style>
     </aside>
   );
 };

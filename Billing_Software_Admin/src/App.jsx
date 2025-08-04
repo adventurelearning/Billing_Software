@@ -28,7 +28,7 @@ const MainLayout = ({ activePage, setActivePage }) => (
     <TopNavbar setActivePage={setActivePage} />
     <div className="flex flex-1 overflow-hidden">
       <SideNavbar activeItem={activePage} setActivePage={setActivePage} />
-      <main className="flex-1 overflow-y-auto p-4">
+      <main className="flex-1 overflow-y-auto ">
         {activePage === 'Dashboard' && (
           <Dashboard setActivePage={setActivePage} />
         )}

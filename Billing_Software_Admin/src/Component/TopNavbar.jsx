@@ -47,7 +47,7 @@ const TopNavbar = ({ setActivePage }) => {
     <header className="bg-gray-700  flex items-center justify-between px-6 py-1">
       {/* Left: Logo + Company Name */}
       <div className="flex items-center gap-4">
-        <div className="w-10 h-10 rounded-full border-2 border-gray-200 overflow-hidden shadow-sm">
+        <div className="w-10 h-10 rounded-full border-2 border-gray-100 overflow-hidden shadow-sm">
           <img
             src={`http://localhost:5000${company.logoUrl}`}
             alt="Logo"
@@ -61,7 +61,7 @@ const TopNavbar = ({ setActivePage }) => {
 
       {/* Right: Profile Dropdown */}
       <div className="relative" ref={dropdownRef}>
-        <div className="flex items-center gap-2 md:gap-3 px-3 py-1 cursor-pointer  bg-blue-100 rounded-lg transition-all duration-200 ease-in-out bg-white">
+        <div className="flex items-center px-3 py-1 cursor-pointer   rounded-lg transition-all duration-200 ease-in-out bg-white">
 
           {/* Clickable avatar + name to navigate */}
           <div
@@ -75,16 +75,8 @@ const TopNavbar = ({ setActivePage }) => {
               {/* <p className="text-xs font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
                 {admin.username?.replace(/\b\w/g, c => c.toUpperCase()) || 'ADMIN'}
               </p> */}
-              <p className="text-sm  flex items-center gap-1 p-1 rounded-md">
-                <FiUser size={15} className='md:w-8 md:h-8 p-2 rounded-full bg-gradient-to-br  from-blue-500 to-indigo-600' /><span>
-                  
-                  
-                  
-                  
-                  
-                  
-                  
-                  </span> Admin 
+              <p className="text-sm text-blue-500 flex items-center gap-1 p-1 rounded-md">
+                <FiUser size={15} className='rounded-full bg-gradient-to-br from-blue-500 w-9 h-9  md:w-6 md:h-6 md:p-1 text-white to-indigo-600' /><span className='text-blue-600 bg-blue-100 px-2 rounded-md'>Admin</span>
               </p>
             </div>
           </div>
@@ -95,7 +87,7 @@ const TopNavbar = ({ setActivePage }) => {
               e.stopPropagation(); // Prevent avatar area navigation
               setDropdownOpen(!dropdownOpen);
             }}
-            className={`ml-2 text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''} cursor-pointer`}
+            className={`text-gray-500 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''} cursor-pointer`}
           />
         </div>
 

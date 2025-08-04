@@ -18,6 +18,7 @@
     "axios": "^1.11.0",
     "bootstrap-icons": "^1.13.1",
     "chart.js": "^4.5.0",
+    "chartjs-adapter-date-fns": "^3.0.0",
     "date-fns": "^4.1.0",
     "electron": "^36.3.2",
     "formik": "^2.4.6",
