@@ -4,7 +4,6 @@ import UserLogin from './UserLogin';
 
 const AuthWrapper = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -32,15 +31,10 @@ const AuthWrapper = ({ children }) => {
       }
 
       setIsAuthenticated(true);
-      setLoading(false);
     };
 
     checkAuth();
   }, [navigate]);
-
-  if (loading) {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  }
 
   return isAuthenticated ? children : <UserLogin />;
 };
