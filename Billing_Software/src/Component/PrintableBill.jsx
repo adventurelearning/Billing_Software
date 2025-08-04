@@ -123,7 +123,7 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
     };
 
     // Split products into chunks for pagination (12 per page)
-    const productsPerPage = 15;
+    const productsPerPage = 18;
     const productChunks = [];
     const allProducts = billData.products || [];
 
@@ -184,13 +184,13 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                         {/* Totals Section */}
                         <div className="border border-black p-1 mb-1">
                             <div className="flex justify-between mb-1">
-                                <span className="font-semibold">Previous Credit:</span>
-                                <span>{formatCurrency(totals.credit)}</span>
+                                <span className="font-semibold" style={{ fontSize: '12px' }}>Previous Credit:</span>
+                                <span style={{ fontSize: '12px' }}>{formatCurrency(totals.credit)}</span>
                             </div>
 
                             <div className="mt-1 mb-1 border-t border-black pt-1">
-                                <span className="font-bold text-md">{billData.isOutstandingPaymentOnly ? 'Total Credit:' : 'Grand Total:'}</span>
-                                <span className="font-bold float-right">{formatCurrency(totals.grandTotal)}</span>
+                                <span className="font-bold text-md" style={{ fontSize: '12px' }}>{billData.isOutstandingPaymentOnly ? 'Total Credit:' : 'Grand Total:'}</span>
+                                <span className="font-bold float-right" style={{ fontSize: '12px' }}>{formatCurrency(totals.grandTotal)}</span>
                             </div>
 
                             {/* Payment Details Section */}
@@ -198,22 +198,22 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                                 <div className="border-t border-black pt-1">
                                     {!billData.isOutstandingPaymentOnly && (
                                         <div className="flex justify-between">
-                                            <span className="font-semibold">Current Bill Payment:</span>
-                                            <span>{formatCurrency(totals.currentPayment)}</span>
+                                            <span className="font-semibold" style={{ fontSize: '12px' }}>Current Bill Payment:</span>
+                                            <span style={{ fontSize: '12px' }}>{formatCurrency(totals.currentPayment)}</span>
                                         </div>
                                     )}
                                     <div className="flex justify-between">
-                                        <span className="font-semibold">Credit Payment:</span>
-                                        <span>{formatCurrency(totals.outstandingPayment)}</span>
+                                        <span className="font-semibold" style={{ fontSize: '12px' }}>Credit Payment:</span>
+                                        <span style={{ fontSize: '12px' }}>{formatCurrency(totals.outstandingPayment)}</span>
                                     </div>
                                     <div className="flex justify-between">
-                                        <span className="font-semibold">Total Paid:</span>
-                                        <span className="font-bold text-black-600">{formatCurrency(totals.totalPaid)}</span>
+                                        <span className="font-semibold" style={{ fontSize: '12px' }}>Total Paid:</span>
+                                        <span className="font-bold text-black-600" style={{ fontSize: '12px' }}>{formatCurrency(totals.totalPaid)}</span>
                                     </div>
                                     {totals.balanceDue > 0 && (
                                         <div className="flex justify-between">
-                                            <span className="font-semibold">Balance Due:</span>
-                                            <span className="font-bold text-red-600">{formatCurrency(totals.balanceDue)}</span>
+                                            <span className="font-semibold" style={{ fontSize: '12px' }}>Balance Due:</span>
+                                            <span className="font-bold text-red-600" style={{ fontSize: '12px' }}>{formatCurrency(totals.balanceDue)}</span>
                                         </div>
                                     )}
                                 </div>
@@ -224,13 +224,13 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                         {billData.payment && (
                             <div className='flex justify-between mt-1'>
                                 <div className="">
-                                    <p><span className="font-semibold">Payment Method:</span> {billData.payment.method.toUpperCase()}</p>
+                                    <p><span className="font-semibold" style={{ fontSize: '12px' }}>Payment Method:</span> {billData.payment.method.toUpperCase()}</p>
                                     {billData.payment.transactionId && (
-                                        <p><span className="font-semibold">Transaction ID:</span> {billData.payment.transactionId}</p>
+                                        <p><span className="font-semibold" style={{ fontSize: '12px' }}>Transaction ID:</span> {billData.payment.transactionId}</p>
                                     )}
                                 </div>
                                 <div className="">
-                                    <p className="text-[10px]">Amount In Words: {numberToWords(totals.grandTotal)}</p>
+                                    <p className="" style={{ fontSize: '12px' }}>Amount In Words: {numberToWords(totals.grandTotal)}</p>
                                 </div>
                             </div>
                         )}
@@ -238,13 +238,13 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                         {/* Footer Section */}
                         <div className="border-t border-black p-1 mt-auto flex justify-between">
                             <div className="mb-1 ">
-                                <h3 className="font-semibold mb-1">Company's Bank Details:</h3>
-                                <p className="text-xs">Bank Name: {displayValue(companyDetails.bankName, '')}</p>
-                                <p className="text-xs">Account No: {displayValue(companyDetails.accountNumber, '')}</p>
-                                <p className="text-xs">IFSC: {displayValue(companyDetails.ifscCode, '')}</p>
+                                <h3 className="font-semibold mb-1" style={{ fontSize: '12px' }}>Company's Bank Details:</h3>
+                                <p className="text-xs" style={{ fontSize: '12px' }}>Bank Name: {displayValue(companyDetails.bankName, '')}</p>
+                                <p className="text-xs" style={{ fontSize: '12px' }}>Account No: {displayValue(companyDetails.accountNumber, '')}</p>
+                                <p className="text-xs" style={{ fontSize: '12px' }}>IFSC: {displayValue(companyDetails.ifscCode, '')}</p>
                             </div>
                             <div className="">
-                                <p className="font-semibold pt-14">Authorized Signatory</p>
+                                <p className="font-semibold pt-14" style={{ fontSize: '12px' }}>Authorized Signatory</p>
                             </div>
                         </div>
                     </div>
@@ -261,9 +261,9 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                         <div className="mb-1">
                             <div className='flex justify-between'>
                                 <p className="font-semibold">GSTIN: {displayValue(companyDetails.gstin, 'N/A')}</p>
-                                {pageIndex > 0 && (
-                                    <p className="font-semibold text-red-500">(continuation)</p>
-                                )}
+                                {/* {pageIndex > 0 && (
+                                    <p className="font-semibold text-red-500" style={{ fontSize: '10px' }}>(continuation)</p>
+                                )} */}
                             </div>
                             <div className="text-center mb-1">
                                 {companyDetails.logoUrl && (
@@ -378,29 +378,29 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                                                         {/* Totals Section */}
                                                         <div className="p-1 mb-1">
                                                             <div className="flex justify-between mb-1">
-                                                                <span className="font-semibold text-[12px]">Subtotal:</span>
-                                                                <span>{formatCurrency(totals.subtotal)}</span>
+                                                                <span className="font-semibold" style={{ fontSize: '12px' }}>Subtotal:</span>
+                                                                <span style={{ fontSize: '12px' }}>{formatCurrency(totals.subtotal)}</span>
                                                             </div>
                                                             <div className="flex justify-between mb-1">
-                                                                <span className="font-semibold text-[12px]">CGST:</span>
-                                                                <span>{formatCurrency(totals.gstTotal)}</span>
+                                                                <span className="font-semibold " style={{ fontSize: '12px' }}>CGST:</span>
+                                                                <span style={{ fontSize: '12px' }}>{formatCurrency(totals.gstTotal)}</span>
                                                             </div>
                                                             <div className="flex justify-between mb-1">
-                                                                <span className="font-semibold text-[12px]">SGST:</span>
-                                                                <span>{formatCurrency(totals.sgstTotal)}</span>
+                                                                <span className="font-semibold " style={{ fontSize: '12px' }}>SGST:</span>
+                                                                <span style={{ fontSize: '12px' }}>{formatCurrency(totals.sgstTotal)}</span>
                                                             </div>
-                                                            <div className="flex justify-between mb-1 text-[12px]">
-                                                                <span className="font-semibold">Delivery Charges:</span>
-                                                                <span>{formatCurrency(totals.transport)}</span>
+                                                            <div className="flex justify-between mb-1 ">
+                                                                <span className="font-semibold" style={{ fontSize: '12px' }}>Delivery Charges:</span>
+                                                                <span style={{ fontSize: '12px' }}>{formatCurrency(totals.transport)}</span>
                                                             </div>
-                                                            <div className="flex justify-between mb-1 text-[12px]">
-                                                                <span className="font-semibold">Previous Credit:</span>
-                                                                <span>{formatCurrency(totals.credit)}</span>
+                                                            <div className="flex justify-between mb-1 ">
+                                                                <span className="font-semibold" style={{ fontSize: '12px' }}>Previous Credit:</span>
+                                                                <span style={{ fontSize: '12px' }}>{formatCurrency(totals.credit)}</span>
                                                             </div>
 
                                                             <div className="mt-1 mb-1 border-t border-black pt-1">
-                                                                <span className="font-bold text-md">{billData.isOutstandingPaymentOnly ? 'Total Credit:' : 'Grand Total:'}</span>
-                                                                <span className="font-bold float-right">{formatCurrency(totals.grandTotal)}</span>
+                                                                <span className="font-bold text-md" style={{ fontSize: '12px' }}>{billData.isOutstandingPaymentOnly ? 'Total Credit:' : 'Grand Total:'}</span>
+                                                                <span className="font-bold float-right" style={{ fontSize: '12px' }}>{formatCurrency(totals.grandTotal)}</span>
                                                             </div>
 
                                                             {/* Payment Details Section */}
@@ -408,55 +408,43 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                                                                 <div className="border-t border-black pt-1">
                                                                     {!billData.isOutstandingPaymentOnly && (
                                                                         <div className="flex justify-between">
-                                                                            <span className="font-semibold text-[12px]">Current Bill Payment:</span>
-                                                                            <span>{formatCurrency(totals.currentPayment)}</span>
+                                                                            <span className="font-semibold " style={{ fontSize: '12px' }}>Current Bill Payment:</span>
+                                                                            <span style={{ fontSize: '12px' }}>{formatCurrency(totals.currentPayment)}</span>
                                                                         </div>
                                                                     )}
                                                                     <div className="flex justify-between">
-                                                                        <span className="font-semibold text-[12px]">Credit Payment:</span>
-                                                                        <span>{formatCurrency(totals.outstandingPayment)}</span>
+                                                                        <span className="font-semibold" style={{ fontSize: '12px' }}>Credit Payment:</span>
+                                                                        <span style={{ fontSize: '12px' }}>{formatCurrency(totals.outstandingPayment)}</span>
                                                                     </div>
                                                                     <div className="flex justify-between">
-                                                                        <span className="font-semibold text-[12px]">Total Paid:</span>
-                                                                        <span className="font-bold text-black-600">{formatCurrency(totals.totalPaid)}</span>
+                                                                        <span className="font-semibold " style={{ fontSize: '12px' }}>Total Paid:</span>
+                                                                        <span className="font-bold text-black-600" style={{ fontSize: '12px' }}>{formatCurrency(totals.totalPaid)}</span>
                                                                     </div>
                                                                     {totals.balanceDue > 0 && (
                                                                         <div className="flex justify-between">
-                                                                            <span className="font-semibold text-[12px]">Balance Due:</span>
-                                                                            <span className="font-semibold text-red-600">{formatCurrency(totals.balanceDue)}</span>
+                                                                            <span className="font-semibold " style={{ fontSize: '12px' }}>Balance Due:</span>
+                                                                            <span className="font-semibold text-red-600" style={{ fontSize: '12px' }}>{formatCurrency(totals.balanceDue)}</span>
                                                                         </div>
                                                                     )}
                                                                 </div>
                                                             )}
                                                             <div className='flex justify-between mt-1'>
                                                                 <div className="">
-                                                                    <p className="text-[10px]">Amount In Words: {numberToWords(totals.grandTotal)}</p>
+                                                                    <p className="" style={{ fontSize: '10px' }}>Amount In Words: {numberToWords(totals.grandTotal)}</p>
                                                                 </div>
                                                                 {billData.payment && (
                                                                     <div className="">
-                                                                        <p><span className="font-semibold text-[10px]">Payment Method:</span> {billData.payment.method.toUpperCase()}</p>
+                                                                        <p style={{ fontSize: '10px' }}><span className="font-semibold" style={{ fontSize: '10px' }}>Payment Method:</span> {billData.payment.method.toUpperCase()}</p>
                                                                         {billData.payment.transactionId && (
-                                                                            <p><span className="font-semibold text-[10px]">Transaction ID:</span> {billData.payment.transactionId}</p>
+                                                                            <p><span className="font-semibold " style={{ fontSize: '10px' }}>Transaction ID:</span> {billData.payment.transactionId}</p>
                                                                         )}
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                            {/* Footer Section */}
-                                                            <div className="border-t border-black p-1 mt-auto flex justify-between">
-                                                                <div className="mb-1 ">
-                                                                    <h3 className="font-semibold mb-1">Company's Bank Details:</h3>
-                                                                    <p className="text-xs">Bank Name: {displayValue(companyDetails.bankName, '')}</p>
-                                                                    <p className="text-xs">Account No: {displayValue(companyDetails.accountNumber, '')}</p>
-                                                                    <p className="text-xs">IFSC: {displayValue(companyDetails.ifscCode, '')}</p>
-                                                                </div>
-                                                                <div className="">
-                                                                    <p className="font-semibold pt-14">Authorized Signatory</p>
-                                                                </div>
-                                                            </div>
                                                         </div>
                                                     </>
                                                 ) : (
-                                                    <div className="text-right text-red-500 font-semibold mt-20 mb-15">
+                                                    <div className="text-right text-red-500 font-semibold mt-20 mb-15" style={{ fontSize: '10px' }}>
                                                         (Continued...)
                                                     </div>
                                                 )}
@@ -464,6 +452,18 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                                         </tr>
                                     </tbody>
                                 </table>
+                                {/* Footer Section */}
+                                <div className="p-1 mt-auto flex justify-between">
+                                    <div className="mb-1 ">
+                                        <h3 className="font-semibold mb-1" style={{ fontSize: '12px' }}>Company's Bank Details:</h3>
+                                        <p className="text-xs" style={{ fontSize: '12px' }}>Bank Name: {displayValue(companyDetails.bankName, '')}</p>
+                                        <p className="text-xs" style={{ fontSize: '12px' }}>Account No: {displayValue(companyDetails.accountNumber, '')}</p>
+                                        <p className="text-xs" style={{ fontSize: '12px' }}>IFSC: {displayValue(companyDetails.ifscCode, '')}</p>
+                                    </div>
+                                    <div className="">
+                                        <p className="font-semibold pt-12" style={{ fontSize: '12px' }}>Authorized Signatory</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
