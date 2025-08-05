@@ -109,7 +109,7 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
       {/* Collapse/Expand Button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className={`absolute top-1/2 -translate-y-1/2 z-10 p-2 rounded-full text-blue-600 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${collapsed ? '-right-5' : '-right-5'}`}
+        className={`absolute top-1/2 -translate-y-1/2 z-50 p-2 rounded-full  text-blue-600 bg-white shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 ${collapsed ? '-right-5' : '-right-5'}`}
         title={collapsed ? 'Expand' : 'Collapse'}
       >
         {collapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}

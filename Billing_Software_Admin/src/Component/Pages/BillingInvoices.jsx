@@ -52,7 +52,7 @@ const ProductDetailsModal = ({ selectedBill, onClose }) => {
             <div>
               <h3 className="text-lg font-medium text-gray-900">Bill Details</h3>
               <div className="text-sm text-gray-500 mt-1">
-                <span className="font-medium">Bill ID:</span> {billNumber} | 
+                <span className="font-medium">Bill ID:</span> {billNumber} |
                 <span className="font-medium ml-2">Date:</span> {billDate}
               </div>
             </div>
@@ -233,7 +233,7 @@ const BillingInvoices = () => {
         setFilteredBills(data);
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          console.error('Error fetching bills:', 
+          console.error('Error fetching bills:',
             error.response?.data?.message || error.message);
         } else {
           console.error('Unexpected error:', error);
@@ -277,122 +277,149 @@ const BillingInvoices = () => {
   };
 
   return (
-    <div className="p-8 bg-gray-50 min-h-screen font-sans text-gray-900">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
-          <h2 className="text-3xl font-bold text-gray-800">Customer Bills</h2>
+    <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto  ">
+        {/* Header Section */}
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10 py-3">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-2">
+            <h1 className="text-xl md:text-xl font-semibold text-gray-700  bg-blue-100 px-2 py-1 rounded-md">
+              Product Sales Bill
+            </h1>
 
-          <div className="flex flex-col space-y-1 sm:space-y-0 sm:flex-row sm:items-center sm:space-x-4 w-full sm:w-auto">
-            <div className="relative w-full sm:w-72">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-gray-400" />
+            <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+              <div className="relative flex-grow max-w-2xl">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Search className="h-5 w-5 text-gray-400" />
+                </div>
+                <input
+                  type="text"
+                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm shadow-sm transition duration-150"
+                  placeholder="Search ID, Bill No, Customer"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
-              <input
-                type="text"
-                className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm shadow-sm"
-                placeholder="Search bills..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </div>
 
-            <div className="text-sm text-gray-600 pl-1 sm:pl-0">
-              {filteredBills.length} {filteredBills.length === 1 ? 'Bill' : 'Bills'} 
+              <div className="flex items-center justify-between sm:justify-end gap-4">
+                <span className="text-sm text-gray-600 whitespace-nowrap">
+                  {filteredBills.length} {filteredBills.length === 1 ? 'Bill' : 'Bills'}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        </header>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-            <p className="ml-4 text-lg text-gray-600">Loading bills...</p>
-          </div>
-        ) : filteredBills.length === 0 && !searchTerm ? (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center border border-gray-200">
-            <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="mt-4 text-xl font-medium text-gray-900">No bills found</h3>
-            <p className="mt-2 text-gray-500">It looks like no bills have been created yet.</p>
-          </div>
-        ) : filteredBills.length === 0 && searchTerm ? (
-          <div className="bg-white rounded-xl shadow-md p-8 text-center border border-gray-200">
-            <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="mt-4 text-xl font-medium text-gray-900">No matching bills found</h3>
-            <p className="mt-2 text-gray-500">Try adjusting your search term.</p>
-          </div>
-        ) : (
-          <div className="bg-white shadow-md rounded-xl overflow-hidden border border-gray-200">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Bill ID</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Items</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Date</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Total</th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-600 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-100">
-                  {filteredBills.map((bill) => {
-                    const billTotal = bill.grandTotal ? bill.grandTotal.toFixed(2) : '0.00';
-                    const customerInitial = bill.customer?.name ? bill.customer.name.charAt(0).toUpperCase() : 'N/A';
-                    const customerName = bill.customer?.name || 'N/A';
-                    const customerContact = bill.customer?.contact || 'N/A';
-                    const billDate = bill.date ? new Date(bill.date).toLocaleDateString('en-IN', {
-                      day: 'numeric',
-                      month: 'short',
-                      year: 'numeric'
-                    }) : 'N/A';
+        {/* Main Content */}
+        <main className="py-6 px-4 ">
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center h-64 gap-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+              <p className="text-lg text-gray-600">Loading bills...</p>
+            </div>
+          ) : filteredBills.length === 0 && !searchTerm ? (
+            <div className="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-200 max-w-2xl mx-auto">
+              <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="mt-4 text-xl font-semibold text-gray-800">No bills found</h3>
+              <p className="mt-2 text-gray-500">It looks like no bills have been created yet.</p>
+              <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
+                Create New Bill
+              </button>
+            </div>
+          ) : filteredBills.length === 0 && searchTerm ? (
+            <div className="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-200 max-w-2xl mx-auto">
+              <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <h3 className="mt-4 text-xl font-semibold text-gray-800">No matching bills found</h3>
+              <p className="mt-2 text-gray-500">Try adjusting your search term or filters.</p>
+              <button
+                onClick={() => setSearchTerm('')}
+                className="mt-4 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors duration-200 text-sm font-medium"
+              >
+                Clear Search
+              </button>
+            </div>
+          ) : (
+            <div className="bg-white shadow-sm rounded-xl overflow-hidden border border-gray-200">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bill ID</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">Contact</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">Items</th>
+                      <th className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                      <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
+                      <th className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-100">
+                    {filteredBills.map((bill) => {
+                      const billTotal = bill.grandTotal ? bill.grandTotal.toFixed(2) : '0.00';
+                      const customerInitial = bill.customer?.name ? bill.customer.name.charAt(0).toUpperCase() : 'N/A';
+                      const customerName = bill.customer?.name || 'N/A';
+                      const customerContact = bill.customer?.contact || 'N/A';
+                      const billDate = bill.date ? new Date(bill.date).toLocaleDateString('en-IN', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      }) : 'N/A';
 
-                    return (
-                      <tr key={bill._id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                          {bill.billNumber || (bill._id ? bill._id.substring(bill._id.length - 6) : 'N/A')}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="flex items-center">
-                            <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
-                              {customerInitial}
+                      return (
+                        <tr key={bill._id} className="hover:bg-gray-50 transition-colors duration-150">
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900">
+                              {bill.billNumber || (bill._id ? bill._id.substring(bill._id.length - 6) : 'N/A')}
                             </div>
-                            <div className="ml-4">
-                              <div className="text-sm font-medium text-gray-900">{customerName}</div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center">
+                              <div className="flex-shrink-0 h-9 w-9 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-medium text-sm">
+                                {customerInitial}
+                              </div>
+                              <div className="ml-3">
+                                <div className="text-sm font-medium text-gray-900 truncate max-w-[120px] sm:max-w-none">
+                                  {customerName}
+                                </div>
+                                <div className="text-xs text-gray-500 sm:hidden">{customerContact}</div>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {customerContact}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {bill.products?.length || 0}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {billDate}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          ₹ {billTotal}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button
-                            onClick={() => openProductDetails(bill)}
-                            className="text-blue-600 hover:text-blue-900 font-semibold transition-colors duration-200"
-                          >
-                            View Details
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
+                            {customerContact}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                            <div className="flex items-center">
+                              <span className="mr-1">{bill.products?.length || 0}</span>
+                              <span className="text-gray-400">items</span>
+                            </div>
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {billDate}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium text-gray-900">
+                            ₹ {billTotal}
+                          </td>
+                          <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button
+                              onClick={() => openProductDetails(bill)}
+                              className="text-blue-600 hover:text-blue-800 font-medium transition-colors duration-200 px-3 py-1 rounded-md hover:bg-blue-50"
+                            >
+                              View
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </main>
 
         {isModalOpen && (
           <ProductDetailsModal

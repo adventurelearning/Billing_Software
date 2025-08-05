@@ -9,23 +9,23 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
 
- useEffect(() => {
-  // Load products from JSON file using Axios
-  const loadProducts = async () => {
-    try {
-      const response = await api.get('/data/products.json');
-      setProducts(response.data.products);
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error loading products:', error.message);
-      } else {
-        console.error('Unexpected error:', error);
+  useEffect(() => {
+    // Load products from JSON file using Axios
+    const loadProducts = async () => {
+      try {
+        const response = await api.get('/data/products.json');
+        setProducts(response.data.products);
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.error('Error loading products:', error.message);
+        } else {
+          console.error('Unexpected error:', error);
+        }
       }
-    }
-  };
+    };
 
-  loadProducts();
-}, []);
+    loadProducts();
+  }, []);
 
   const handleAddProduct = (newProduct) => {
     const id = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;
@@ -36,7 +36,7 @@ const Products = () => {
   };
 
   const handleUpdateProduct = (updatedProduct) => {
-    const updatedProducts = products.map(p => 
+    const updatedProducts = products.map(p =>
       p.id === updatedProduct.id ? updatedProduct : p
     );
     setProducts(updatedProducts);
@@ -57,31 +57,40 @@ const Products = () => {
   };
 
   return (
-    <div className="container mx-auto px-2 py-2">
-      <h1 className="text-2xl font-bold ">Product Management</h1>
-      
+    <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-2">
+          <div className="flex justify-between items-center h-16">
+            {/* Dashboard title */}
+            <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">Product Management</h1>
+          </div>
+        </div>
+      </header>
+
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-lg font-semibold mb-4">
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <h2 className="text-base font-semibold mb-2">
             {editingProduct ? 'Edit Product' : 'Add New Product'}
           </h2>
-          <ProductForm 
+          <ProductForm
             onSubmit={editingProduct ? handleUpdateProduct : handleAddProduct}
             product={editingProduct}
             onCancel={() => setEditingProduct(null)}
           />
         </div>
-        
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold mb-4">Product List</h2>
+
+        <div className="bg-white p-3 rounded-lg shadow-md">
+          <h2 className="text-base font-semibold mb-4">Product List</h2>
           <ProductTable
-            products={products} 
-            onEdit={setEditingProduct} 
-            onDelete={handleDeleteProduct} 
+            products={products}
+            onEdit={setEditingProduct}
+            onDelete={handleDeleteProduct}
           />
         </div>
       </div>
     </div>
+
+
   );
 };
 

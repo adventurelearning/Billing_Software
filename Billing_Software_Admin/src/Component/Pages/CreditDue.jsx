@@ -99,9 +99,9 @@ const CreditDue = () => {
     } else if (customDateRange.length === 2 && customDateRange[0] && customDateRange[1]) {
       filtered = filtered.filter(bill =>
         dayjs(bill.date).isBetween(
-          customDateRange[0].startOf('day'), 
-          customDateRange[1].endOf('day'), 
-          null, 
+          customDateRange[0].startOf('day'),
+          customDateRange[1].endOf('day'),
+          null,
           '[]'
         )
       );
@@ -136,9 +136,9 @@ const CreditDue = () => {
     const pendingCustomers = {};
 
     filteredBills.forEach(bill => {
-      if (statusFilter === 'all' || 
-          (statusFilter === 'pending' && bill.unpaidAmountForThisBill > 0) ||
-          (statusFilter === 'paid' && bill.unpaidAmountForThisBill <= 0)) {
+      if (statusFilter === 'all' ||
+        (statusFilter === 'pending' && bill.unpaidAmountForThisBill > 0) ||
+        (statusFilter === 'paid' && bill.unpaidAmountForThisBill <= 0)) {
 
         const customerId = bill.customer?.id || `unknown-${bill.billNumber}`;
         const customerName = bill.customer?.name || 'Unknown Customer';
@@ -317,7 +317,7 @@ const CreditDue = () => {
         },
       }}
     >
-      <div className="min-h-screen bg-gray-100 p-6 font-inter">
+      <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
         <style>
           {`
           .font-inter {
@@ -419,18 +419,22 @@ const CreditDue = () => {
         </style>
 
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <h1 className="text-3xl font-extrabold text-gray-900 mb-4 md:mb-0">
-              Credit Due Management
-            </h1>
-            <div className="flex items-center space-x-2 text-gray-600">
-              <CalendarDays className="w-5 h-5" />
-              <span className="text-lg font-medium">
-                {dayjs().format('DD MMMM YYYY')}
-              </span>
-            </div>
-          </div>
+          <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+            <div className="max-w-7xl mx-auto px-2">
+              <div className="flex justify-between items-center h-16">
+                <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">
+                  Credit Due Management
+                </h1>
+                <div className="flex items-center space-x-2 text-gray-600">
+                  <CalendarDays className="w-5 h-5" />
+                  <span className="text-lg font-medium">
+                    {dayjs().format('DD MMMM YYYY')}
+                  </span>
+                </div>
+              </div>
 
+            </div>
+          </header>
           {/* Filters Section */}
           <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-6 rounded-xl shadow-lg items-center">
             <div className="flex items-center gap-2 min-w-[180px]">
