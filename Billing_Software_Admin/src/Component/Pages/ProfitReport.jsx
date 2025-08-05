@@ -12,34 +12,34 @@ const ProfitReport = () => {
         endDate: ''
     });
 
-      const calculateProfits = () => {
+    const calculateProfits = () => {
         // Initial stock profit (from AdminProduct)
         const initialProfit = products.reduce(
-            (sum, product) => sum + (product.profit || 0) * (product.stockQuantity || 0), 
+            (sum, product) => sum + (product.profit || 0) * (product.stockQuantity || 0),
             0
         );
 
         // Additional stock profit (from StockHistory)
         const additionalProfit = stockHistory.reduce(
             (sum, history) => {
-                const profitPerUnit = history.profit || 
-                                   (history.mrpPrice - history.sellerPrice) || 0;
-                return history.addedStock > 0 ? 
-                    sum + (profitPerUnit * history.addedStock) : 
+                const profitPerUnit = history.profit ||
+                    (history.mrpPrice - history.sellerPrice) || 0;
+                return history.addedStock > 0 ?
+                    sum + (profitPerUnit * history.addedStock) :
                     sum
-            }, 
+            },
             0
         );
 
         // Reductions (negative values from StockHistory)
         const reductions = stockHistory.reduce(
             (sum, history) => {
-                const profitPerUnit = history.profit || 
-                                   (history.mrpPrice - history.sellerPrice) || 0;
-                return history.addedStock < 0 ? 
-                    sum + Math.abs(profitPerUnit * history.addedStock) : 
+                const profitPerUnit = history.profit ||
+                    (history.mrpPrice - history.sellerPrice) || 0;
+                return history.addedStock < 0 ?
+                    sum + Math.abs(profitPerUnit * history.addedStock) :
                     sum
-            }, 
+            },
             0
         );
 
@@ -58,7 +58,7 @@ const ProfitReport = () => {
     const fetchData = async () => {
         try {
             setLoading(true);
-            
+
             // Build query string from filters
             const queryParams = new URLSearchParams();
             if (filters.productCode) queryParams.append('productCode', filters.productCode);
@@ -94,11 +94,16 @@ const ProfitReport = () => {
     if (error) return <div className="p-4 text-red-500">Error: {error}</div>;
 
     return (
-        <div className="p-4">
-            <h2 className="text-xl font-bold mb-4">Profit Report</h2>
-            
+        <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
+            <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-2">
+                    <div className="flex justify-between items-center mb-2 md:mb-0 py-2">
+                        <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">Profit Report</h1>
+                    </div>
+                </div>
+                </header>
             {/* Filters */}
-            <div className="bg-white p-4 rounded-lg shadow mb-6">
+            <div className="bg-white p-4 rounded-lg shadow mb-4 m-2">
                 <h3 className="text-lg font-semibold mb-3">Filters</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -136,7 +141,7 @@ const ProfitReport = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 px-2">
                 <div className="bg-blue-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Initial Stock Profit</h3>
                     <p className="text-2xl font-bold">₹{initialProfit.toFixed(2)}</p>
@@ -155,8 +160,8 @@ const ProfitReport = () => {
                 </div>
             </div>
 
-                 {/* Initial Stock Table */}
-            <div className="mb-8">
+            {/* Initial Stock Table */}
+            <div className="mb-8 px-2">
                 <h3 className="text-lg font-semibold mb-2">Initial Stock</h3>
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-gray-200">

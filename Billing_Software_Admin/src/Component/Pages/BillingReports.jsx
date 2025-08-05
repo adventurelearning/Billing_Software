@@ -96,9 +96,9 @@ const BillingReport = ({ user }) => {
   const fetchBillData = async () => {
     try {
       setLoading(true);
-      
+
       const params = {};
-      
+
       if (selectedCounter !== 'all') {
         params.counterNum = selectedCounter.toString().trim();
       }
@@ -117,7 +117,7 @@ const BillingReport = ({ user }) => {
 
       // Filter bills by date range client-side
       billsData = filterBillsByDateRange(billsData);
-      
+
       // Additional counter filter (client-side)
       if (selectedCounter !== 'all') {
         billsData = billsData.filter(bill =>
@@ -179,9 +179,9 @@ const BillingReport = ({ user }) => {
     } else if (customDateRange.length === 2 && customDateRange[0] && customDateRange[1]) {
       return billsData.filter(bill =>
         dayjs(bill.date).isBetween(
-          customDateRange[0].startOf('day'), 
-          customDateRange[1].endOf('day'), 
-          null, 
+          customDateRange[0].startOf('day'),
+          customDateRange[1].endOf('day'),
+          null,
           '[]'
         )
       );
@@ -212,7 +212,7 @@ const BillingReport = ({ user }) => {
       if (bill.products && bill.products.length > 0) {
         bill.products.forEach(product => {
           const productName = product.product?.name || product.name || 'Unknown Product';
-          
+
           if (!productMap[productName]) {
             productMap[productName] = {
               name: productName,
@@ -225,12 +225,12 @@ const BillingReport = ({ user }) => {
 
           productMap[productName].quantity += product.quantity || 0;
           productMap[productName].totalAmount += (product.price || 0) * (product.quantity || 0);
-          
+
           // Track which counters sold this product
           if (bill.cashier?.counterNum) {
             productMap[productName].counters.add(bill.cashier.counterNum);
           }
-          
+
           productMap[productName].bills += 1;
         });
       }
@@ -241,9 +241,9 @@ const BillingReport = ({ user }) => {
       ...product,
       counters: Array.from(product.counters).join(', ')
     }));
-    
+
     productsArray.sort((a, b) => b.quantity - a.quantity);
-    
+
     setTopProducts(productsArray.slice(0, 10)); // Top 10 products
   };
 
@@ -416,322 +416,326 @@ const BillingReport = ({ user }) => {
         },
       }}
     >
-      <div className="min-h-screen bg-gray-100 p-6 font-inter">
-       
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-            <h1 className="text-xl font-semibold text-gray-900 mb-4 ">
-              Billing Report & Analytics
-            </h1>
-            <div className="flex items-center space-x-2 text-gray-600">
-              <CalendarDays className="w-5 h-5" />
-              <span className="text-lg font-medium">
-                {dayjs().format('DD MMMM YYYY')}
-              </span>
+      <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-2">
+            <div className="flex justify-between items-center h-16">
+              {/* Dashboard title */}
+              <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">
+                Billing Report & Analytics
+              </h1>
+              <div className="flex items-center space-x-2 text-gray-600">
+                <CalendarDays className="w-5 h-5" />
+                <span className="text-lg font-medium">
+                  {dayjs().format('DD MMMM YYYY')}
+                </span>
+              </div>
             </div>
-          </div>
-
-          {/* Filters Section */}
-          <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-6 rounded-xl shadow-lg items-center">
-            <div className="flex items-center gap-2 min-w-[180px]">
-              <Store className="w-5 h-5 text-gray-500" />
-              <Select
-                value={selectedCounter}
-                style={{ flexGrow: 1 }}
-                onChange={setSelectedCounter}
-                className="rounded-lg"
-                disabled={counters.length === 0}
-              >
-                <Option value="all">All Counters</Option>
-                {counters.map(counter => (
-                  <Option key={counter} value={counter}>
-                    Counter {counter}
-                  </Option>
-                ))}
-              </Select>
             </div>
+        </header >
 
-            <div className="flex items-center gap-2 min-w-[180px]">
-              <CalendarDays className="w-5 h-5 text-gray-500" />
-              <Select
-                defaultValue={timeRange}
-                value={timeRange}
-                style={{ flexGrow: 1 }}
-                onChange={(value) => {
-                  setTimeRange(value);
-                  if (value !== 'custom') setCustomDateRange([]);
-                }}
-                className="rounded-lg"
-              >
-                <Option value="year">This Year</Option>
-                <Option value="month">This Month</Option>
-                <Option value="week">This Week</Option>
-                <Option value="day">Today</Option>
-                <Option value="custom">Custom Date</Option>
-              </Select>
-            </div>
-
-            {timeRange === 'custom' && (
-              <RangePicker
-                value={customDateRange}
-                onChange={(dates) => setCustomDateRange(dates)}
-                className="w-full md:w-auto rounded-lg shadow-sm"
-              />
-            )}
-
-            <Input
-              placeholder="Search by name, contact or bill number"
-              prefix={<Search className="w-4 h-4 text-gray-400" />}
+        {/* Filters Section */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white m-4  p-6 rounded-xl shadow-sm items-center">
+          <div className="flex items-center gap-2 min-w-[180px]">
+            <Store className="w-5 h-5 text-gray-500" />
+            <Select
+              value={selectedCounter}
               style={{ flexGrow: 1 }}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              allowClear
-              className="rounded-lg shadow-sm"
+              onChange={setSelectedCounter}
+              className="rounded-lg"
+              disabled={counters.length === 0}
+            >
+              <Option value="all">All Counters</Option>
+              {counters.map(counter => (
+                <Option key={counter} value={counter}>
+                  Counter {counter}
+                </Option>
+              ))}
+            </Select>
+          </div>
+
+          <div className="flex items-center gap-2 min-w-[180px]">
+            <CalendarDays className="w-5 h-5 text-gray-500" />
+            <Select
+              defaultValue={timeRange}
+              value={timeRange}
+              style={{ flexGrow: 1 }}
+              onChange={(value) => {
+                setTimeRange(value);
+                if (value !== 'custom') setCustomDateRange([]);
+              }}
+              className="rounded-lg"
+            >
+              <Option value="year">This Year</Option>
+              <Option value="month">This Month</Option>
+              <Option value="week">This Week</Option>
+              <Option value="day">Today</Option>
+              <Option value="custom">Custom Date</Option>
+            </Select>
+          </div>
+
+          {timeRange === 'custom' && (
+            <RangePicker
+              value={customDateRange}
+              onChange={(dates) => setCustomDateRange(dates)}
+              className="w-full md:w-auto rounded-lg shadow-sm"
             />
-          </div>
+          )}
 
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100">
-              <Statistic
-                title={<span className="text-blue-700 flex items-center gap-2"><ShoppingBag className="w-5 h-5" /> Total Bills</span>}
-                value={summary.totalBills}
-                valueStyle={{ color: '#1d4ed8' }}
-              />
-            </Card>
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-green-50 to-green-100">
-              <Statistic
-                title={<span className="text-green-700 flex items-center gap-2"><Wallet className="w-5 h-5" /> Total Amount</span>}
-                value={summary.totalAmount}
-                precision={2}
-                prefix="₹"
-                valueStyle={{ color: '#15803d' }}
-              />
-            </Card>
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100">
-              <Statistic
-                title={<span className="text-purple-700 flex items-center gap-2"><Users className="w-5 h-5" /> Total Customers</span>}
-                value={summary.totalCustomers}
-                valueStyle={{ color: '#7e22ce' }}
-              />
-            </Card>
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100">
-              <Statistic
-                title={<span className="text-amber-700 flex items-center gap-2"><BarChart2 className="w-5 h-5" /> Avg. Bill Amount</span>}
-                value={summary.averageBill}
-                precision={2}
-                prefix="₹"
-                valueStyle={{ color: '#b45309' }}
-              />
-            </Card>
-          </div>
+          <Input
+            placeholder="Search by name, contact or bill number"
+            prefix={<Search className="w-4 h-4 text-gray-400" />}
+            style={{ flexGrow: 1 }}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            allowClear
+            className="rounded-lg shadow-sm"
+          />
+        </div>
 
-          {/* Top Selling Products */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5" />
-              Top Selling Products
-              <Tag className="ml-2">{selectedCounter === 'all' ? 'All Counters' : `Counter ${selectedCounter}`}</Tag>
-            </h2>
-            
-            {topProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                {topProducts.map((product, index) => (
-                  <Card key={product.name} bordered={false} className="shadow-md hover:shadow-lg rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <h3 className="font-semibold text-gray-800 truncate">
-                        {product.name}
-                      </h3>
-                      {/* <div className={`flex items-center justify-center w-6 h-6 rounded-full ${
+        {/* Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8 m-2">
+          <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100">
+            <Statistic
+              title={<span className="text-blue-700 flex items-center gap-2"><ShoppingBag className="w-5 h-5" /> Total Bills</span>}
+              value={summary.totalBills}
+              valueStyle={{ color: '#1d4ed8' }}
+            />
+          </Card>
+          <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-green-50 to-green-100">
+            <Statistic
+              title={<span className="text-green-700 flex items-center gap-2"><Wallet className="w-5 h-5" /> Total Amount</span>}
+              value={summary.totalAmount}
+              precision={2}
+              prefix="₹"
+              valueStyle={{ color: '#15803d' }}
+            />
+          </Card>
+          <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100">
+            <Statistic
+              title={<span className="text-purple-700 flex items-center gap-2"><Users className="w-5 h-5" /> Total Customers</span>}
+              value={summary.totalCustomers}
+              valueStyle={{ color: '#7e22ce' }}
+            />
+          </Card>
+          <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-amber-50 to-amber-100">
+            <Statistic
+              title={<span className="text-amber-700 flex items-center gap-2"><BarChart2 className="w-5 h-5" /> Avg. Bill Amount</span>}
+              value={summary.averageBill}
+              precision={2}
+              prefix="₹"
+              valueStyle={{ color: '#b45309' }}
+            />
+          </Card>
+        </div>
+
+        {/* Top Selling Products */}
+        <div className="mb-8 m-2">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <TrendingUp className="w-5 h-5" />
+            Top Selling Products
+            <Tag className="ml-2">{selectedCounter === 'all' ? 'All Counters' : `Counter ${selectedCounter}`}</Tag>
+          </h2>
+
+          {topProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              {topProducts.map((product, index) => (
+                <Card key={product.name} bordered={false} className="shadow-md hover:shadow-lg rounded-lg">
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-semibold text-gray-800 truncate">
+                      {product.name}
+                    </h3>
+                    {/* <div className={`flex items-center justify-center w-6 h-6 rounded-full ${
                         index === 0 ? 'bg-yellow-500' : 
                         index === 1 ? 'bg-gray-400' : 
                         index === 2 ? 'bg-amber-700' : 'bg-blue-500'
                       } text-white text-xs font-bold`}>
                         {index + 1}
                       </div> */}
+                  </div>
+
+                  {selectedCounter === 'all' && (
+                    <p className="text-xs text-gray-600 mb-2">
+                      Sold at: {product.counters || 'Multiple counters'}
+                    </p>
+                  )}
+
+                  <Divider className="my-2" />
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <p className="text-xs text-gray-500">Quantity Sold</p>
+                      <p className="font-bold text-blue-600">{product.quantity}</p>
                     </div>
-                    
-                    {selectedCounter === 'all' && (
-                      <p className="text-xs text-gray-600 mb-2">
-                        Sold at: {product.counters || 'Multiple counters'}
-                      </p>
-                    )}
-                    
-                    <Divider className="my-2" />
-                    
-                    <div className="grid grid-cols-2 gap-2">
-                      <div>
-                        <p className="text-xs text-gray-500">Quantity Sold</p>
-                        <p className="font-bold text-blue-600">{product.quantity}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-gray-500">Total Value</p>
-                        <p className="font-bold text-green-600">₹{product.totalAmount.toFixed(2)}</p>
-                      </div>
+                    <div>
+                      <p className="text-xs text-gray-500">Total Value</p>
+                      <p className="font-bold text-green-600">₹{product.totalAmount.toFixed(2)}</p>
                     </div>
-                    
-                    <div className="mt-2">
-                      <p className="text-xs text-gray-500">Appeared in</p>
-                      <p className="font-medium">{product.bills} {product.bills === 1 ? 'bill' : 'bills'}</p>
-                    </div>
-                  </Card>
-                ))}
+                  </div>
+
+                  <div className="mt-2">
+                    <p className="text-xs text-gray-500">Appeared in</p>
+                    <p className="font-medium">{product.bills} {product.bills === 1 ? 'bill' : 'bills'}</p>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <Card bordered={false} className="shadow-sm rounded-lg">
+              <div className="flex flex-col items-center justify-center py-8 text-gray-500">
+                <Info className="w-12 h-12 mb-4 text-gray-400" />
+                <p className="text-base font-semibold">No products found for the selected criteria</p>
               </div>
-            ) : (
-              <Card bordered={false} className="shadow-sm rounded-lg">
+            </Card>
+          )}
+        </div>
+
+        {/* Bills Table */}
+        <div className="bg-white p-6 rounded-xl shadow-lg">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <Filter className="w-5 h-5" />
+              {selectedCounter === 'all' ? 'All Bills' : `Bills for Counter ${selectedCounter}`}
+            </h2>
+            <div className="text-sm text-gray-500">
+              Showing {filteredBills.length} records
+            </div>
+          </div>
+
+          <Table
+            columns={columns}
+            dataSource={filteredBills}
+            rowKey="_id"
+            pagination={{
+              pageSize: 10,
+              showSizeChanger: true,
+              pageSizeOptions: ['10', '20', '50', '100'],
+              showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
+            }}
+            scroll={{ x: true }}
+            loading={loading}
+            locale={{
+              emptyText: (
                 <div className="flex flex-col items-center justify-center py-8 text-gray-500">
                   <Info className="w-12 h-12 mb-4 text-gray-400" />
-                  <p className="text-lg font-medium">No products found for the selected criteria</p>
+                  <p className="text-base font-semibold">No bills found for the selected criteria</p>
+                  <p className="text-sm font-semibold">Try adjusting your filters or search terms.</p>
                 </div>
-              </Card>
-            )}
-          </div>
+              )
+            }}
+            className="rounded-xl"
+          />
+        </div>
 
-          {/* Bills Table */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <Filter className="w-5 h-5" />
-                {selectedCounter === 'all' ? 'All Bills' : `Bills for Counter ${selectedCounter}`}
-              </h2>
-              <div className="text-sm text-gray-500">
-                Showing {filteredBills.length} records
+        {/* Bill Details Modal */}
+        <Modal
+          title={<Title level={4} className="mb-0">Bill Details</Title>}
+          open={isModalVisible}
+          onCancel={handleModalClose}
+          footer={null}
+          width={800}
+        >
+          {selectedBill && (
+            <div>
+              <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <div className="mb-2">
+                      <Text strong>Bill Number:</Text> {selectedBill.billNumber || 'N/A'}
+                    </div>
+                    <div className="mb-2">
+                      <Text strong>Date:</Text> {dayjs(selectedBill.date).format('DD/MM/YYYY HH:mm')}
+                    </div>
+                    <div className="mb-2">
+                      <Text strong>Counter:</Text> {selectedBill.cashier?.counterNum || 'N/A'}
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className="mb-2">
+                      <Text strong>Customer:</Text> {selectedBill.customer?.name || 'Walk-in Customer'}
+                    </div>
+                    <div className="mb-2">
+                      <Text strong>Contact:</Text> {selectedBill.customer?.contact || 'N/A'}
+                    </div>
+                    <div className="mb-2">
+                      <Text strong>Payment Method:</Text> {selectedBill.paymentMethod || 'N/A'}
+                    </div>
+                  </Col>
+                </Row>
+              </div>
+
+              <div className="mb-6">
+                <Title level={5} className="mb-3">Products</Title>
+                <Table
+                  columns={[
+                    {
+                      title: 'Product',
+                      dataIndex: 'product',
+                      key: 'product',
+                      render: (product) => product?.name || 'Unknown Product',
+                    },
+                    {
+                      title: 'Price',
+                      dataIndex: 'price',
+                      key: 'price',
+                      render: price => `₹${price?.toFixed(2) || '0.00'}`,
+                      width: 100,
+                    },
+                    {
+                      title: 'Quantity',
+                      dataIndex: 'quantity',
+                      key: 'quantity',
+                      width: 100,
+                    },
+                    {
+                      title: 'Total',
+                      key: 'total',
+                      render: (_, record) => `₹${((record.price || 0) * (record.quantity || 0)).toFixed(2)}`,
+                      width: 120,
+                    },
+                  ]}
+                  dataSource={selectedBill.products || []}
+                  rowKey={(record, index) => `${record.product?.id}-${index}`}
+                  pagination={false}
+                  size="small"
+                />
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <div className="mb-2">
+                      <Text strong>Subtotal:</Text> ₹{selectedBill.subTotal?.toFixed(2) || '0.00'}
+                    </div>
+                    {selectedBill.discount > 0 && (
+                      <div className="mb-2">
+                        <Text strong>Discount:</Text> ₹{selectedBill.discount?.toFixed(2) || '0.00'}
+                      </div>
+                    )}
+                    <div className="mb-2">
+                      <Text strong>Tax:</Text> ₹{selectedBill.taxAmount?.toFixed(2) || '0.00'}
+                    </div>
+                  </Col>
+                  <Col span={12}>
+                    <div className="mb-2">
+                      <Text strong>Grand Total:</Text> ₹{selectedBill.grandTotal?.toFixed(2) || '0.00'}
+                    </div>
+                    <div className="mb-2">
+                      <Text strong>Paid Amount:</Text> ₹{selectedBill.paidAmount?.toFixed(2) || '0.00'}
+                    </div>
+                    <div className="mb-2">
+                      <Text strong>Pending Amount:</Text>
+                      <Tag color={selectedBill.unpaidAmountForThisBill > 0 ? 'red' : 'green'} className="ml-2">
+                        ₹{selectedBill.unpaidAmountForThisBill?.toFixed(2) || '0.00'}
+                      </Tag>
+                    </div>
+                  </Col>
+                </Row>
               </div>
             </div>
-
-            <Table
-              columns={columns}
-              dataSource={filteredBills}
-              rowKey="_id"
-              pagination={{
-                pageSize: 10,
-                showSizeChanger: true,
-                pageSizeOptions: ['10', '20', '50', '100'],
-                showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`,
-              }}
-              scroll={{ x: true }}
-              loading={loading}
-              locale={{
-                emptyText: (
-                  <div className="flex flex-col items-center justify-center py-8 text-gray-500">
-                    <Info className="w-12 h-12 mb-4 text-gray-400" />
-                    <p className="text-lg font-medium">No bills found for the selected criteria</p>
-                    <p className="text-sm">Try adjusting your filters or search terms.</p>
-                  </div>
-                )
-              }}
-              className="rounded-xl"
-            />
-          </div>
-
-          {/* Bill Details Modal */}
-          <Modal
-            title={<Title level={4} className="mb-0">Bill Details</Title>}
-            open={isModalVisible}
-            onCancel={handleModalClose}
-            footer={null}
-            width={800}
-          >
-            {selectedBill && (
-              <div>
-                <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <div className="mb-2">
-                        <Text strong>Bill Number:</Text> {selectedBill.billNumber || 'N/A'}
-                      </div>
-                      <div className="mb-2">
-                        <Text strong>Date:</Text> {dayjs(selectedBill.date).format('DD/MM/YYYY HH:mm')}
-                      </div>
-                      <div className="mb-2">
-                        <Text strong>Counter:</Text> {selectedBill.cashier?.counterNum || 'N/A'}
-                      </div>
-                    </Col>
-                    <Col span={12}>
-                      <div className="mb-2">
-                        <Text strong>Customer:</Text> {selectedBill.customer?.name || 'Walk-in Customer'}
-                      </div>
-                      <div className="mb-2">
-                        <Text strong>Contact:</Text> {selectedBill.customer?.contact || 'N/A'}
-                      </div>
-                      <div className="mb-2">
-                        <Text strong>Payment Method:</Text> {selectedBill.paymentMethod || 'N/A'}
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-
-                <div className="mb-6">
-                  <Title level={5} className="mb-3">Products</Title>
-                  <Table
-                    columns={[
-                      {
-                        title: 'Product',
-                        dataIndex: 'product',
-                        key: 'product',
-                        render: (product) => product?.name || 'Unknown Product',
-                      },
-                      {
-                        title: 'Price',
-                        dataIndex: 'price',
-                        key: 'price',
-                        render: price => `₹${price?.toFixed(2) || '0.00'}`,
-                        width: 100,
-                      },
-                      {
-                        title: 'Quantity',
-                        dataIndex: 'quantity',
-                        key: 'quantity',
-                        width: 100,
-                      },
-                      {
-                        title: 'Total',
-                        key: 'total',
-                        render: (_, record) => `₹${((record.price || 0) * (record.quantity || 0)).toFixed(2)}`,
-                        width: 120,
-                      },
-                    ]}
-                    dataSource={selectedBill.products || []}
-                    rowKey={(record, index) => `${record.product?.id}-${index}`}
-                    pagination={false}
-                    size="small"
-                  />
-                </div>
-
-                <div className="bg-gray-50 p-4 rounded-lg">
-                  <Row gutter={16}>
-                    <Col span={12}>
-                      <div className="mb-2">
-                        <Text strong>Subtotal:</Text> ₹{selectedBill.subTotal?.toFixed(2) || '0.00'}
-                      </div>
-                      {selectedBill.discount > 0 && (
-                        <div className="mb-2">
-                          <Text strong>Discount:</Text> ₹{selectedBill.discount?.toFixed(2) || '0.00'}
-                        </div>
-                      )}
-                      <div className="mb-2">
-                        <Text strong>Tax:</Text> ₹{selectedBill.taxAmount?.toFixed(2) || '0.00'}
-                      </div>
-                    </Col>
-                    <Col span={12}>
-                      <div className="mb-2">
-                        <Text strong>Grand Total:</Text> ₹{selectedBill.grandTotal?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className="mb-2">
-                        <Text strong>Paid Amount:</Text> ₹{selectedBill.paidAmount?.toFixed(2) || '0.00'}
-                      </div>
-                      <div className="mb-2">
-                        <Text strong>Pending Amount:</Text> 
-                        <Tag color={selectedBill.unpaidAmountForThisBill > 0 ? 'red' : 'green'} className="ml-2">
-                          ₹{selectedBill.unpaidAmountForThisBill?.toFixed(2) || '0.00'}
-                        </Tag>
-                      </div>
-                    </Col>
-                  </Row>
-                </div>
-              </div>
-            )}
-          </Modal>
-        </div>  
+          )}
+        </Modal>
+      </div>
     </ConfigProvider>
   );
 };

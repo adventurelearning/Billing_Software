@@ -11,40 +11,81 @@ const ProductDetailsModal = ({ product, onClose }) => {
   if (!product) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-2xl font-bold text-gray-800 mb-6 border-b pb-3">Product Details: {product.productName}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-700">
-          <p><strong>Product Code:</strong> {product.productCode}</p>
-          <p><strong>Category:</strong> {product.category}</p>
-          <p><strong>Brand:</strong> {product.brand || '-'}</p>
-          <p><strong>Base Unit:</strong> {product.baseUnit}</p>
-          <p><strong>Secondary Unit:</strong> {product.secondaryUnit || '-'}</p>
-          <p><strong>Conversion Rate:</strong> {product.conversionRate || '-'}</p>
-          <p><strong>MRP:</strong> ₹{product.mrp?.toFixed(2)}</p>
-          <p><strong>Discount:</strong> {product.discount ? `${product.discount}%` : '-'}</p>
-          <p><strong>Net Price:</strong> ₹{product.netPrice?.toFixed(2)}</p>
-          <p><strong>CGST:</strong> {product.gst ? `${product.gst}%` : '-'}</p>
-          <p><strong>SGST:</strong> {product.sgst ? `${product.sgst}%` : '-'}</p>
-          <p><strong>Total Price:</strong> ₹{product.totalPrice?.toFixed(2)}</p>
-          <p><strong>Stock Quantity:</strong> {product.stockQuantity} {product.baseUnit}</p>
-          <p><strong>GST Category:</strong> {product.gstCategory || '-'}</p>
-          <p><strong>Overall Quantity:</strong> {product.overallQuantity || '-'}</p>
-          <p><strong>Quantity:</strong> {product.quantity || '-'}</p>
-          <p><strong>Discount on MRP:</strong> {product.discountOnMRP ? `${product.discountOnMRP}%` : '-'}</p>
-          <p><strong>Incoming Date:</strong> {product.incomingDate ? new Date(product.incomingDate).toLocaleDateString() : '-'}</p>
-          <p><strong>Expiry Date:</strong> {product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '-'}</p>
-          <p><strong>Supplier Name:</strong> {product.supplierName || '-'}</p>
-          <p><strong>Batch Number:</strong> {product.batchNumber || '-'}</p>
-          <p><strong>Manufacture Date:</strong> {product.manufactureDate ? new Date(product.manufactureDate).toLocaleDateString() : '-'}</p>
-          <p><strong>Manufacture Location:</strong> {product.manufactureLocation || '-'}</p>
-          <p><strong>Created At:</strong> {product.createdAt ? new Date(product.createdAt).toLocaleString() : '-'}</p>
-          <p><strong>Updated At:</strong> {product.updatedAt ? new Date(product.updatedAt).toLocaleString() : '-'}</p>
-        </div>
-        <div className="mt-6 flex justify-end">
+  <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        {/* Header with highlighted product name */}
+        <div className="flex justify-between items-start mb-6">
+          <div className="bg-blue-50 px-4 py-3 rounded-lg border border-blue-100">
+            <h2 className="text-2xl font-bold text-blue-700">{product.productName}</h2>
+            <p className="text-blue-600 font-medium">{product.productCode}</p>
+          </div>
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Table-like layout */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <tbody className="bg-white divide-y divide-gray-200">
+              {/* Basic Information */}
+              <TableRow label="Category" value={product.category} />
+              <TableRow label="Brand" value={product.brand} />
+              <TableRow label="Base Unit" value={product.baseUnit} />
+              <TableRow label="Secondary Unit" value={product.secondaryUnit} />
+              <TableRow label="Conversion Rate" value={product.conversionRate} />
+              <TableRow label="GST Category" value={product.gstCategory} />
+              
+              {/* Stock Information */}
+              <tr className="bg-gray-50">
+                <td colSpan="2" className="px-4 py-2 font-bold text-gray-700">Stock Information</td>
+              </tr>
+              <TableRow label="Stock Quantity" value={`${product.stockQuantity} ${product.baseUnit}`} />
+              <TableRow label="Overall Quantity" value={product.overallQuantity} />
+              
+              {/* Pricing Information */}
+              <tr className="bg-gray-50">
+                <td colSpan="2" className="px-4 py-2 font-bold text-gray-700">Pricing Information</td>
+              </tr>
+              <TableRow label="MRP" value={`₹${product.mrp?.toFixed(2)}`} />
+              <TableRow label="Discount" value={product.discount ? `${product.discount}%` : '-'} />
+              <TableRow label="Net Price" value={`₹${product.netPrice?.toFixed(2)}`} />
+              <TableRow label="CGST" value={product.gst ? `${product.gst}%` : '-'} />
+              <TableRow label="SGST" value={product.sgst ? `${product.sgst}%` : '-'} />
+              <TableRow label="Total Price" value={`₹${product.totalPrice?.toFixed(2)}`} />
+              <TableRow label="Discount on MRP" value={product.discountOnMRP ? `${product.discountOnMRP}%` : '-'} />
+              
+              {/* Date Information */}
+              <tr className="bg-gray-50">
+                <td colSpan="2" className="px-4 py-2 font-bold text-gray-700">Date Information</td>
+              </tr>
+              <TableRow label="Incoming Date" value={product.incomingDate ? new Date(product.incomingDate).toLocaleDateString() : '-'} />
+              <TableRow label="Expiry Date" value={product.expiryDate ? new Date(product.expiryDate).toLocaleDateString() : '-'} />
+              <TableRow label="Manufacture Date" value={product.manufactureDate ? new Date(product.manufactureDate).toLocaleDateString() : '-'} />
+              
+              {/* Additional Information */}
+              <tr className="bg-gray-50">
+                <td colSpan="2" className="px-4 py-2 font-bold text-gray-700">Additional Information</td>
+              </tr>
+              <TableRow label="Batch Number" value={product.batchNumber} />
+              <TableRow label="Supplier Name" value={product.supplierName} />
+              <TableRow label="Manufacture Location" value={product.manufactureLocation} />
+              <TableRow label="Created At" value={product.createdAt ? new Date(product.createdAt).toLocaleString() : '-'} />
+              <TableRow label="Updated At" value={product.updatedAt ? new Date(product.updatedAt).toLocaleString() : '-'} />
+            </tbody>
+          </table>
+        </div>
+
+        {/* Footer */}
+        <div className="mt-8 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
             Close
           </button>
@@ -53,6 +94,18 @@ const ProductDetailsModal = ({ product, onClose }) => {
     </div>
   );
 };
+
+// Reusable detail item component
+const TableRow = ({ label, value }) => (
+  <tr>
+    <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-700 bg-gray-50">
+      {label}
+    </td>
+    <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900">
+      {value}
+    </td>
+  </tr>
+);
 
 // Printable Component
 const PrintableProducts = React.forwardRef(({ products, filterType }, ref) => {
@@ -261,72 +314,113 @@ const ProductStockList = ({ setActivePage }) => {
   };
 
   return (
-    <div className="container mx-auto px-2 py-2">
-      <div className="bg-white rounded-xl shadow-md overflow-hidden">
+    <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
+      <div className="bg-white rounded-xl shadow-md ">
         {/* Header and Controls */}
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <h1 className="text-2xl font-bold text-gray-800 mb-4 md:mb-0">Product Stock List</h1>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FiSearch className="text-gray-400" />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-              </div>
-              <div className="flex gap-2">
-                <select
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={selectedCategory}
-                  onChange={(e) => setSelectedCategory(e.target.value)}
-                >
-                  {categories.map(category => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-                <select
-                  className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500"
-                  value={selectedGstCategory}
-                  onChange={(e) => setSelectedGstCategory(e.target.value)}
-                >
-                  <option value="All">All GST Categories</option>
-                  <option value="GST">GST Products</option>
-                  <option value="Non-GST">Non-GST Products</option>
-                </select>
+        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-2">
+            <div className="flex flex-col py-3">
+              {/* Title Row */}
+              <div className="flex justify-between items-center mb-2 md:mb-0">
+                <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 p-2 rounded-md">
+                  Product Stock List
+                </h1>
                 <button
-                  onClick={handlePrint}
-                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-                >
-                  <FiPrinter /> Print
-                </button>
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                  className="md:hidden bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg flex items-center gap-2"
                   onClick={() => setActivePage('Products')}
                 >
-                  <FiPlus /> Add Product
+                  <FiPlus size={18} />
+                </button>
+              </div>
+
+              {/* Search and Filters Row */}
+              <div className="flex flex-col space-y-1 sm:space-y-0 sm:flex-row sm:space-x-2 sm:items-center py-2">
+                {/* Search Input */}
+                <div className="relative flex-grow">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <FiSearch className="text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search products..."
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </div>
+
+                {/* Filters Row - will wrap on smaller screens */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex flex-col sm:flex-row gap-2 flex-grow">
+                    <select
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 flex-grow"
+                      value={selectedCategory}
+                      onChange={(e) => setSelectedCategory(e.target.value)}
+                    >
+                      {categories.map(category => (
+                        <option key={category} value={category}>{category}</option>
+                      ))}
+                    </select>
+
+                    <select
+                      className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-blue-500 focus:border-blue-500 flex-grow"
+                      value={selectedGstCategory}
+                      onChange={(e) => setSelectedGstCategory(e.target.value)}
+                    >
+                      <option value="All">All GST Categories</option>
+                      <option value="GST">GST Products</option>
+                      <option value="Non-GST">Non-GST Products</option>
+                    </select>
+                  </div>
+
+                  {/* Buttons - hidden on mobile except Add Product */}
+                  <div className="hidden sm:flex gap-2">
+                    <button
+                      onClick={handlePrint}
+                      className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                    >
+                      <FiPrinter /> Print
+                    </button>
+                    <button
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                      onClick={() => setActivePage('Products')}
+                    >
+                      <FiPlus /> Add Product
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile-only buttons - shown below filters */}
+              <div className="flex sm:hidden gap-2 mt-2">
+                <button
+                  onClick={handlePrint}
+                  className="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg flex items-center gap-1 flex-1 justify-center"
+                >
+                  <FiPrinter size={16} /> <span>Print</span>
+                </button>
+                <button
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-2 rounded-lg flex items-center gap-1 flex-1 justify-center"
+                  onClick={() => setActivePage('Products')}
+                >
+                  <FiPlus size={16} /> <span>Add</span>
                 </button>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Hidden printable component */}
-        <div className="hidden">
-          <PrintableProducts
-            ref={printRef}
-            products={filteredProducts}
-            filterType={getFilterType()}
-          />
-        </div>
+          {/* Hidden printable component */}
+          <div className="hidden">
+            <PrintableProducts
+              ref={printRef}
+              products={filteredProducts}
+              filterType={getFilterType()}
+            />
+          </div>
+        </header>
 
         {/* Product Table */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto px-2">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -372,7 +466,7 @@ const ProductStockList = ({ setActivePage }) => {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Stock</th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">View Details</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">

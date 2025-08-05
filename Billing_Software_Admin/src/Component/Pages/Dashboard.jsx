@@ -397,255 +397,253 @@ const Dashboard = ({ setActivePage }) => {
   );
 
   return (
-<div className="font-sans text-gray-900 min-h-screen bg-gray-50">
-  {/* Header - Fixed at top */}
-  <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-    <div className="max-w-6xl mx-auto px-2">
-      <div className="flex justify-between items-center h-16">
-        {/* Dashboard title */}
-        <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">
-          Dashboard
-        </h1>
-        
-        {/* Notification button */}
-        <button
-          onClick={() => setShowLowStockModal(true)}
-          className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200 relative"
-          aria-label="Notifications"
-        >
-          <Bell className="h-5 w-5" />
-          {lowStockAlerts.length > 0 && (
-            <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold animate-pulse">
-              {lowStockAlerts.length}
-            </span>
-          )}
-        </button>
-      </div>
-    </div>
-  </header>
+    <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
+      {/* Header - Fixed at top */}
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-2">
+          <div className="flex justify-between items-center h-16">
+            {/* Dashboard title */}
+            <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">
+              Dashboard
+            </h1>
 
-  {/* Main Content */}
-  <main className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-    {/* Action Buttons - Stack on mobile, row on larger screens */}
-    <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-        <button
-          onClick={() => setActivePage('Products')}
-          className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 w-full sm:w-auto"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add New Product
-        </button>
-        <button
-          onClick={() => setActivePage('Stock Summary')}
-          className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 w-full sm:w-auto"
-        >
-          <Eye className="mr-2 h-4 w-4" />
-          View Stock Summary
-        </button>
-      </div>
-    </div>
-
-    {loading ? (
-      <div className="flex justify-center items-center h-64">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-        <p className="ml-4 text-lg text-gray-600">Loading dashboard data...</p>
-      </div>
-    ) : (
-      <>
-        {/* Summary Cards - Responsive grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Revenue Card */}
-          <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dl>
-                    <dt className="text-base font-medium text-gray-500 truncate">Total Revenue</dt>
-                    <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
-                    <dd className="flex items-baseline">
-                      <div className="text-lg font-bold text-gray-900">
-                        ₹{totalRevenue.toLocaleString()}
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-                <div className="flex-shrink-0 bg-blue-100 rounded-full p-2 shadow-lg">
-                  <DollarSign className="h-7 w-7 text-blue-800" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bills Card */}
-          <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dl>
-                    <dt className="text-base font-medium text-gray-500 truncate">Total Bill</dt>
-                    <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
-                    <dd className="flex items-baseline">
-                      <div className="text-lg font-bold text-gray-900">
-                        {totalBills}
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-                <div className="flex-shrink-0 bg-green-100 rounded-full p-2 shadow-lg">
-                  <ShoppingCart className="h-7 w-7 text-green-800" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Customers Card */}
-          <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dl>
-                    <dt className="text-base font-medium text-gray-500 truncate">Total Customers</dt>
-                    <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
-                    <dd className="flex items-baseline">
-                      <div className="text-lg font-bold text-gray-900">
-                        {uniqueCustomers}
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-                <div className="flex-shrink-0 bg-yellow-100 rounded-full p-2 shadow-lg">
-                  <Users className="h-7 w-7 text-yellow-800" />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Products Card */}
-          <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
-            <div className="p-5">
-              <div className="flex items-center">
-                <div className="flex-1">
-                  <dl>
-                    <dt className="text-base font-medium text-gray-500 truncate">Products in Stock</dt>
-                    <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
-                    <dd className="flex items-baseline">
-                      <div className="text-lg font-bold text-gray-900">
-                        {totalProductsInStock}
-                      </div>
-                    </dd>
-                  </dl>
-                </div>
-                <div className="flex-shrink-0 bg-purple-100 rounded-full p-2 shadow-lg">
-                  <Package className="h-7 w-7 text-purple-800" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Charts Section - Stack on mobile, side-by-side on larger screens */}
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
-          {/* Monthly Revenue Chart */}
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <h3 className="text-lg font-bold text-gray-900 mb-4">Monthly Revenue</h3>
-            <div className="h-80">
-              <Bar data={monthlyRevenueChartData} options={monthlyRevenueChartOptions} />
-            </div>
-          </div>
-
-          {/* Product Sales Chart */}
-          <div className="bg-white shadow-md rounded-lg p-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
-              <h3 className="text-lg font-bold text-gray-900">
-                {showTopSellingChart ? 'Top Selling Products' : 'Less Selling Products'}
-              </h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => setShowTopSellingChart(true)}
-                  className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    showTopSellingChart
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Top Selling
-                </button>
-                <button
-                  onClick={() => setShowTopSellingChart(false)}
-                  className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
-                    !showTopSellingChart
-                      ? 'bg-blue-600 text-white shadow-md'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  Less Selling
-                </button>
-              </div>
-            </div>
-            <div className="h-80 flex justify-center items-center">
-              {showTopSellingChart ? (
-                topSellingProducts.length > 0 ? (
-                  <Pie data={getProductChartData(topSellingProducts)} options={productChartOptions} />
-                ) : (
-                  <p className="text-gray-600">No top selling product data available.</p>
-                )
-              ) : (
-                lessSellingProducts.length > 0 ? (
-                  <Pie data={getProductChartData(lessSellingProducts)} options={productChartOptions} />
-                ) : (
-                  <p className="text-gray-600">No less selling product data available.</p>
-                )
+            {/* Notification button */}
+            <button
+              onClick={() => setShowLowStockModal(true)}
+              className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors duration-200 relative"
+              aria-label="Notifications"
+            >
+              <Bell className="h-5 w-5" />
+              {lowStockAlerts.length > 0 && (
+                <span className="absolute top-0 right-0 h-3 w-3 rounded-full bg-red-500 flex items-center justify-center text-white text-xs font-bold animate-pulse">
+                  {lowStockAlerts.length}
+                </span>
               )}
-            </div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto py-4 m-2 p-6">
+        {/* Action Buttons - Stack on mobile, row on larger screens */}
+        <div className="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+            <button
+              onClick={() => setActivePage('Products')}
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors duration-200 w-full sm:w-auto"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Add New Product
+            </button>
+            <button
+              onClick={() => setActivePage('Stock Summary')}
+              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200 w-full sm:w-auto"
+            >
+              <Eye className="mr-2 h-4 w-4" />
+              View Stock Summary
+            </button>
           </div>
         </div>
 
-        {/* Alerts Section - Full width */}
-        <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
-          <div className="px-6 py-5 border-b border-gray-200 bg-red-50">
-            <h3 className="text-lg leading-6 font-semibold text-red-800 flex items-center">
-              <Bell className="mr-2 h-5 w-5" /> Low Stock Alerts
-            </h3>
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
+            <p className="ml-4 text-lg text-gray-600">Loading dashboard data...</p>
           </div>
-          <div className="bg-white p-6">
-            {lowStockAlerts.length > 0 ? (
-              <ul className="divide-y divide-red-100">
-                {lowStockAlerts.map((alert, index) => (
-                  <li key={index} className="py-3 flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
+        ) : (
+          <>
+            {/* Summary Cards - Responsive grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              {/* Revenue Card */}
+              <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
+                <div className="p-5">
+                  <div className="flex items-center">
                     <div className="flex-1">
-                      <div className="text-base font-medium text-gray-900">{alert.productName}</div>
-                      <div className="text-sm text-gray-500">Code: {alert.productCode}</div>
-                      <div className="text-sm text-gray-500">Category: {alert.category}</div>
+                      <dl>
+                        <dt className="text-base font-medium text-gray-500 truncate">Total Revenue</dt>
+                        <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
+                        <dd className="flex items-baseline">
+                          <div className="text-lg font-bold text-gray-900">
+                            ₹{totalRevenue.toLocaleString()}
+                          </div>
+                        </dd>
+                      </dl>
                     </div>
-                    <div className="sm:text-right">
-                      <div className="text-base text-red-600 font-semibold">
-                        Available: {alert.currentStock}
-                      </div>
-                      <div className="text-sm text-gray-500">Price: ₹{alert.price}</div>
+                    <div className="flex-shrink-0 bg-blue-100 rounded-full p-2 shadow-lg">
+                      <DollarSign className="h-7 w-7 text-blue-800" />
                     </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <div className="text-center py-4 text-gray-600 text-base">
-                All good! No low stock alerts.
+                  </div>
+                </div>
               </div>
-            )}
-          </div>
-        </div>
-      </>
-    )}
-  </main>
 
-  {/* Low Stock Notification Modal */}
-  {showLowStockModal && (
-    <NotificationModal
-      alerts={lowStockAlerts}
-      onClose={() => setShowLowStockModal(false)}
-    />
-  )}
-</div>
+              {/* Bills Card */}
+              <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-1">
+                      <dl>
+                        <dt className="text-base font-medium text-gray-500 truncate">Total Bill</dt>
+                        <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
+                        <dd className="flex items-baseline">
+                          <div className="text-lg font-bold text-gray-900">
+                            {totalBills}
+                          </div>
+                        </dd>
+                      </dl>
+                    </div>
+                    <div className="flex-shrink-0 bg-green-100 rounded-full p-2 shadow-lg">
+                      <ShoppingCart className="h-7 w-7 text-green-800" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Customers Card */}
+              <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-1">
+                      <dl>
+                        <dt className="text-base font-medium text-gray-500 truncate">Total Customers</dt>
+                        <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
+                        <dd className="flex items-baseline">
+                          <div className="text-lg font-bold text-gray-900">
+                            {uniqueCustomers}
+                          </div>
+                        </dd>
+                      </dl>
+                    </div>
+                    <div className="flex-shrink-0 bg-yellow-100 rounded-full p-2 shadow-lg">
+                      <Users className="h-7 w-7 text-yellow-800" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Products Card */}
+              <div className="bg-white overflow-hidden shadow-md rounded-lg transform transition duration-300 hover:scale-[1.02]">
+                <div className="p-5">
+                  <div className="flex items-center">
+                    <div className="flex-1">
+                      <dl>
+                        <dt className="text-base font-medium text-gray-500 truncate">Products in Stock</dt>
+                        <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
+                        <dd className="flex items-baseline">
+                          <div className="text-lg font-bold text-gray-900">
+                            {totalProductsInStock}
+                          </div>
+                        </dd>
+                      </dl>
+                    </div>
+                    <div className="flex-shrink-0 bg-purple-100 rounded-full p-2 shadow-lg">
+                      <Package className="h-7 w-7 text-purple-800" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Charts Section - Stack on mobile, side-by-side on larger screens */}
+            <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
+              {/* Monthly Revenue Chart */}
+              <div className="bg-white shadow-md rounded-lg p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4">Monthly Revenue</h3>
+                <div className="h-80">
+                  <Bar data={monthlyRevenueChartData} options={monthlyRevenueChartOptions} />
+                </div>
+              </div>
+
+              {/* Product Sales Chart */}
+              <div className="bg-white shadow-md rounded-lg p-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 gap-3">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {showTopSellingChart ? 'Top Selling Products' : 'Less Selling Products'}
+                  </h3>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setShowTopSellingChart(true)}
+                      className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${showTopSellingChart
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                    >
+                      Top Selling
+                    </button>
+                    <button
+                      onClick={() => setShowTopSellingChart(false)}
+                      className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${!showTopSellingChart
+                          ? 'bg-blue-600 text-white shadow-md'
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                        }`}
+                    >
+                      Less Selling
+                    </button>
+                  </div>
+                </div>
+                <div className="h-80 flex justify-center items-center">
+                  {showTopSellingChart ? (
+                    topSellingProducts.length > 0 ? (
+                      <Pie data={getProductChartData(topSellingProducts)} options={productChartOptions} />
+                    ) : (
+                      <p className="text-gray-600">No top selling product data available.</p>
+                    )
+                  ) : (
+                    lessSellingProducts.length > 0 ? (
+                      <Pie data={getProductChartData(lessSellingProducts)} options={productChartOptions} />
+                    ) : (
+                      <p className="text-gray-600">No less selling product data available.</p>
+                    )
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Alerts Section - Full width */}
+            <div className="bg-white shadow-md rounded-lg overflow-hidden mb-8">
+              <div className="px-6 py-5 border-b border-gray-200 bg-red-50">
+                <h3 className="text-lg leading-6 font-semibold text-red-800 flex items-center">
+                  <Bell className="mr-2 h-5 w-5" /> Low Stock Alerts
+                </h3>
+              </div>
+              <div className="bg-white p-6">
+                {lowStockAlerts.length > 0 ? (
+                  <ul className="divide-y divide-red-100">
+                    {lowStockAlerts.map((alert, index) => (
+                      <li key={index} className="py-3 flex flex-col sm:flex-row justify-between gap-2 sm:gap-0">
+                        <div className="flex-1">
+                          <div className="text-base font-medium text-gray-900">{alert.productName}</div>
+                          <div className="text-sm text-gray-500">Code: {alert.productCode}</div>
+                          <div className="text-sm text-gray-500">Category: {alert.category}</div>
+                        </div>
+                        <div className="sm:text-right">
+                          <div className="text-base text-red-600 font-semibold">
+                            Available: {alert.currentStock}
+                          </div>
+                          <div className="text-sm text-gray-500">Price: ₹{alert.price}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <div className="text-center py-4 text-gray-600 text-base">
+                    All good! No low stock alerts.
+                  </div>
+                )}
+              </div>
+            </div>
+          </>
+        )}
+      </main>
+
+      {/* Low Stock Notification Modal */}
+      {showLowStockModal && (
+        <NotificationModal
+          alerts={lowStockAlerts}
+          onClose={() => setShowLowStockModal(false)}
+        />
+      )}
+    </div>
   );
 };
 
