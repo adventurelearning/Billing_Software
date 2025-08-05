@@ -78,11 +78,14 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
         {companyDetails.logoUrl && (
-          <div className="flex justify-center">
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
             <img
               src={companyDetails.logoUrl}
               alt="Company Logo"
-              className="h-5 object-contain"
+              style={{
+                height: '20px',
+                objectFit: 'contain'
+              }}
             />
           </div>
         )}
