@@ -71,8 +71,6 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
 
   return (
    <aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out
-  // Mobile - hidden
-  hidden
   // Desktop - visible with toggle
   md:flex ${collapsed ? 'w-20 items-center' : 'w-56'}`}>
       {/* Navigation */}
