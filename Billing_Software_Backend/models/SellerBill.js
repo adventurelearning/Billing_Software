@@ -11,11 +11,6 @@ const sellerBillSchema = new mongoose.Schema({
     required: true,
     trim: true
   },
-  batchNumber: {
-    type: String,
-    required: true,
-    trim: true
-  },
   billType: {
     type: String,
     enum: ['gst', 'non-gst'],

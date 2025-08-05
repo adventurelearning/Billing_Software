@@ -41,7 +41,7 @@ const upload = multer({
 router.post('/upload', upload.single('bill'), async (req, res) => {
   try {
     // Validate required fields
-    const requiredFields = ['sellerId', 'supplierName', 'batchNumber', 'billType', 'billNumber', 'billDate', 'amount'];
+    const requiredFields = ['sellerId', 'supplierName', 'billType', 'billNumber', 'billDate', 'amount'];
     const missingFields = requiredFields.filter(field => !req.body[field]);
     
     if (missingFields.length > 0) {
@@ -64,7 +64,7 @@ router.post('/upload', upload.single('bill'), async (req, res) => {
     const newBill = new SellerBill({
       sellerId: new mongoose.Types.ObjectId(req.body.sellerId),
       supplierName: req.body.supplierName,
-      batchNumber: req.body.batchNumber,
+      // batchNumber: req.body.batchNumber,
       billType: req.body.billType,
       billNumber: req.body.billNumber,
       billDate: new Date(req.body.billDate),
@@ -231,7 +231,7 @@ router.get('/suppliers', async (req, res) => {
           _id: {
             sellerId: '$sellerId',
             supplierName: '$supplierName',
-            batchNumber: '$batchNumber'
+            // batchNumber: '$batchNumber'
           },
           billCount: { $sum: 1 }
         }
@@ -241,11 +241,11 @@ router.get('/suppliers', async (req, res) => {
           _id: 0,
           sellerId: '$_id.sellerId',
           supplierName: '$_id.supplierName',
-          batchNumber: '$_id.batchNumber',
+          // batchNumber: '$_id.batchNumber',
           billCount: 1
         }
       },
-      { $sort: { supplierName: 1, batchNumber: 1 } }
+      { $sort: { supplierName: 1} }
     ]);
 
     res.json(suppliers);
