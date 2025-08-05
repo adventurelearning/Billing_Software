@@ -70,10 +70,11 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
   };
 
   return (
-    <aside
-      className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out ${collapsed ? 'w-20 items-center' : 'w-56'
-        } md:w-56 md:items-start`}
-    >
+   <aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out
+  // Mobile - hidden
+  hidden
+  // Desktop - visible with toggle
+  md:flex ${collapsed ? 'w-20 items-center' : 'w-56'}`}>
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto  scrollbar-hide">
         <ul className="px-1 ">
