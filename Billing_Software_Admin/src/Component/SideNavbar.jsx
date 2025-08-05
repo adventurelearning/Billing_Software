@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  FiHome, FiCreditCard, FiUsers, FiPackage,  FiArchive,
-  FiDollarSign, FiPieChart, FiUser, 
-  FiChevronLeft, FiChevronRight, FiLogOut, FiUpload,  
+  FiHome, FiCreditCard, FiUsers, FiPackage, FiArchive,
+  FiDollarSign, FiPieChart, FiUser,
+  FiChevronLeft, FiChevronRight, FiLogOut, FiUpload,
 } from 'react-icons/fi';
 import { BsCreditCard } from "react-icons/bs";
 import { MdOutlineInventory, MdAssessment } from "react-icons/md";
@@ -70,7 +70,10 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
   };
 
   return (
-    <aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out ${collapsed ? 'w-20 items-center' : 'w-56'}`}>
+    <aside
+      className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out ${collapsed ? 'w-20 items-center' : 'w-56'
+        } md:w-56 md:items-start`}
+    >
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto  scrollbar-hide">
         <ul className="px-1 ">
