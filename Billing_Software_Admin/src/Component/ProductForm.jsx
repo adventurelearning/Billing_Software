@@ -634,8 +634,8 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                                         name="gst"
                                         value={formData.gst}
                                         onChange={handleChange}
-                                        inputMode="numeric"
-                                        pattern="[0-9]*"
+                                        inputMode="decimal"
+                                        pattern="[0-9.]*"
                                         className="no-arrows w-full pr-7 pl-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         placeholder="0.0"
                                     />
@@ -653,8 +653,8 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                                         name="sgst"
                                         value={formData.sgst}
                                         onChange={handleChange}
-                                        inputMode="numeric"
-                                        pattern="[0-9]*"
+                                        inputMode="decimal"
+                                        pattern="[0-9.]*"
                                         className="no-arrows w-full pr-7 pl-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
                                         placeholder="0.0"
                                     />

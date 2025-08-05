@@ -10,6 +10,7 @@ import CashierDetails from './CashierDetails';
 import PrintableBill from './PrintableBill';
 import Navbar from './Navbar';
 import Header from './Header';
+import ThermalPrintableBill from './ThermalPrintableBill';
 
 const BillingSystem = ({
   onFocusProductSearch,
@@ -55,6 +56,109 @@ const BillingSystem = ({
 
   const handlePaymentMethodChange = (method) => {
     setPaymentMethod(method);
+  };
+
+  const printThermalBill = async (billData) => {
+    try {
+      const companyRes = await Api.get('/companies');
+      const companyDetails = companyRes.data[0];
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+      <html>
+        <head>
+          <title>Thermal Bill ${billData.billNumber}</title>
+          <style>
+            @page {
+              size: 80mm auto;
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
+          </style>
+        </head>
+        <body>
+          <div id="print-root"></div>
+          <script>
+            window.onload = function() {
+              setTimeout(() => {
+                window.print();
+                setTimeout(() => window.close(), 500);
+              }, 200);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+      printWindow.document.close();
+
+      const rootElement = printWindow.document.getElementById('print-root');
+      const root = ReactDOMClient.createRoot(rootElement);
+      root.render(
+        <ThermalPrintableBill billData={billData} companyDetails={companyDetails} />
+      );
+    } catch (error) {
+      console.error('Thermal print error:', error);
+      toast.error('Failed to print thermal bill: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
+  // Add this function for mobile printing
+  const handleMobilePrint = async () => {
+    if (products.length === 0 && customerOutstandingCredit === 0) {
+      toast.error('No products or outstanding credit to print in the bill.');
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+
+      const userData = JSON.parse(localStorage.getItem('loggedInUser'));
+      const cashier = {
+        cashierId: userData.cashierId,
+        cashierName: userData.cashierName,
+        counterNum: userData.counterNum,
+        contactNumber: userData.contactNumber,
+      };
+
+      const billData = {
+        customer,
+        products: products.length > 0 ? products : [],
+        cashier,
+        transportCharge,
+        productSubtotal: calculateSubtotal(),
+        currentBillTotal: calculateCurrentBillTotal(),
+        previousOutstandingCredit: customerOutstandingCredit,
+        grandTotal: calculateGrandTotal(),
+        date: new Date().toISOString(),
+        billNumber: products.length > 0
+          ? `BILL-${customer.id || 'NEW'}-${Date.now()}`
+          : `CREDIT-${customer.id || 'NEW'}-${Date.now()}`,
+        payment: {
+          method: paymentMethod,
+          currentBillPayment: calculateCurrentBillTotal(),
+          selectedOutstandingPayment: customerOutstandingCredit,
+          amountPaid: customerOutstandingCredit
+        },
+        selectedUnpaidBillIds: [],
+        isOutstandingPaymentOnly: products.length === 0 && customerOutstandingCredit > 0
+      };
+
+      const response = await Api.post('/bills', billData);
+      const savedBill = response.data.bill;
+
+      await printThermalBill(savedBill);
+
+      toast.success('Bill saved and printed to thermal printer!');
+      resetForm();
+    } catch (error) {
+      console.error('Thermal print error:', error);
+      toast.error('Failed to print thermal bill: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const printBill = async (billData) => {
@@ -357,28 +461,44 @@ const BillingSystem = ({
       const apiUrl = isNewBillPresent ? '/bills' : '/bills/settle-outstanding';
       const response = await Api.post(apiUrl, completeBill);
 
-      // Handle successful response
       if (response.data && (response.data.success || response.data.message === 'Outstanding bills settled successfully.')) {
-        await printBill(response.data.bill || {
-          ...completeBill,
-          _id: Date.now().toString(), // Temporary ID for printing
-          createdAt: new Date().toISOString()
-        });
-        toast.success('Payment successful and bill saved!');
+        if (paymentDetails.isMobilePrint) {
+          await printThermalBill(response.data.bill || {
+            ...completeBill,
+            _id: Date.now().toString(),
+            createdAt: new Date().toISOString()
+          });
+          toast.success('Payment successful and thermal bill printed!');
+        } else {
+          await printBill(response.data.bill || {
+            ...completeBill,
+            _id: Date.now().toString(),
+            createdAt: new Date().toISOString()
+          });
+          toast.success('Payment successful and bill saved!');
+        }
         handleFinalClose();
       } else {
         throw new Error(response.data?.message || 'Payment failed without error message');
       }
     } catch (error) {
       console.error('Error during payment:', error);
-      // Check if this is actually a success message from the server
       if (error.message.includes('Outstanding bills settled successfully')) {
-        await printBill({
-          ...completeBill,
-          _id: Date.now().toString(), // Temporary ID for printing
-          createdAt: new Date().toISOString()
-        });
-        toast.success('Payment successful and bill saved!');
+        if (paymentDetails.isMobilePrint) {
+          await printThermalBill({
+            ...completeBill,
+            _id: Date.now().toString(),
+            createdAt: new Date().toISOString()
+          });
+          toast.success('Payment successful and thermal bill printed!');
+        } else {
+          await printBill({
+            ...completeBill,
+            _id: Date.now().toString(),
+            createdAt: new Date().toISOString()
+          });
+          toast.success('Payment successful and bill saved!');
+        }
         handleFinalClose();
       } else {
         toast.error(error.message || 'Payment failed. Please check console for details.');
@@ -405,43 +525,45 @@ const BillingSystem = ({
           <div className="flex flex-col lg:flex-row gap-1 h-full">
             {/* Left Column - Products */}
             <div className="lg:w-3/4  flex flex-col ">
-               <ProductList
-              products={products}
-              onAdd={handleAddProduct}
-              onEdit={handleEditProduct}
-              onRemove={handleRemoveProduct}
-              onFocusProductSearch={onFocusProductSearch}
-              onFocusProductCode={onFocusProductCode}
-              onFocusQuantity={onFocusQuantity}
-              onTriggerAddProduct={onTriggerAddProduct}
-              transportCharge={transportCharge}
-              onTransportChargeChange={handleTransportChargeChange}
-              paymentMethod={paymentMethod}
-              onPaymentMethodChange={setPaymentMethod}
-            />
+              <ProductList
+                products={products}
+                onAdd={handleAddProduct}
+                onEdit={handleEditProduct}
+                onRemove={handleRemoveProduct}
+                onFocusProductSearch={onFocusProductSearch}
+                onFocusProductCode={onFocusProductCode}
+                onFocusQuantity={onFocusQuantity}
+                onTriggerAddProduct={onTriggerAddProduct}
+                transportCharge={transportCharge}
+                onTransportChargeChange={handleTransportChargeChange}
+                paymentMethod={paymentMethod}
+                onPaymentMethodChange={setPaymentMethod}
+              />
 
             </div>
             <div className="w-full lg:w-1/4 flex flex-col gap-1 ">
-             <CashierDetails />
-            <CustomerDetails
-              customer={customer}
-              onSubmit={handleCustomerSubmit}
-              onEdit={() => toast.info('Customer editing feature coming soon!')}
-              isCheckingCustomer={isCheckingCustomer}
-              onFocusCustomerName={customerNameFocusRef}
-              onFocusPhoneNumber={phoneNumberFocusRef}
-            />
-            <BillSummary
-              products={products}
-              customerOutstandingCredit={customerOutstandingCredit}
-              currentBillTotal={calculateCurrentBillTotal()}
-              grandTotal={calculateGrandTotal()}
-              transportCharge={transportCharge}
-              onProceedToPayment={handleProceedToPayment}
-              onPrint={handlePrint}
-              onTriggerPrint={printRef}
-              onTriggerPayment={paymentRef}
-            />
+              <CashierDetails />
+              <CustomerDetails
+                customer={customer}
+                onSubmit={handleCustomerSubmit}
+                onEdit={() => toast.info('Customer editing feature coming soon!')}
+                isCheckingCustomer={isCheckingCustomer}
+                onFocusCustomerName={customerNameFocusRef}
+                onFocusPhoneNumber={phoneNumberFocusRef}
+              />
+              <BillSummary
+                products={products}
+                customerOutstandingCredit={customerOutstandingCredit}
+                currentBillTotal={calculateCurrentBillTotal()}
+                grandTotal={calculateGrandTotal()}
+                transportCharge={transportCharge}
+                onProceedToPayment={handleProceedToPayment}
+                onPrint={handlePrint}
+                onMobilePrint={handleMobilePrint} // THIS IS THE CRUCIAL LINE
+                onTriggerPrint={printRef}
+                onTriggerPayment={paymentRef}
+                customer={customer}
+              />
             </div>
           </div>
         </div>

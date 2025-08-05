@@ -1,3 +1,4 @@
+// PaymentModal.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import Api from '../services/api';
@@ -15,9 +16,9 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
   const [remainingUnpaid, setRemainingUnpaid] = useState(0);
   const [unpaidBills, setUnpaidBills] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedBills, setSelectedBills] = useState([]); // Stores _id of selected unpaid bills
-
+  const [selectedBills, setSelectedBills] = useState([]);
   const [userEnteredOutstandingPayment, setUserEnteredOutstandingPayment] = useState(0);
+  const [isMobilePrinting, setIsMobilePrinting] = useState(false);
 
   const actualSelectedOutstandingTotal = useMemo(() => {
     return unpaidBills.reduce((sum, bill) => {
@@ -30,15 +31,14 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
 
   useEffect(() => {
     setUserEnteredOutstandingPayment(actualSelectedOutstandingTotal);
-  }, [actualSelectedOutstandingTotal]); 
+  }, [actualSelectedOutstandingTotal]);
 
   const calculatedGrandTotal = useMemo(() => {
     const totalCurrentBill = currentBillTotal || 0;
-    const totalSelectedOutstanding = parseInt(userEnteredOutstandingPayment) || 0; 
+    const totalSelectedOutstanding = parseInt(userEnteredOutstandingPayment) || 0;
     return totalCurrentBill + totalSelectedOutstanding;
-  }, [currentBillTotal, userEnteredOutstandingPayment]); 
+  }, [currentBillTotal, userEnteredOutstandingPayment]);
 
-  
   useEffect(() => {
     setAmountPaid(calculatedGrandTotal);
   }, [calculatedGrandTotal]);
@@ -61,7 +61,7 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
       const response = await Api.get(`/bills/unpaid`, {
         params: { customerId: customer.id }
       });
-      setUnpaidBills(Array.isArray(response.data) ? 
+      setUnpaidBills(Array.isArray(response.data) ?
         response.data.filter(bill => (bill.unpaidAmountForThisBill || 0) > 0) : []);
     } catch (error) {
       console.error('Error fetching unpaid bills:', error);
@@ -71,6 +71,7 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
       setIsLoading(false);
     }
   };
+
   const handleBillSelection = (billId) => {
     setSelectedBills((prevSelected) => {
       const newSelected = prevSelected.includes(billId)
@@ -88,9 +89,9 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
     }
   };
 
-    const handleSubmit = (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (isSaving) return; // Prevent multiple submissions
+    if (isSaving) return;
 
     // Basic validations
     if (amountPaid < 0) {
@@ -108,9 +109,8 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
 
     let paymentForCurrentBill = 0;
     let paymentForOutstandingBills = 0;
-    let remainingPayment = amountPaid; // Total amount customer is paying
+    let remainingPayment = amountPaid;
 
-    // Determine if there's a new bill being paid for
     const isNewBillPresent = (currentBillTotal || 0) > 0;
 
     if (isNewBillPresent) {
@@ -122,44 +122,105 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
         remainingPayment = 0;
       }
 
-      paymentForOutstandingBills = Math.min(remainingPayment, parseInt(userEnteredOutstandingPayment) || 0); // Use parseInt
-      remainingPayment -= paymentForOutstandingBills; 
+      paymentForOutstandingBills = Math.min(remainingPayment, parseInt(userEnteredOutstandingPayment) || 0);
+      remainingPayment -= paymentForOutstandingBills;
     } else {
       paymentForCurrentBill = 0;
-      paymentForOutstandingBills = Math.min(remainingPayment, parseInt(userEnteredOutstandingPayment) || 0); // Use parseInt
-      remainingPayment -= paymentForOutstandingBills; 
+      paymentForOutstandingBills = Math.min(remainingPayment, parseInt(userEnteredOutstandingPayment) || 0);
+      remainingPayment -= paymentForOutstandingBills;
     }
 
     onComplete({
       method: paymentMethod,
-      amountPaid: parseInt(amountPaid), 
-      isNewBillPayment: isNewBillPresent, 
-      currentBillPayment: paymentForCurrentBill, 
-      selectedOutstandingPayment: paymentForOutstandingBills, 
-      selectedUnpaidBillIds: selectedBills, 
+      amountPaid: parseInt(amountPaid),
+      isNewBillPayment: isNewBillPresent,
+      currentBillPayment: paymentForCurrentBill,
+      selectedOutstandingPayment: paymentForOutstandingBills,
+      selectedUnpaidBillIds: selectedBills,
       totalAmountDueForSelected: calculatedGrandTotal,
-      newBillNumber: isNewBillPresent ? newBillNumber : undefined, 
+      newBillNumber: isNewBillPresent ? newBillNumber : undefined,
       customer: customer,
+      isMobilePrint: false // Regular print
     });
+  };
+
+  const handleMobilePrint = async (e) => {
+    e.preventDefault();
+    if (isSaving) return;
+
+    // Basic validations
+    if (amountPaid < 0) {
+      toast.error('Payment amount cannot be negative');
+      return;
+    }
+    if (userEnteredOutstandingPayment > actualSelectedOutstandingTotal) {
+      toast.error(`Amount for outstanding bills cannot exceed ${formatCurrency(actualSelectedOutstandingTotal)}`);
+      return;
+    }
+    if (userEnteredOutstandingPayment < 0) {
+      toast.error('Outstanding payment cannot be negative');
+      return;
+    }
+
+    setIsMobilePrinting(true);
+
+    let paymentForCurrentBill = 0;
+    let paymentForOutstandingBills = 0;
+    let remainingPayment = amountPaid;
+
+    const isNewBillPresent = (currentBillTotal || 0) > 0;
+
+    if (isNewBillPresent) {
+      if (remainingPayment >= currentBillTotal) {
+        paymentForCurrentBill = currentBillTotal;
+        remainingPayment -= currentBillTotal;
+      } else {
+        paymentForCurrentBill = remainingPayment;
+        remainingPayment = 0;
+      }
+
+      paymentForOutstandingBills = Math.min(remainingPayment, parseInt(userEnteredOutstandingPayment) || 0);
+      remainingPayment -= paymentForOutstandingBills;
+    } else {
+      paymentForCurrentBill = 0;
+      paymentForOutstandingBills = Math.min(remainingPayment, parseInt(userEnteredOutstandingPayment) || 0);
+      remainingPayment -= paymentForOutstandingBills;
+    }
+
+    try {
+      await onComplete({
+        method: paymentMethod,
+        amountPaid: parseInt(amountPaid),
+        isNewBillPayment: isNewBillPresent,
+        currentBillPayment: paymentForCurrentBill,
+        selectedOutstandingPayment: paymentForOutstandingBills,
+        selectedUnpaidBillIds: selectedBills,
+        totalAmountDueForSelected: calculatedGrandTotal,
+        newBillNumber: isNewBillPresent ? newBillNumber : undefined,
+        customer: customer,
+        isMobilePrint: true // Mobile print flag
+      });
+    } finally {
+      setIsMobilePrinting(false);
+    }
   };
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: 'INR',
-      // Removed minimumFractionDigits: 2 to display as integer
     }).format(amount);
   };
 
   const formatDateTime = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true // For AM/PM format
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
     });
   };
 
@@ -176,7 +237,6 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
     );
   };
 
-  // Determine the display bill number based on whether it's a new bill or just outstanding payment
   const displayBillNumber = (currentBillTotal || 0) > 0 ? newBillNumber : 'N/A (Outstanding Settlement)';
 
   return (
@@ -208,7 +268,7 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
               </div>
             )}
             <div>
-              <p className="text-sm text-gray-600">{ (currentBillTotal || 0) > 0 ? 'Current Bill #' : 'Settling For:'}</p>
+              <p className="text-sm text-gray-600">{(currentBillTotal || 0) > 0 ? 'Current Bill #' : 'Settling For:'}</p>
               <p className="font-medium">{displayBillNumber}</p>
             </div>
           </div>
@@ -241,9 +301,8 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
               {unpaidBills.map((bill) => (
                 <div
                   key={bill._id}
-                  className={`border rounded-lg p-4 transition-all duration-200 ${
-                    selectedBills.includes(bill._id) ? 'bg-indigo-50 border-indigo-300' : 'bg-white border-gray-200'
-                  }`}
+                  className={`border rounded-lg p-4 transition-all duration-200 ${selectedBills.includes(bill._id) ? 'bg-indigo-50 border-indigo-300' : 'bg-white border-gray-200'
+                    }`}
                 >
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center">
@@ -416,17 +475,25 @@ const PaymentModal = ({ currentBillData, onClose, onComplete, isSaving }) => {
               type="button"
               onClick={onClose}
               className="px-6 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md
-               hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
-              disabled={isSaving}
+             hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+              disabled={isSaving || isMobilePrinting}
             >
               Cancel
             </button>
             <button
+              type="button"
+              onClick={handleMobilePrint}
+              className={`px-6 py-2 text-sm font-medium text-white rounded-md shadow-sm ${isMobilePrinting ? 'bg-purple-500 cursor-not-allowed' : 'bg-purple-600 hover:bg-purple-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 rounded-lg`}
+              disabled={isSaving || isMobilePrinting}
+            >
+              {isMobilePrinting ? 'Printing...' : 'Mobile Print'}
+            </button>
+            <button
               type="submit"
-              className={`px-6 py-2 text-sm font-medium text-white rounded-md shadow-sm ${
-                isSaving ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-              } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-lg`}
-              disabled={isSaving}
+              className={`px-6 py-2 text-sm font-medium text-white rounded-md shadow-sm ${isSaving ? 'bg-blue-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
+                } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-lg`}
+              disabled={isSaving || isMobilePrinting}
             >
               {isSaving ? 'Processing...' : 'Complete Payment'}
             </button>
