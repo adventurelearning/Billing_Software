@@ -11,6 +11,7 @@ function BillSummary({
   onProceedToPayment,
   onPrint,
   onTriggerPrint,
+  onMobilePrint,
   onTriggerPayment,
   customer,
   transportCharge: transportChargeValue
@@ -138,19 +139,29 @@ function BillSummary({
             onClick={onPrint}
             disabled={products.length >= 0 && customerOutstandingCredit > 0}
             className={`flex-1 py-1 text-sm rounded-sm focus:outline-none ${(products.length >= 0 && customerOutstandingCredit > 0)
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             ref={printButtonRef}
           >
             Save & Print
           </button>
           <button
+            onClick={onMobilePrint}
+            disabled={products.length >= 0 && customerOutstandingCredit > 0}
+            className={`flex-1 py-1 text-sm rounded-sm ${(products.length >= 0 && customerOutstandingCredit > 0)
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                : 'bg-green-600 text-white hover:bg-green-700'
+              }`}
+          >
+            Mobile Print
+          </button>
+          <button
             onClick={onProceedToPayment}
             disabled={(products.length === 0 && customerOutstandingCredit === 0)}
             className={`flex-1 py-1 text-sm rounded-sm focus:outline-none ${(products.length === 0 && customerOutstandingCredit === 0)
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+              ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
               }`}
             ref={paymentButtonRef}
           >

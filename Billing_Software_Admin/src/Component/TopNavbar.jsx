@@ -49,7 +49,7 @@ const TopNavbar = ({ setActivePage }) => {
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-full border-2 border-gray-100 overflow-hidden shadow-sm">
           <img
-            src={`http://localhost:5000${company.logoUrl}`}
+            src={company.logoUrl}
             alt="Logo"
             className="w-full h-full object-cover text-xs text-white"
           />

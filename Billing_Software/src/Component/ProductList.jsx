@@ -9,6 +9,7 @@ import { FaHistory } from "react-icons/fa";
 import Modal from 'react-modal';
 import * as ReactDOMClient from 'react-dom/client';
 import PrintableBill from './PrintableBill';
+import ThermalPrintableBill from './ThermalPrintableBill';
 
 function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, paymentMethod, onPaymentMethodChange,
   onTransportChargeChange = (value) => { }, }) {
@@ -565,6 +566,53 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     }
   };
 
+  const handleMobilePrintBill = async (bill) => {
+    try {
+      const companyRes = await Api.get('/companies');
+      const companyDetails = companyRes.data[0];
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+      <html>
+        <head>
+          <title>Thermal Bill ${bill.billNumber}</title>
+          <style>
+            @page {
+              size: 80mm auto;
+              margin: 0;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
+          </style>
+        </head>
+        <body>
+          <div id="print-root"></div>
+          <script>
+            window.onload = function() {
+              setTimeout(() => {
+                window.print();
+                setTimeout(() => window.close(), 500);
+              }, 200);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+      printWindow.document.close();
+
+      const rootElement = printWindow.document.getElementById('print-root');
+      const root = ReactDOMClient.createRoot(rootElement);
+      root.render(
+        <ThermalPrintableBill billData={bill} companyDetails={companyDetails} />
+      );
+    } catch (error) {
+      console.error('Thermal print error:', error);
+      toast.error('Failed to print thermal bill: ' + (error.response?.data?.message || error.message));
+    }
+  };
+
   return (
     <div className="flex flex-col h-full">
       {/* Product Form */}
@@ -1037,12 +1085,20 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                         Total: ₹{bill.grandTotal?.toFixed(2) || '0.00'}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handlePrintBill(bill)}
-                      className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm"
-                    >
-                      Print
-                    </button>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handlePrintBill(bill)}
+                        className="px-3 py-1 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 text-sm"
+                      >
+                        Print
+                      </button>
+                      <button
+                        onClick={() => handleMobilePrintBill(bill)}
+                        className="px-3 py-1 bg-purple-100 text-purple-600 rounded hover:bg-purple-200 text-sm"
+                      >
+                        Mobile Print
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
