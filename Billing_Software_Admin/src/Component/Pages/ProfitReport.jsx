@@ -141,20 +141,22 @@ const ProfitReport = () => {
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 px-2 m-4">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4  mb-6 px-2 m-4">
+
                 <div className="bg-blue-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Initial Stock Profit</h3>
                     <p className="text-xl font-semibold">₹{initialProfit.toFixed(2)}</p>
                 </div>
-                <div className="bg-green-100 p-4 rounded-lg">
+                {/* <div className="bg-green-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Added Stock Profit</h3>
                     <p className="text-xl font-semibold">₹{additionalProfit.toFixed(2)}</p>
                 </div>
                 <div className="bg-yellow-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Stock Reductions</h3>
-                    <p className="text-xl font-semibold">-₹{reductions.toFixed(2)}</p>
-                </div>
-                <div className="bg-purple-100 p-4 rounded-lg">
+                    <p className="text-2xl font-bold">-₹{reductions.toFixed(2)}</p>
+                </div> */}
+                <div className="bg-purple-100 p-4 rounded-lg mr-10">
                     <h3 className="text-lg font-semibold">Net Profit</h3>
                     <p className="text-xl font-semibold">₹{netProfit.toFixed(2)}</p>
                 </div>

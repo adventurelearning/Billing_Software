@@ -31,9 +31,12 @@ const sellerBillSchema = new mongoose.Schema({
     required: [true, 'Amount is required'],
     min: [0, 'Amount must be positive']
   },
-  filePath: {
+  fileUrl: {
     type: String,
-    required: [true, 'File path is required']
+    required: [true, 'File URL is required']
+  },
+  publicId: {
+    type: String,
   },
   fileName: {
     type: String,
@@ -53,7 +56,7 @@ const sellerBillSchema = new mongoose.Schema({
       ret.id = ret._id;
       delete ret._id;
       delete ret.__v;
-      delete ret.filePath;
+      delete ret.publicId;
       return ret;
     }
   }

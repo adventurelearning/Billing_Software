@@ -283,24 +283,24 @@ const Customers = () => {
       const customerMap = new Map();
 
       // 1. Try to fetch customers with proper error handling
-      try {
-        const customersResponse = await api.get('/customers'); // Changed from '/customers/all'
-        if (customersResponse.data) {
-          customersResponse.data.forEach(customer => {
-            customerMap.set(customer._id, {
-              id: customer._id?.toString() || 'N/A',
-              name: customer.name || 'Unknown Customer',
-              contact: customer.contact || 'N/A',
-              aadhar: customer.aadhaar || customer.aadhar || 'N/A',
-              location: customer.location || 'N/A',
-              bills: []
-            });
-          });
-        }
-      } catch (customersError) {
-        console.warn('Failed to fetch customers:', customersError.message);
-        // Continue even if customers fetch fails - we'll try with bills data
-      }
+      // try {
+      //   const customersResponse = await api.get('/customers'); // Changed from '/customers/all'
+      //   if (customersResponse.data) {
+      //     customersResponse.data.forEach(customer => {
+      //       customerMap.set(customer._id, {
+      //         id: customer._id?.toString() || 'N/A',
+      //         name: customer.name || 'Unknown Customer',
+      //         contact: customer.contact || 'N/A',
+      //         aadhar: customer.aadhaar || customer.aadhar || 'N/A',
+      //         location: customer.location || 'N/A',
+      //         bills: []
+      //       });
+      //     });
+      //   }
+      // } catch (customersError) {
+      //   console.warn('Failed to fetch customers:', customersError.message);
+      //   // Continue even if customers fetch fails - we'll try with bills data
+      // }
 
       // 2. Fetch bills with proper error handling
       try {

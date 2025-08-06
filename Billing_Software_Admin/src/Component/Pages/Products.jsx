@@ -9,23 +9,23 @@ const Products = () => {
   const [products, setProducts] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
 
-  useEffect(() => {
-    // Load products from JSON file using Axios
-    const loadProducts = async () => {
-      try {
-        const response = await api.get('/data/products.json');
-        setProducts(response.data.products);
-      } catch (error) {
-        if (axios.isAxiosError(error)) {
-          console.error('Error loading products:', error.message);
-        } else {
-          console.error('Unexpected error:', error);
-        }
-      }
-    };
+  // useEffect(() => {
+  //   // Load products from JSON file using Axios
+  //   const loadProducts = async () => {
+  //     try {
+  //       const response = await api.get('/data/products.json');
+  //       setProducts(response.data.products);
+  //     } catch (error) {
+  //       if (error) {
+  //         console.error('Error loading products:', error.message);
+  //       } else {
+  //         console.error('Unexpected error:', error);
+  //       }
+  //     }
+  //   };
 
-    loadProducts();
-  }, []);
+  //   loadProducts();
+  // }, []);
 
   const handleAddProduct = (newProduct) => {
     const id = products.length > 0 ? Math.max(...products.map(p => p.id)) + 1 : 1;

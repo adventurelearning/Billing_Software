@@ -176,14 +176,19 @@ const BillingSystem = ({
           <body>
             <div id="print-root"></div>
             <script>
-              window.onload = function() {
-                 window.print();
-                setTimeout(() => {
+            window.onload = function() {
+              setTimeout(() => {
+                const printPromise = new Promise(resolve => {
+                  window.onafterprint = resolve;
                   window.print();
+                });
+                
+                printPromise.then(() => {
                   setTimeout(() => window.close(), 500);
-                }, 500);
-              };
-            </script>
+                });
+              }, 500);
+            };
+          </script>
           </body>
         </html>
       `);
@@ -193,7 +198,8 @@ const BillingSystem = ({
       const rootElement = printWindow.document.getElementById('print-root');
       const root = ReactDOMClient.createRoot(rootElement);
       root.render(
-        <PrintableBill billData={billData} companyDetails={companyDetails} />
+        <PrintableBill
+          billData={billData} companyDetails={companyDetails} />
       );
     } catch (error) {
       console.error('Print error:', error);
@@ -201,7 +207,7 @@ const BillingSystem = ({
     }
   };
 
-  const handlePrint = async () => {
+  const handlePrint = async (e) => {
     if (products.length === 0 && customerOutstandingCredit === 0) {
       toast.error('No products or outstanding credit to print in the bill.');
       return;
@@ -244,7 +250,7 @@ const BillingSystem = ({
       const response = await Api.post('/bills', billData);
       const savedBill = response.data.bill;
 
-      await printBill(savedBill);
+      await printBill(savedBill, e);
 
       toast.success('Bill saved and printed successfully!');
       resetForm();
