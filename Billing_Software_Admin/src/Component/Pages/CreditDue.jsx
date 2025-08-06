@@ -424,19 +424,14 @@ const CreditDue = () => {
               <div className="flex justify-between items-center h-16">
                 <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">
                   Credit Due Management
-                </h1>
-                <div className="flex items-center space-x-2 text-gray-600">
-                  <CalendarDays className="w-5 h-5" />
-                  <span className="text-lg font-medium">
-                    {dayjs().format('DD MMMM YYYY')}
-                  </span>
-                </div>
+                </h1>               
               </div>
 
             </div>
           </header>
           {/* Filters Section */}
-          <div className="flex flex-col md:flex-row gap-4 mb-8 bg-white p-6 rounded-xl shadow-lg items-center">
+          <main className="max-w-7xl mx-auto py-4 m-2 p-6" >
+         <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm">
             <div className="flex items-center gap-2 min-w-[180px]">
               <CalendarDays className="w-5 h-5 text-gray-500" />
               <Select
@@ -491,7 +486,7 @@ const CreditDue = () => {
 
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-green-50 to-green-100">
+            <Card variant={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-green-50 to-green-100">
               <Statistic
                 title={<span className="text-green-700 flex items-center gap-2"><Wallet className="w-5 h-5" /> Total Bill Amount</span>}
                 value={totalSummary.totalAmount}
@@ -500,7 +495,7 @@ const CreditDue = () => {
                 valueStyle={{ color: '#15803d' }}
               />
             </Card>
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-red-50 to-red-100">
+            <Card variant={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-red-50 to-red-100">
               <Statistic
                 title={<span className="text-red-700 flex items-center gap-2"><Landmark className="w-5 h-5" /> Total Pending Amount</span>}
                 value={totalSummary.pendingAmount}
@@ -509,7 +504,7 @@ const CreditDue = () => {
                 valueStyle={{ color: '#b91c1c' }}
               />
             </Card>
-            <Card bordered={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100">
+            <Card variant={false} className="shadow-xl transition-all duration-300 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100">
               <Statistic
                 title={<span className="text-blue-700 flex items-center gap-2"><Wallet className="w-5 h-5" /> Total Paid Amount</span>}
                 value={totalSummary.paidAmount}
@@ -521,7 +516,7 @@ const CreditDue = () => {
           </div>
 
           {/* Customers Table */}
-          <div className="bg-white p-6 rounded-xl shadow-lg">
+          <div className="bg-white rounded-xl shadow-lg">
             <Table
               columns={columns}
               dataSource={pendingCustomers}
@@ -538,8 +533,8 @@ const CreditDue = () => {
                 emptyText: (
                   <div className="flex flex-col items-center justify-center py-8 text-gray-500">
                     <Info className="w-12 h-12 mb-4 text-gray-400" />
-                    <p className="text-lg font-medium">No records found for the selected criteria</p>
-                    <p className="text-sm">Try adjusting your filters or search terms.</p>
+                    <p className="sm:text-lg sm:font-medium">No records found for the selected criteria</p>
+                    <p className="sm:text-sm">Try adjusting your filters or search terms.</p>
                   </div>
                 )
               }}
@@ -780,7 +775,7 @@ const CreditDue = () => {
                           rowKey={(item, index) => `${item.product?.id}-${index}`}
                           pagination={false}
                           size="small"
-                          bordered
+                          variant
                           className="rounded-lg"
                           locale={{
                             emptyText: 'No products found for this bill'
@@ -798,6 +793,7 @@ const CreditDue = () => {
               </div>
             )}
           </Modal>
+          </main>
         </div>
       </div>
     </ConfigProvider>

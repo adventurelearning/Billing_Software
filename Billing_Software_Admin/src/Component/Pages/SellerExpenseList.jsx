@@ -506,12 +506,12 @@ const SellerExpenseList = () => {
                                 <input
                                     type="text"
                                     placeholder="Search by seller or batch..."
-                                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                                    className="w-full px-4 py-1 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                 />
                                 <svg
-                                    className="absolute right-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-500"
+                                    className="absolute right-3 top-2 h-5 w-5 text-gray-400 dark:text-gray-500"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
@@ -538,29 +538,39 @@ const SellerExpenseList = () => {
                 </div>
             </header>
 
-            <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mb-4 p-4">
-                <div className="flex items-center">
-                    <label htmlFor="startDate" className="mr-2 text-sm text-gray-600 dark:text-gray-300">From:</label>
-                    <input
-                        type="date"
-                        id="startDate"
-                        className="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-700"
-                        value={dateRange.start}
-                        onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                    />
+            <div className="flex flex-col sm:flex-row items-start sm:items-end gap-3 mb-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                {/* Date Range Inputs */}
+                <div className="flex flex-col xs:flex-row gap-3 w-full sm:w-auto">
+                    <div className="flex-1 min-w-[150px]">
+                        <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            From
+                        </label>
+                        <input
+                            type="date"
+                            id="startDate"
+                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                            value={dateRange.start}
+                            onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
+                        />
+                    </div>
+
+                    <div className="flex-1 min-w-[150px]">
+                        <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            To
+                        </label>
+                        <input
+                            type="date"
+                            id="endDate"
+                            className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+                            value={dateRange.end}
+                            onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
+                        />
+                    </div>
                 </div>
-                <div className="flex items-center">
-                    <label htmlFor="endDate" className="mr-2 text-sm text-gray-600 dark:text-gray-300">To:</label>
-                    <input
-                        type="date"
-                        id="endDate"
-                        className="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-700"
-                        value={dateRange.end}
-                        onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                    />
-                </div>
+
+                {/* Apply Button */}
                 <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                    className="w-full sm:w-auto px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors"
                     onClick={() => setCurrentPage(1)}
                 >
                     Apply Filter

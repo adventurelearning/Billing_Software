@@ -127,7 +127,7 @@ return (
     {/* Header */}
     <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
       <div className="max-w-7xl mx-auto px-2 ">
-        <div className="flex flex-col md:flex-row gap-4 py-4 items-start md:items-center justify-between">
+        <div className="flex flex-col md:flex-row gap-4 py-3 items-start md:items-center justify-between">
           {/* Dashboard title */}
           <div className="flex-shrink-0">
             <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 p-2 rounded-md">
@@ -137,21 +137,21 @@ return (
 
           {/* Search and filter */}
           <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1 min-w-[200px]">
+            <div className="relative flex-1">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FiSearch className="text-gray-400" />
               </div>
               <input
                 type="text"
                 placeholder="Search products..."
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full"
+                className="pl-10 pr-4 py-1 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 w-full"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
 
             <select
-              className="border border-gray-300 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
+              className="border border-gray-300 rounded-lg px-3 py-1 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"
               value={timeFilter}
               onChange={(e) => setTimeFilter(e.target.value)}
             >
@@ -166,7 +166,7 @@ return (
     {/* Main Content */}
     <main className="max-w-7xl mx-auto px-4 sm:px-6  py-6">
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8">
         {/* Total Products */}
         <div className="bg-white rounded-xl shadow p-4 md:p-6 border-l-4 border-blue-500">
           <div className="flex justify-between items-center">
@@ -194,7 +194,7 @@ return (
         </div>
 
         {/* Trending Products */}
-        <div className="bg-white rounded-xl shadow p-4 md:p-6 border-l-4 border-green-500">
+        {/* <div className="bg-white rounded-xl shadow p-4 md:p-6 border-l-4 border-green-500">
           <div className="flex justify-between items-center">
             <div>
               <p className="text-sm md:text-base text-gray-500 font-medium">Trending Products</p>
@@ -204,7 +204,7 @@ return (
               <FiTrendingUp className="text-green-600 text-lg md:text-xl" />
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Product Inventory */}
