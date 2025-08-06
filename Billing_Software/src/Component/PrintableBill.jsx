@@ -56,36 +56,35 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
         let taxTotal = 0;
 
         if (products.length > 0) {
-            subtotal = Math.round(products.reduce((sum, product) => {
-                const price = Math.round((product.basicPrice || 0) * 1) / 1;
+            subtotal = products.reduce((sum, product) => {
+                const price = (product.basicPrice || 0);
                 const qty = product.quantity || 1;
                 return sum + (price * qty);
-            }, 0) * 100) / 100;
+            }, 0);
 
-            gstTotal = Math.round(products.reduce((sum, product) => {
-                const tax = Math.round((product.gstAmount || 0) * 1) / 1;
+            gstTotal = products.reduce((sum, product) => {
+                const tax = (product.gstAmount || 0) ;
                 const qty = product.quantity || 1;
                 return sum + (tax * qty);
-            }, 0) * 100) / 100;
+            }, 0) ;
 
-            sgstTotal = Math.round(products.reduce((sum, product) => {
-                const tax = Math.round((product.sgstAmount || 0) * 1) / 1;
+            sgstTotal = products.reduce((sum, product) => {
+                const tax = (product.sgstAmount || 0) ;
                 const qty = product.quantity || 1;
                 return sum + (tax * qty);
-            }, 0) * 100) / 100;
+            }, 0) ;
 
-            taxTotal = Math.round((gstTotal + sgstTotal) * 100) / 100;
         }
 
-        const transport = Math.round((billData.transportCharge || 0) * 100) / 100;
-        const credit = Math.round((billData.previousOutstandingCredit || 0) * 100) / 100;
-        const grandTotal = Math.round((subtotal + taxTotal + transport + credit) * 100) / 100;
+        const transport = (billData.transportCharge || 0) ;
+        const credit = (billData.previousOutstandingCredit || 0) ;
+        const grandTotal = (subtotal + gstTotal + sgstTotal + transport + credit) ;
 
         // Calculate payment details
         const currentPayment = billData.payment?.currentBillPayment || 0;
         const outstandingPayment = billData.payment?.selectedOutstandingPayment || 0;
-        const totalPaid = Math.round((currentPayment + outstandingPayment) * 100) / 100;
-        const balanceDue = Math.round((grandTotal - totalPaid) * 100) / 100;
+        const totalPaid = (currentPayment + outstandingPayment) ;
+        const balanceDue = Math.max(0, grandTotal - totalPaid) ;
 
         return {
             subtotal,
