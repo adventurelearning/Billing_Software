@@ -168,38 +168,38 @@ const SellerBills = () => {
     }
   };
 
-  const handleDownload = async (billId, fileName) => {
-    try {
-      // Create a hidden anchor tag to trigger download
-      const link = document.createElement('a');
-      link.href = `/api/seller-bills/download/${billId}`;
-      link.setAttribute('download', fileName || 'bill.pdf');
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+  // const handleDownload = async (billId, fileName) => {
+  //   try {
+  //     // Create a hidden anchor tag to trigger download
+  //     const link = document.createElement('a');
+  //     link.href = `/api/seller-bills/download/${billId}`;
+  //     link.setAttribute('download', fileName || 'bill.pdf');
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
 
-      // Track download in database
-      await api.patch(`/seller-bills/track-download/${billId}`);
-    } catch (error) {
-      console.error('Download error:', error);
-      Swal.fire('Error', 'Failed to download bill', 'error');
-    }
-  };
+  //     // Track download in database
+  //     await api.patch(`/seller-bills/track-download/${billId}`);
+  //   } catch (error) {
+  //     console.error('Download error:', error);
+  //     Swal.fire('Error', 'Failed to download bill', 'error');
+  //   }
+  // };
 
-  const handleView = async (billId) => {
-    try {
-      // Open in new tab for viewing
-      window.open(`/api/seller-bills/secure-view/${billId}`, '_blank');
-    } catch (error) {
-      console.error('View error:', error);
-      Swal.fire('Error', 'Failed to view PDF', 'error');
-    }
-  };
+  // const handleView = async (billId) => {
+  //   try {
+  //     // Open in new tab for viewing
+  //     window.open(`/api/seller-bills/secure-view/${billId}`, '_blank');
+  //   } catch (error) {
+  //     console.error('View error:', error);
+  //     Swal.fire('Error', 'Failed to view PDF', 'error');
+  //   }
+  // };
 
-  const formatDate = (dateString) => {
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(dateString).toLocaleDateString(undefined, options);
-  };
+  // const formatDate = (dateString) => {
+  //   const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  //   return new Date(dateString).toLocaleDateString(undefined, options);
+  // };
 
   const toggleUploadForm = () => {
     setShowUploadForm(!showUploadForm);
@@ -507,18 +507,19 @@ const SellerBills = () => {
           <span className="truncate max-w-xs block">{bill.fileName}</span>
         </td>
         <td className="px-4 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-          <button
-            onClick={() => handleView(bill.id)}
+          <a
+            target='_blank'
+            href={bill.fileUrl}
             className="text-blue-600 hover:text-blue-900"
           >
             View
-          </button>
-          <button
+          </a>
+          {/* <button
             onClick={() => handleDownload(bill.id, bill.fileName)}
             className="text-green-600 hover:text-green-900"
           >
             Download
-          </button>
+          </button> */}
         </td>
       </tr>
     ));
