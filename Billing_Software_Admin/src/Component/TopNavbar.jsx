@@ -44,7 +44,7 @@ const TopNavbar = ({ setActivePage }) => {
   }, []);
 
   return (
-    <header className="bg-gray-700  flex items-center justify-between px-6 py-1">
+    <header className="bg-gray-700  flex items-center justify-between px-3 py-1">
       {/* Left: Logo + Company Name */}
       <div className="flex items-center gap-4">
         <div className="w-10 h-10 rounded-full border-2 border-gray-100 overflow-hidden shadow-sm">
@@ -71,12 +71,12 @@ const TopNavbar = ({ setActivePage }) => {
             {/* <div className="w-9 h-9  md:w-10 md:h-10  rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-lg shadow-md flex-shrink-0">
               {admin.username?.charAt(0).toUpperCase() || 'A'}
             </div> */}
-            <div className="text-left hidden sm:block">
+            <div className="text-left sm:block">
               {/* <p className="text-xs font-semibold text-gray-800 whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
                 {admin.username?.replace(/\b\w/g, c => c.toUpperCase()) || 'ADMIN'}
               </p> */}
               <p className="text-sm text-blue-500 flex items-center gap-1 p-1 rounded-md">
-                <FiUser size={15} className='rounded-full bg-gradient-to-br from-blue-500 w-9 h-9  md:w-6 md:h-6 md:p-1 text-white to-indigo-600' /><span className='text-blue-600 bg-blue-100 px-2 rounded-md'>Admin</span>
+                <FiUser size={15} className='rounded-full bg-gradient-to-br from-blue-500 w-5 h-5 sm:w-9 sm:h-9  md:w-6 md:h-6 md:p-1 text-white to-indigo-600' /><span className='text-blue-600 bg-blue-100 px-1 rounded-md'>Admin</span>
               </p>
             </div>
           </div>

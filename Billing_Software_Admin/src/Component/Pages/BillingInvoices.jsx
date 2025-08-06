@@ -317,15 +317,12 @@ const BillingInvoices = () => {
               <p className="text-lg text-gray-600">Loading bills...</p>
             </div>
           ) : filteredBills.length === 0 && !searchTerm ? (
-            <div className="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-200 max-w-2xl mx-auto">
+            <div className="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-200 max-w-2xl mx-auto ">
               <svg className="mx-auto h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              <h3 className="mt-4 text-xl font-semibold text-gray-800">No bills found</h3>
-              <p className="mt-2 text-gray-500">It looks like no bills have been created yet.</p>
-              <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 text-sm font-medium">
-                Create New Bill
-              </button>
+              <h3 className="mt-4 text-base font-semibold text-gray-800">No bills found</h3>
+              <p className="mt-2 text-gray-500 text-sm">It looks like no bills have been created yet.</p>              
             </div>
           ) : filteredBills.length === 0 && searchTerm ? (
             <div className="bg-white rounded-xl shadow-sm p-8 text-center border border-gray-200 max-w-2xl mx-auto">

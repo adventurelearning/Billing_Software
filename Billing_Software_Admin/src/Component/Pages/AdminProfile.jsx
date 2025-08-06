@@ -77,10 +77,10 @@ const AdminProfile = () => {
   const [showUserModal, setShowUserModal] = useState(false);
 
 return (
-  <div className="w-full p-4 sm:p-5 bg-white rounded-xl shadow-lg">
-    <h1 className="text-xl font-semibold text-gray-900 mb-4">Admin Management</h1>
+  <div className="w-full p-4  sm:p-5 bg-white rounded-xl shadow-lg">
+    <h1 className="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">Admin Management</h1>
 
-    <div className="flex flex-wrap justify-between items-center gap-4 mb-6">
+    <div className="flex flex-wrap justify-between items-center gap-4">
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
@@ -119,7 +119,7 @@ return (
         </div>
         <label
           htmlFor="logo-upload"
-          className="absolute bottom-2 -right-2 bg-blue-600 text-white p-1.5 rounded-full cursor-pointer hover:bg-blue-700 group-hover:scale-110 transition-all"
+          className="absolute bottom-2 -right-1 bg-blue-600 text-white p-1.5 rounded-full cursor-pointer hover:bg-blue-700 group-hover:scale-110 transition-all"
           title={formik.values.logo ? "Change Logo" : "Upload Logo"}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@ return (
       </div>
     </div>
 
-    <form onSubmit={formik.handleSubmit} className="space-y-5">
+    <form onSubmit={formik.handleSubmit} className="space-y-2">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Business Details */}
         <div className="space-y-5">

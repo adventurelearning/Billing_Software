@@ -3,7 +3,7 @@ const ProductTable = ({ products, onEdit, onDelete }) => {
   if (products.length === 0) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-sm text-center">
-        <p className="text-gray-500">No products available. Add products to get started.</p>
+        <p className="text-gray-500 text-xs sm:text-base ">No products available. Add products to get started.</p>
       </div>
     );
   }

@@ -103,7 +103,7 @@ const ProfitReport = () => {
                 </div>
                 </header>
             {/* Filters */}
-            <div className="bg-white p-4 rounded-lg shadow mb-4 m-2">
+            <div className="bg-white p-4 rounded-lg shadow mb-4 m-6 ">
                 <h3 className="text-lg font-semibold mb-3">Filters</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
@@ -113,7 +113,7 @@ const ProfitReport = () => {
                             name="productCode"
                             value={filters.productCode}
                             onChange={handleFilterChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            className="w-full px-3 py-1 border border-gray-300 rounded-md"
                             placeholder="Enter product code"
                         />
                     </div>
@@ -124,7 +124,7 @@ const ProfitReport = () => {
                             name="startDate"
                             value={filters.startDate}
                             onChange={handleFilterChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            className="w-full px-3 py-1 border border-gray-300 rounded-md"
                         />
                     </div>
                     <div>
@@ -134,39 +134,39 @@ const ProfitReport = () => {
                             name="endDate"
                             value={filters.endDate}
                             onChange={handleFilterChange}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            className="w-full px-3 py-1 border border-gray-300 rounded-md"
                         />
                     </div>
                 </div>
             </div>
 
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 px-2">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 px-2 m-4">
                 <div className="bg-blue-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Initial Stock Profit</h3>
-                    <p className="text-2xl font-bold">₹{initialProfit.toFixed(2)}</p>
+                    <p className="text-xl font-semibold">₹{initialProfit.toFixed(2)}</p>
                 </div>
                 <div className="bg-green-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Added Stock Profit</h3>
-                    <p className="text-2xl font-bold">₹{additionalProfit.toFixed(2)}</p>
+                    <p className="text-xl font-semibold">₹{additionalProfit.toFixed(2)}</p>
                 </div>
                 <div className="bg-yellow-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Stock Reductions</h3>
-                    <p className="text-2xl font-bold">-₹{reductions.toFixed(2)}</p>
+                    <p className="text-xl font-semibold">-₹{reductions.toFixed(2)}</p>
                 </div>
                 <div className="bg-purple-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Net Profit</h3>
-                    <p className="text-2xl font-bold">₹{netProfit.toFixed(2)}</p>
+                    <p className="text-xl font-semibold">₹{netProfit.toFixed(2)}</p>
                 </div>
             </div>
 
             {/* Initial Stock Table */}
-            <div className="mb-8 px-2">
+            <div className="mb-8 px-2 m-4">
                 <h3 className="text-lg font-semibold mb-2">Initial Stock</h3>
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-gray-200">
                         <thead>
-                            <tr className="bg-gray-100">
+                            <tr className="bg-gray-100 text-base font-normal">
                                 <th className="py-2 px-4 border">Code</th>
                                 <th className="py-2 px-4 border">Product</th>
                                 <th className="py-2 px-4 border">Sales Price</th>
