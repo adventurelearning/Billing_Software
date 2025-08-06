@@ -196,10 +196,10 @@ const SellerBills = () => {
   //   }
   // };
 
-  // const formatDate = (dateString) => {
-  //   const options = { year: 'numeric', month: 'short', day: 'numeric' };
-  //   return new Date(dateString).toLocaleDateString(undefined, options);
-  // };
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
 
   const toggleUploadForm = () => {
     setShowUploadForm(!showUploadForm);
