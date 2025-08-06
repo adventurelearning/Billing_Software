@@ -57,19 +57,19 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
 
         if (products.length > 0) {
             subtotal = Math.round(products.reduce((sum, product) => {
-                const price = Math.round((product.basicPrice || 0) * 100) / 100;
+                const price = Math.round((product.basicPrice || 0) * 1) / 1;
                 const qty = product.quantity || 1;
                 return sum + (price * qty);
             }, 0) * 100) / 100;
 
             gstTotal = Math.round(products.reduce((sum, product) => {
-                const tax = Math.round((product.gstAmount || 0) * 100) / 100;
+                const tax = Math.round((product.gstAmount || 0) * 1) / 1;
                 const qty = product.quantity || 1;
                 return sum + (tax * qty);
             }, 0) * 100) / 100;
 
             sgstTotal = Math.round(products.reduce((sum, product) => {
-                const tax = Math.round((product.sgstAmount || 0) * 100) / 100;
+                const tax = Math.round((product.sgstAmount || 0) * 1) / 1;
                 const qty = product.quantity || 1;
                 return sum + (tax * qty);
             }, 0) * 100) / 100;
@@ -123,7 +123,7 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
     };
 
     // Split products into chunks for pagination (12 per page)
-    const productsPerPage = 18;
+    const productsPerPage = 16;
     const productChunks = [];
     const allProducts = billData.products || [];
 
