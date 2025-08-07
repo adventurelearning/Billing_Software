@@ -107,7 +107,7 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
       {/* Fixed bottom section */}
       <div className="mt-auto">
         {/* Logout */}
-        <div className="pt-2 border-t border-gray-400 px-1">
+        <div className="pt-2 border-t border-gray-400 px-1 py-1.5">
           <button
             onClick={handleLogout}
             className={`flex items-center justify-center w-full px-3 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out
@@ -121,7 +121,7 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
 
         {/* Footer with company name - only shown when not collapsed */}
         {!collapsed && (
-          <div className="text-xs text-gray-100 text-center pb-1 mt-2 px-1">
+          <div className="text-xs text-gray-100 text-center pb-1 mt-1 px-1">
             &copy; {new Date().getFullYear()} {company.businessName}
           </div>
         )}
