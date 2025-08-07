@@ -506,7 +506,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     Pricing Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                    <div>
+                    {/* <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Select Unit</label>
                         <select
                             value={selectedUnit}
@@ -517,7 +517,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                                 <option key={unit.value} value={unit.value}>{unit.label}</option>
                             ))}
                         </select>
-                    </div>
+                    </div> */}
                     <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">MRP Price (₹)*</label>
                         <div className="relative">
@@ -708,6 +708,112 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                 </div>
             </div>
 
+
+                        {/* Inventory Section */}
+            <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
+                    Inventory & Units
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Base Unit*</label>
+                        <select
+                            name="baseUnit"
+                            value={formData.baseUnit}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                            {unitTypes.map((unit) => (
+                                <option key={unit.value} value={unit.value}>
+                                    {unit.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Secondary Unit</label>
+                        <select
+                            name="secondaryUnit"
+                            value={formData.secondaryUnit}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        >
+                            <option value="">None</option>
+                            {unitTypes
+                                .filter(unit => unit.value !== formData.baseUnit)
+                                .map((unit) => (
+                                    <option key={unit.value} value={unit.value}>
+                                        {unit.label}
+                                    </option>
+                                ))}
+                        </select>
+                    </div>
+
+                    {formData.secondaryUnit && (
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Convert Quantity</label>
+                            <div className="flex items-center space-x-1">
+                                <span className="text-xs">1 {formData.baseUnit} =</span>
+                                <input
+                                    type="text"
+                                    name="conversionRate"
+                                    value={formData.conversionRate}
+                                    onChange={handleChange}
+                                    inputMode="numeric"
+                                    pattern="[0-9]*"
+                                    className="no-arrows w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                />
+                                <span className="text-xs">{formData.secondaryUnit}</span>
+                            </div>
+                        </div>
+                    )}
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Stock Qty*</label>
+                        <input
+                            type="text"
+                            name="stockQuantity"
+                            value={formData.stockQuantity}
+                            onChange={handleChange}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            required
+                            className="no-arrows w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Available qty"
+                        />
+                    </div>
+
+                    {formData.secondaryUnit && (
+                        <div>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Total {formData.secondaryUnit}
+                            </label>
+                            <input
+                                type="number"
+                                name="totalConvertedQty"
+                                value={formData.totalConvertedQty}
+                                readOnly
+                                className="w-full px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none"
+                            />
+                        </div>
+                    )}
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Low Stock Alert</label>
+                        <input
+                            type="text"
+                            name="lowStockAlert"
+                            value={formData.lowStockAlert}
+                            onChange={handleChange}
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            className="no-arrows w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Alert when stock is low"
+                        />
+                    </div>
+                </div>
+            </div>
+
             {/* Product Source Information Section */}
             <div className="bg-white shadow rounded-lg p-4">
                 <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
@@ -774,110 +880,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                 </div>
             </div>
 
-            {/* Inventory Section */}
-            <div className="bg-white shadow rounded-lg p-4">
-                <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
-                    Inventory & Units
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Base Unit*</label>
-                        <select
-                            name="baseUnit"
-                            value={formData.baseUnit}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                            {unitTypes.map((unit) => (
-                                <option key={unit.value} value={unit.value}>
-                                    {unit.label}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
 
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Secondary Unit</label>
-                        <select
-                            name="secondaryUnit"
-                            value={formData.secondaryUnit}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                            <option value="">None</option>
-                            {unitTypes
-                                .filter(unit => unit.value !== formData.baseUnit)
-                                .map((unit) => (
-                                    <option key={unit.value} value={unit.value}>
-                                        {unit.label}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
-
-                    {formData.secondaryUnit && (
-                        <div>
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Conversion Rate</label>
-                            <div className="flex items-center space-x-1">
-                                <span className="text-xs">1 {formData.baseUnit} =</span>
-                                <input
-                                    type="text"
-                                    name="conversionRate"
-                                    value={formData.conversionRate}
-                                    onChange={handleChange}
-                                    inputMode="numeric"
-                                    pattern="[0-9]*"
-                                    className="no-arrows w-16 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                />
-                                <span className="text-xs">{formData.secondaryUnit}</span>
-                            </div>
-                        </div>
-                    )}
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Stock Qty*</label>
-                        <input
-                            type="text"
-                            name="stockQuantity"
-                            value={formData.stockQuantity}
-                            onChange={handleChange}
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            required
-                            className="no-arrows w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Available qty"
-                        />
-                    </div>
-
-                    {formData.secondaryUnit && (
-                        <div>
-                            <label className="block text-xs font-medium text-gray-700 mb-1">
-                                Total {formData.secondaryUnit}
-                            </label>
-                            <input
-                                type="number"
-                                name="totalConvertedQty"
-                                value={formData.totalConvertedQty}
-                                readOnly
-                                className="w-full px-2 py-1 text-sm border border-gray-200 bg-gray-100 rounded focus:outline-none"
-                            />
-                        </div>
-                    )}
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Low Stock Alert</label>
-                        <input
-                            type="text"
-                            name="lowStockAlert"
-                            value={formData.lowStockAlert}
-                            onChange={handleChange}
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            className="no-arrows w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Alert when stock is low"
-                        />
-                    </div>
-                </div>
-            </div>
 
             {/* Form Actions */}
             <div className="flex justify-end space-x-2 pt-2">

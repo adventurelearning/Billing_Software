@@ -85,7 +85,7 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
   };
 
   return (
-    <aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out 
+<aside className={`relative flex flex-col bg-gray-700 shadow-xl transition-all duration-300 ease-in-out 
       ${collapsed ? 'w-16 md:w-20 items-center' : 'w-56'}`}>
       
       {/* Navigation */}
@@ -101,28 +101,31 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
               collapsed={collapsed}
             />
           ))}
-
-          {/* Logout */}
-          <li className="pt-2 border-t border-gray-400">
-            <button
-              onClick={handleLogout}
-              className={`flex items-center justify-center w-full px-3 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out
-                ${collapsed ? 'px-0 py-3' : ''}`}
-              title={collapsed ? "Logout" : ""}
-            >
-              <FiLogOut className={`text-lg ${collapsed ? '' : 'mr-2'}`} />
-              {!collapsed && "Logout"}
-            </button>
-          </li>
         </ul>
+      </nav>
 
-        {/* Footer with company name */}
+      {/* Fixed bottom section */}
+      <div className="mt-auto">
+        {/* Logout */}
+        <div className="pt-2 border-t border-gray-400 px-1 py-1.5">
+          <button
+            onClick={handleLogout}
+            className={`flex items-center justify-center w-full px-3 py-2 text-sm font-medium bg-red-600 text-white rounded-lg shadow-md hover:bg-red-700 transition duration-200 ease-in-out
+              ${collapsed ? 'px-0 py-3' : ''}`}
+            title={collapsed ? "Logout" : ""}
+          >
+            <FiLogOut className={` text-sm sm:text-lg ${collapsed ? '' : 'mr-2'}`} />
+            {!collapsed && "Logout"}
+          </button>
+        </div>
+
+        {/* Footer with company name - only shown when not collapsed */}
         {!collapsed && (
-          <div className="text-xs text-gray-100 text-center pb-1 mt-2">
+          <div className="text-xs text-gray-100 text-center pb-1 mt-1 px-1">
             &copy; {new Date().getFullYear()} {company.businessName}
           </div>
         )}
-      </nav>
+      </div>
 
       {/* Collapse/Expand Button */}
       <button

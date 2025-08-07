@@ -596,9 +596,9 @@ const SellerExpenseList = () => {
                             : paymentInfo.balanceAmount || (currentTotalAmount - (paymentInfo.paidAmount || 0));
 
                         return (
-                            <div key={sellerKey} className="bg-white rounded-lg shadow overflow-hidden dark:bg-gray-800 dark:border dark:border-gray-700">
+                            <div key={sellerKey} className="bg-white rounded-lg shadow overflow-hidden ">
                                 <div
-                                    className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="flex justify-between items-center p-4 cursor-pointer "
                                     onClick={() => toggleSellerDetails(sellerKey)}
                                 >
                                     <div className="flex items-center space-x-4">
@@ -606,19 +606,19 @@ const SellerExpenseList = () => {
                                             parseFloat(totalAmount) > 5000 ? 'bg-yellow-500' : 'bg-green-500'
                                             }`}></div>
                                         <div>
-                                            <h3 className="font-semibold text-lg text-gray-800 dark:text-white">{sellerGroup.supplierName}</h3>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">Batch: {sellerGroup.batchNumber}</p>
+                                            <h3 className="font-semibold text-lg text-gray-800 ">{sellerGroup.supplierName}</h3>
+                                            <p className="text-sm text-gray-600 ">Batch: {sellerGroup.batchNumber}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-right">
-                                            <p className="font-medium text-gray-800 dark:text-white">₹{totalAmount}</p>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            <p className="font-medium text-gray-800 ">₹{totalAmount}</p>
+                                            <p className="text-sm text-gray-600 ">
                                                 {sellerGroup.products.length} items | Profit: ₹{totalProfit}
                                             </p>
                                         </div>
                                         <svg
-                                            className={`h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform ${isExpanded ? 'rotate-180' : ''
+                                            className={`h-5 w-5 text-gray-500  transform transition-transform ${isExpanded ? 'rotate-180' : ''
                                                 }`}
                                             fill="none"
                                             viewBox="0 0 24 24"
@@ -630,110 +630,110 @@ const SellerExpenseList = () => {
                                 </div>
 
                                 {isExpanded && (
-                                    <div className="border-t border-gray-200 dark:border-gray-700">
+                                    <div className="border-t border-gray-200 ">
                                         <div className="overflow-x-auto">
-                                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                            <table className="min-w-full divide-y divide-gray-200 ">
+                                                <thead className="bg-gray-50 ">
                                                     <tr>
                                                         <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('productName')}
                                                         >
                                                             Product <SortIndicator columnKey="productName" />
                                                         </th>
                                                         <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('productCode')}
                                                         >
                                                             Code <SortIndicator columnKey="productCode" />
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">
                                                             Category
                                                         </th>
                                                         <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('addedStock')}
                                                         >
                                                             Qty <SortIndicator columnKey="addedStock" />
                                                         </th>
                                                         <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('sellerPrice')}
                                                         >
                                                             Cost <SortIndicator columnKey="sellerPrice" />
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">
                                                             Sales Price
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">
                                                             Profit
                                                         </th>
                                                         <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
+                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider cursor-pointer"
                                                             onClick={() => requestSort('createdAt')}
                                                         >
                                                             Added <SortIndicator columnKey="createdAt" />
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">
                                                             Mfg
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">
                                                             Expiry
                                                         </th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                                <tbody className="bg-white divide-y divide-gray-200  ">
                                                     {sellerGroup.products.map((product) => {
                                                         const profitPerUnit = (product.mrp - product.sellerPrice) || 0;
                                                         const totalProfit = (profitPerUnit * product.addedStock).toFixed(2);
 
                                                         return (
-                                                            <tr key={`${product._id}-${product.addedStock}`} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                            <tr key={`${product._id}-${product.addedStock}`} className="hover:bg-gray-50 ">
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                                                    <div className="text-sm font-medium text-gray-900 ">
                                                                         {product.productName}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">{product.productCode}</div>
+                                                                    <div className="text-sm text-gray-900 ">{product.productCode}</div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         {product.category}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         <span className="font-medium">{product.addedStock}</span> {product.baseUnit}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         ₹{product.sellerPrice.toFixed(2)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         ₹{product.mrp?.toFixed(2) || 'N/A'}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className={`text-sm font-medium ${profitPerUnit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                                    <div className={`text-sm font-medium ${profitPerUnit >= 0 ? 'text-green-600 ' : 'text-red-600 '}`}>
                                                                         ₹{totalProfit}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         {formatDate(product.createdAt)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         {formatDate(product.manufactureDate)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900 ">
                                                                         {formatDate(product.expiryDate)}
                                                                     </div>
                                                                 </td>
@@ -743,17 +743,17 @@ const SellerExpenseList = () => {
                                                 </tbody>
                                                 <tfoot className="bg-gray-50 dark:bg-gray-700">
                                                     <tr>
-                                                        <td colSpan="3" className="px-6 py-3 text-right text-sm font-medium text-gray-500 dark:text-gray-300">
+                                                        <td colSpan="3" className="px-6 py-3 text-right text-sm font-medium text-gray-500 ">
                                                             Total
                                                         </td>
                                                         <td className="px-6 py-3 text-sm text-gray-900 dark:text-gray-200">
                                                             {sellerGroup.products.reduce((sum, p) => sum + p.addedStock, 0)}
                                                         </td>
-                                                        <td className="px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white">
+                                                        <td className="px-6 py-3 text-sm font-semibold text-gray-900 ">
                                                             ₹{totalAmount}
                                                         </td>
                                                         <td></td>
-                                                        <td className="px-6 py-3 text-sm font-semibold text-green-600 dark:text-green-400">
+                                                        <td className="px-6 py-3 text-sm font-semibold text-green-600 ">
                                                             ₹{totalProfit}
                                                         </td>
                                                         <td colSpan="3"></td>
@@ -764,27 +764,27 @@ const SellerExpenseList = () => {
 
                                         {/* Payment History Section */}
                                         {history.length > 0 && (
-                                            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+                                            <div className="px-6 py-4 border-t border-gray-200 ">
                                                 <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Payment History</h4>
                                                 <div className="overflow-x-auto">
-                                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                        <thead className="bg-gray-50 dark:bg-gray-700">
+                                                    <table className="min-w-full divide-y divide-gray-200 ">
+                                                        <thead className="bg-gray-50 ">
                                                             <tr>
-                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Notes</th>
+                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">Date</th>
+                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">Amount</th>
+                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500  uppercase tracking-wider">Notes</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                                        <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 ">
                                                             {history.map((payment, index) => (
                                                                 <tr key={index}>
-                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 ">
                                                                         {formatDateTime(payment.date)}
                                                                     </td>
-                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 ">
                                                                         ₹{payment.amount.toFixed(2)}
                                                                     </td>
-                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 ">
                                                                         {payment.notes || '-'}
                                                                     </td>
                                                                 </tr>
@@ -795,11 +795,11 @@ const SellerExpenseList = () => {
                                             </div>
                                         )}
 
-                                        <div className="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                        <div className="px-6 py-3 bg-gray-50  border-t border-gray-200  flex justify-between items-center">
+                                            <div className="text-sm text-gray-500 ">
                                                 {/* GST: {sellerGroup.gstCategory} */}
                                                 {balanceAmount > 0 && (
-                                                    <span className="ml-4 text-red-600 dark:text-red-400">
+                                                    <span className="ml-4 text-red-600 ">
                                                         Balance: ₹{Math.max(balanceAmount, 0).toFixed(2)}
                                                     </span>
                                                 )}
@@ -823,14 +823,14 @@ const SellerExpenseList = () => {
                                                 ) : (
                                                     <>
                                                         <button
-                                                            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                                            className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-md "
                                                             onClick={() => openPaymentModal(sellerKey)}
                                                         >
                                                             {paymentInfo.paidAmount ? 'Add Payment' : 'Make Payment'}
                                                         </button>
                                                         {paymentInfo.paidAmount && (
                                                             <button
-                                                                className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                                                                className="px-3 py-2 bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium rounded-md "
                                                                 disabled
                                                             >
                                                                 Partially Paid
