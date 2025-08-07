@@ -367,40 +367,53 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
         return { isAvailable: false, available: 0, availableDisplay: 0 };
       }
 
-      // Get the stock information
       const stockRes = await Api.get(`products/stock/${product.productCode}`);
-      const stockData = stockRes.data;
-      const availableQuantity = stockData.stock?.availableQuantity || 0;
+    const stockData = stockRes.data;
+    const availableQuantity = stockData.stock?.availableQuantity || 0;
 
-      // Calculate available quantity in the requested unit
-      let availableInRequestedUnit = availableQuantity;
-      let isAvailable = true;
-      let conversionRate = 1;
+    let availableInRequestedUnit = availableQuantity;
+    let isAvailable = true;
+    let conversionRate = 1;
 
-      if (unit === product.baseUnit) {
-        // For base unit, compare directly
+    if (unit === product.baseUnit) {
+      // For base unit, compare directly
+      isAvailable = availableQuantity >= quantity;
+      availableInRequestedUnit = availableQuantity;
+    } else if (unit === product.secondaryUnit) {
+      // For secondary unit, convert requested quantity to base units
+      conversionRate = product.conversionRate || 1;
+      const requestedQuantityInBase = quantity / conversionRate; // ✅ FIXED: Convert to base units
+      isAvailable = availableQuantity >= requestedQuantityInBase;
+      availableInRequestedUnit = availableQuantity * conversionRate; // Convert available to secondary units
+    } else {
+      // Handle other unit conversions (ml, gram, etc.)
+      if (unit === 'gram' && product.baseUnit === 'kg') {
+        const requestedQuantityInBase = quantity / 1000;
+        isAvailable = availableQuantity >= requestedQuantityInBase;
+        availableInRequestedUnit = availableQuantity * 1000;
+      } else if (unit === 'ml' && product.baseUnit === 'liter') {
+        const requestedQuantityInBase = quantity / 1000;
+        isAvailable = availableQuantity >= requestedQuantityInBase;
+        availableInRequestedUnit = availableQuantity * 1000;
+      } else {
+        // Default 1:1 conversion if no specific conversion exists
         isAvailable = availableQuantity >= quantity;
         availableInRequestedUnit = availableQuantity;
-      } else if (unit === product.secondaryUnit) {
-        // For secondary unit, convert to base unit for comparison
-        conversionRate = product.conversionRate || 1;
-        const requestedQuantityInBase = quantity;
-        isAvailable = availableQuantity >= requestedQuantityInBase;
-        availableInRequestedUnit = availableQuantity * conversionRate;
       }
-
-      return {
-        isAvailable,
-        available: availableQuantity,
-        availableDisplay: availableInRequestedUnit,
-        unit,
-        conversionRate
-      };
-    } catch (err) {
-      console.error('Error checking stock:', err);
-      return { isAvailable: false, available: 0, availableDisplay: 0 };
     }
-  };
+
+    return {
+      isAvailable,
+      available: availableQuantity,
+      availableDisplay: availableInRequestedUnit,
+      unit,
+      conversionRate
+    };
+  } catch (err) {
+    console.error('Error checking stock:', err);
+    return { isAvailable: false, available: 0, availableDisplay: 0 };
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
