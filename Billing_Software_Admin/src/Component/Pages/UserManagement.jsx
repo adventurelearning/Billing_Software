@@ -41,16 +41,19 @@ const UserManagement = ({ setActivePage }) => {
     }));
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this cashier?")) {
-      try {
-        await api.delete(`/credentials/users/${id}`);
-        setUsers(users.filter(u => u._id !== id));
-      } catch (error) {
-        console.error("Error deleting user:", error);
-      }
+ const handleDelete = async (id) => {
+  if (window.confirm("Are you sure you want to delete this cashier?")) {
+    try {
+      await api.delete(`/credentials/users/${id}`);
+      setUsers(users.filter(u => u._id !== id));
+      // Optional: Show success message
+      alert("Cashier deleted successfully");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      alert("Failed to delete cashier. Please try again.");
     }
-  };
+  }
+};
 
   if (loading) return (
     <div className="flex justify-center items-center h-64">

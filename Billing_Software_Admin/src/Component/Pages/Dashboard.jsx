@@ -13,6 +13,7 @@ import {
 import { Search, Plus, Eye, Edit, Bell, DollarSign, Users, Package, ShoppingCart, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../service/api';
+import dayjs from 'dayjs';
 
 ChartJS.register(
   CategoryScale,
@@ -45,7 +46,6 @@ const NotificationModal = ({ alerts, onClose }) => {
                 <div className="text-right">
                   <span className="text-base text-red-600 font-semibold">
                     Available : {alert.currentStock}
-                    {/* left (threshold: {alert.threshold}) */}
                   </span>
                   <div className="text-sm text-gray-500"></div>
                 </div>
@@ -180,28 +180,38 @@ const Dashboard = ({ setActivePage }) => {
       .map(([name, sales]) => ({ name, sales }));
     setLessSellingProducts(lessSelling);
 
-    // Monthly Revenue
+    // Monthly Revenue - Group by month-year to handle multiple years
     const monthlyRev = {};
+    const currentYear = dayjs().year();
+    
+    // Initialize all months with 0
+    for (let i = 0; i < 12; i++) {
+      monthlyRev[i] = 0;
+    }
+
     billsData.forEach(bill => {
       if (!bill || !bill.date) return;
-      const month = new Date(bill.date).getMonth();
-      const total = bill.total || 0;
-
-      if (!monthlyRev[month]) {
-        monthlyRev[month] = total;
-      } else {
+      const billDate = dayjs(bill.date);
+      const billYear = billDate.year();
+      
+      // Only process bills from current year
+      if (billYear === currentYear) {
+        const month = billDate.month();
+        const total = bill.grandTotal || bill.total || 0;
         monthlyRev[month] += total;
       }
     });
+    
     setMonthlyRevenue(monthlyRev);
   };
 
   // Calculate summary metrics with fallback values
   const totalBills = bills.length || 0;
-  const totalRevenue = bills.reduce((sum, bill) => sum + (bill?.paidAmount || 0), 0);
+  const totalRevenue = bills.reduce((sum, bill) => sum + (bill?.grandTotal || bill?.paidAmount || 0), 0);
   const uniqueCustomers = new Set(bills.map(bill => bill?.customer?.id).filter(Boolean)).size;
   const allProductsInBills = bills.flatMap(bill => bill?.products || []);
   const totalProductsInStock = allProductsInBills.reduce((sum, product) => sum + (product?.quantity || 0), 0);
+
 
   // Prepare chart data for Monthly Revenue
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -209,11 +219,12 @@ const Dashboard = ({ setActivePage }) => {
     labels: months,
     datasets: [
       {
-        label: 'Monthly Revenue',
+        label: 'Monthly Revenue (₹)',
         data: months.map((_, index) => monthlyRevenue[index] || 0),
         backgroundColor: 'rgba(59, 130, 246, 0.7)',
         borderColor: 'rgba(29, 78, 216, 1)',
         borderWidth: 1,
+        borderRadius: 4,
         hoverBackgroundColor: 'rgba(59, 130, 246, 0.9)',
       },
     ],
@@ -235,40 +246,40 @@ const Dashboard = ({ setActivePage }) => {
       },
       title: {
         display: true,
-        text: 'Monthly Revenue Overview',
+        text: 'Monthly Revenue Overview - ' + dayjs().year(),
         font: {
-          size: 18,
+          size: 16,
           weight: 'bold',
           family: 'Inter, sans-serif',
         },
         color: '#333',
+        padding: {
+          top: 10,
+          bottom: 20
+        }
       },
       tooltip: {
         backgroundColor: 'rgba(0,0,0,0.8)',
         titleFont: {
-          size: 16,
+          size: 14,
           family: 'Inter, sans-serif',
         },
         bodyFont: {
-          size: 14,
+          size: 12,
           family: 'Inter, sans-serif',
         },
         callbacks: {
           label: function (context) {
-            let label = context.dataset.label || '';
-            if (label) {
-              label += ': ';
-            }
-            if (context.parsed.y !== null) {
-              label += `₹${context.parsed.y.toLocaleString()}`;
-            }
-            return label;
+            return `₹${context.raw.toLocaleString('en-IN')}`;
           }
         }
       }
     },
     scales: {
       x: {
+        grid: {
+          display: false,
+        },
         ticks: {
           font: {
             size: 12,
@@ -276,11 +287,9 @@ const Dashboard = ({ setActivePage }) => {
           },
           color: '#555',
         },
-        grid: {
-          display: false,
-        },
       },
       y: {
+        beginAtZero: true,
         ticks: {
           font: {
             size: 12,
@@ -288,13 +297,18 @@ const Dashboard = ({ setActivePage }) => {
           },
           color: '#555',
           callback: function (value) {
-            return '₹' + value.toLocaleString();
-          }
+            return '₹' + value.toLocaleString('en-IN');
+          },
+          stepSize: 10000 // This will create ticks at 10,000 intervals
         },
         grid: {
           color: 'rgba(200, 200, 200, 0.2)',
         },
       },
+    },
+    animation: {
+      duration: 1000,
+      easing: 'easeInOutQuad'
     }
   };
 
@@ -373,11 +387,11 @@ const Dashboard = ({ setActivePage }) => {
       acc.push({
         id: customerId,
         name: bill.customer.name || 'Unknown Customer',
-        totalSpent: bill.total || 0,
+        totalSpent: bill.grandTotal || bill.total || 0,
         lastVisit: bill.date || new Date().toISOString(),
       });
     } else {
-      existingCustomer.totalSpent += bill.total || 0;
+      existingCustomer.totalSpent += bill.grandTotal || bill.total || 0;
       const billDate = bill.date ? new Date(bill.date) : new Date(0);
       const lastVisitDate = existingCustomer.lastVisit ? new Date(existingCustomer.lastVisit) : new Date(0);
 
@@ -465,7 +479,7 @@ const Dashboard = ({ setActivePage }) => {
                         <p className='text-xs font-medium text-gray-500 pb-2'>Last 30 days</p>
                         <dd className="flex items-baseline">
                           <div className="text-lg font-bold text-gray-900">
-                            ₹{totalRevenue.toLocaleString()}
+                            ₹{totalRevenue.toLocaleString('en-IN')}
                           </div>
                         </dd>
                       </dl>
@@ -548,7 +562,6 @@ const Dashboard = ({ setActivePage }) => {
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8'>
               {/* Monthly Revenue Chart */}
               <div className="bg-white shadow-md rounded-lg p-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-4">Monthly Revenue</h3>
                 <div className="h-80">
                   <Bar data={monthlyRevenueChartData} options={monthlyRevenueChartOptions} />
                 </div>
@@ -563,7 +576,8 @@ const Dashboard = ({ setActivePage }) => {
                   <div className="flex gap-2">
                     <button
                       onClick={() => setShowTopSellingChart(true)}
-                      className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${showTopSellingChart
+                      className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                        showTopSellingChart
                           ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
@@ -572,7 +586,8 @@ const Dashboard = ({ setActivePage }) => {
                     </button>
                     <button
                       onClick={() => setShowTopSellingChart(false)}
-                      className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${!showTopSellingChart
+                      className={`px-3 py-1 sm:px-4 sm:py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
+                        !showTopSellingChart
                           ? 'bg-blue-600 text-white shadow-md'
                           : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                         }`}
