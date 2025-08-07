@@ -136,9 +136,14 @@ router.get('/code/:code', async (req, res) => {
 // Add this new route to your existing product routes file
 router.get('/name/:name', async (req, res) => {
   try {
-    // Case-insensitive search for product name
+    // Escape any regex special characters in the input
+    const escapedName = req.params.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    
+    // Case-insensitive search for product name with flexible matching
     const product = await AdminProduct.findOne({ 
-      productName: { $regex: new RegExp(req.params.name, 'i') } 
+      productName: { 
+        $regex: new RegExp(escapedName.trim().replace(/\s+/g, '\\s*'), 'i') 
+      } 
     });
     
     if (!product) {
