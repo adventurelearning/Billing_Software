@@ -497,7 +497,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     Pricing Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                    <div>
+                    {/* <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">Select Unit</label>
                         <select
                             value={selectedUnit}
@@ -508,7 +508,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                                 <option key={unit.value} value={unit.value}>{unit.label}</option>
                             ))}
                         </select>
-                    </div>
+                    </div> */}
                     <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">MRP Price (₹)*</label>
                         <div className="relative">
@@ -744,7 +744,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
 
                     {formData.secondaryUnit && (
                         <div>
-                            <label className="block text-xs font-medium text-gray-700 mb-1">Conversion Rate</label>
+                            <label className="block text-xs font-medium text-gray-700 mb-1">Convert Quantity</label>
                             <div className="flex items-center space-x-1">
                                 <span className="text-xs">1 {formData.baseUnit} =</span>
                                 <input
