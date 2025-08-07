@@ -10,7 +10,7 @@ import {
   Legend,
   ArcElement
 } from 'chart.js';
-import { Search, Plus, Eye, Edit, Bell, DollarSign, Users, Package, ShoppingCart, X } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Bell, DollarSign,IndianRupee , Users, Package, ShoppingCart, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../service/api';
 import dayjs from 'dayjs';
@@ -485,7 +485,7 @@ const Dashboard = ({ setActivePage }) => {
                       </dl>
                     </div>
                     <div className="flex-shrink-0 bg-blue-100 rounded-full p-2 shadow-lg">
-                      <DollarSign className="h-7 w-7 text-blue-800" />
+                      <IndianRupee className="h-7 w-7 text-blue-800" />
                     </div>
                   </div>
                 </div>

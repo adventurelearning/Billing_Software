@@ -38,7 +38,7 @@ const ProductDetailsModal = ({ product, onClose }) => {
               <TableRow label="Brand" value={product.brand} />
               <TableRow label="Base Unit" value={product.baseUnit} />
               <TableRow label="Secondary Unit" value={product.secondaryUnit} />
-              <TableRow label="Conversion Rate" value={product.conversionRate} />
+              <TableRow label="Convert Quantity" value={product.conversionRate} />
               <TableRow label="GST Category" value={product.gstCategory} />
 
               {/* Stock Information */}
@@ -46,19 +46,22 @@ const ProductDetailsModal = ({ product, onClose }) => {
                 <td colSpan="2" className="px-4 py-2 font-bold text-gray-700">Stock Information</td>
               </tr>
               <TableRow label="Stock Quantity" value={`${product.stockQuantity} ${product.baseUnit}`} />
-              <TableRow label="Overall Quantity" value={product.overallQuantity} />
+              {/* <TableRow label="Overall Quantity" value={product.overallQuantity} /> */}
 
               {/* Pricing Information */}
               <tr className="bg-gray-50">
                 <td colSpan="2" className="px-4 py-2 font-bold text-gray-700">Pricing Information</td>
               </tr>
-              <TableRow label="MRP" value={`₹${product.mrp?.toFixed(2)}`} />
-              <TableRow label="Discount" value={product.discount ? `${product.discount}%` : '-'} />
-              <TableRow label="Net Price" value={`₹${product.netPrice?.toFixed(2)}`} />
+              <TableRow label="MRP" value={`₹${product.mrpPrice?.toFixed(2)}`} />
+              <TableRow label="Seller Price" value={`₹${product.sellerPrice?.toFixed(2)}`} />
               <TableRow label="CGST" value={product.gst ? `${product.gst}%` : '-'} />
               <TableRow label="SGST" value={product.sgst ? `${product.sgst}%` : '-'} />
-              <TableRow label="Total Price" value={`₹${product.totalPrice?.toFixed(2)}`} />
-              <TableRow label="Discount on MRP" value={product.discountOnMRP ? `${product.discountOnMRP}%` : '-'} />
+              {/* <TableRow label="Discount" value={product.discount ? `${product.discount}%` : '-'} /> */}
+              <TableRow label="Sales Price" value={`₹${product.mrp?.toFixed(2)}`} />
+              <TableRow label="Per unit Price" value={`₹${product.perUnitPrice?.toFixed(2)}`} />
+
+
+              {/* <TableRow label="Discount on MRP" value={product.discountOnMRP ? `${product.discountOnMRP}%` : '-'} /> */}
 
               {/* Date Information */}
               <tr className="bg-gray-50">
@@ -315,89 +318,89 @@ const ProductStockList = ({ setActivePage }) => {
 
   return (
     <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
-      
-        {/* Header and Controls */}
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-          <div className="max-w-7xl mx-auto px-2 sm:px-4">
-            <div className="py-2">
-              {/* Title Row - more compact */}
-              <div className="flex justify-between items-center mb-1">
-                <h1 className="text-lg sm:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-2 py-1 rounded-md">
-                  Product Stock List
-                </h1>
-              </div>
 
-              {/* Compact Search and Filters */}
-              <div className="flex flex-col gap-2">                {/* Search Input - always full width */}
-                {/* Filters - row on desktop, column on mobile */}
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <div className="flex flex-col sm:flex-row gap-2 flex-grow">
-                    <select
-                      className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-blue-500 focus:border-blue-500 flex-grow"
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                    >
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
+      {/* Header and Controls */}
+      <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="py-2">
+            {/* Title Row - more compact */}
+            <div className="flex justify-between items-center mb-1">
+              <h1 className="text-lg sm:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-2 py-1 rounded-md">
+                Product Stock List
+              </h1>
+            </div>
 
-                    <select
-                      className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-blue-500 focus:border-blue-500 flex-grow"
-                      value={selectedGstCategory}
-                      onChange={(e) => setSelectedGstCategory(e.target.value)}
-                    >
-                      <option value="All">All GST</option>
-                      <option value="GST">GST</option>
-                      <option value="Non-GST">Non-GST</option>
-                    </select>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
-                        <FiSearch className="text-gray-400 h-4 w-4" />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Search products..."
-                        className="text-sm pl-8 pr-2 py-1.5 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 w-full"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
+            {/* Compact Search and Filters */}
+            <div className="flex flex-col gap-2">                {/* Search Input - always full width */}
+              {/* Filters - row on desktop, column on mobile */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex flex-col sm:flex-row gap-2 flex-grow">
+                  <select
+                    className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-blue-500 focus:border-blue-500 flex-grow"
+                    value={selectedCategory}
+                    onChange={(e) => setSelectedCategory(e.target.value)}
+                  >
+                    {categories.map(category => (
+                      <option key={category} value={category}>{category}</option>
+                    ))}
+                  </select>
+
+                  <select
+                    className="text-sm border border-gray-300 rounded-md px-2 py-1 focus:ring-blue-500 focus:border-blue-500 flex-grow"
+                    value={selectedGstCategory}
+                    onChange={(e) => setSelectedGstCategory(e.target.value)}
+                  >
+                    <option value="All">All GST</option>
+                    <option value="GST">GST</option>
+                    <option value="Non-GST">Non-GST</option>
+                  </select>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                      <FiSearch className="text-gray-400 h-4 w-4" />
                     </div>
-                  </div>
-
-                  {/* Buttons - same styling for all screens */}
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handlePrint}
-                      className="text-base bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1 flex-1 sm:flex-none justify-center"
-                    >
-                      <FiPrinter size={14} /> <span className="sm:inline">Print</span>
-                    </button>
-                    <button
-                      className="text-base bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 flex-1 sm:flex-none justify-center"
-                      onClick={() => setActivePage('Products')}
-                    >
-                      <FiPlus size={14} /> <span className=" sm:inline">Add</span>
-                    </button>
+                    <input
+                      type="text"
+                      placeholder="Search products..."
+                      className="text-sm pl-8 pr-2 py-1.5 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 w-full"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
                 </div>
-              </div>
 
-
-              {/* Hidden printable component */}
-              <div className="hidden">
-                <PrintableProducts
-                  ref={printRef}
-                  products={filteredProducts}
-                  filterType={getFilterType()}
-                />
+                {/* Buttons - same styling for all screens */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={handlePrint}
+                    className="text-base bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md flex items-center gap-1 flex-1 sm:flex-none justify-center"
+                  >
+                    <FiPrinter size={14} /> <span className="sm:inline">Print</span>
+                  </button>
+                  <button
+                    className="text-base bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded-md flex items-center gap-1 flex-1 sm:flex-none justify-center"
+                    onClick={() => setActivePage('Products')}
+                  >
+                    <FiPlus size={14} /> <span className=" sm:inline">Add</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </header>
 
-        {/* Product Table */}
-        <div className="bg-white rounded-xl shadow-md m-4 ">
+
+            {/* Hidden printable component */}
+            <div className="hidden">
+              <PrintableProducts
+                ref={printRef}
+                products={filteredProducts}
+                filterType={getFilterType()}
+              />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Product Table */}
+      <div className="bg-white rounded-xl shadow-md m-4 ">
         <div className="max-w-7xl mx-auto ">
           <div className="overflow-x-auto ">
             <table className="min-w-full divide-y divide-gray-200">
