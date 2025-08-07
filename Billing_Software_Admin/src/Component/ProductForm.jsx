@@ -700,73 +700,8 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                 </div>
             </div>
 
-            {/* Product Source Information Section */}
-            <div className="bg-white shadow rounded-lg p-4">
-                <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
-                    Product Source Information
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Supplier Name</label>
-                        <input
-                            type="text"
-                            name="supplierName"
-                            value={formData.supplierName}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Supplier name"
-                        />
-                    </div>
 
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Batch Number</label>
-                        <input
-                            type="text"
-                            name="batchNumber"
-                            value={formData.batchNumber}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Batch number"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Manufacture Date</label>
-                        <input
-                            type="date"
-                            name="manufactureDate"
-                            value={formData.manufactureDate}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Expiry Date</label>
-                        <input
-                            type="date"
-                            name="expiryDate"
-                            value={formData.expiryDate}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        />
-                    </div>
-
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Manufacture Location</label>
-                        <input
-                            type="text"
-                            name="manufactureLocation"
-                            value={formData.manufactureLocation}
-                            onChange={handleChange}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            placeholder="Location"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* Inventory Section */}
+                        {/* Inventory Section */}
             <div className="bg-white shadow rounded-lg p-4">
                 <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
                     Inventory & Units
@@ -870,6 +805,74 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     </div>
                 </div>
             </div>
+
+            {/* Product Source Information Section */}
+            <div className="bg-white shadow rounded-lg p-4">
+                <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
+                    Product Source Information
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Supplier Name</label>
+                        <input
+                            type="text"
+                            name="supplierName"
+                            value={formData.supplierName}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Supplier name"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Batch Number</label>
+                        <input
+                            type="text"
+                            name="batchNumber"
+                            value={formData.batchNumber}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Batch number"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Manufacture Date</label>
+                        <input
+                            type="date"
+                            name="manufactureDate"
+                            value={formData.manufactureDate}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Expiry Date</label>
+                        <input
+                            type="date"
+                            name="expiryDate"
+                            value={formData.expiryDate}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-medium text-gray-700 mb-1">Manufacture Location</label>
+                        <input
+                            type="text"
+                            name="manufactureLocation"
+                            value={formData.manufactureLocation}
+                            onChange={handleChange}
+                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            placeholder="Location"
+                        />
+                    </div>
+                </div>
+            </div>
+
+
 
             {/* Form Actions */}
             <div className="flex justify-end space-x-2 pt-2">

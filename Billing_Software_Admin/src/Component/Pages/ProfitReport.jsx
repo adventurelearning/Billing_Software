@@ -156,7 +156,7 @@ const ProfitReport = () => {
                     <h3 className="text-lg font-semibold">Stock Reductions</h3>
                     <p className="text-2xl font-bold">-₹{reductions.toFixed(2)}</p>
                 </div> */}
-                <div className="bg-purple-100 p-4 rounded-lg mr-10">
+                <div className="bg-purple-100 p-4 rounded-lg">
                     <h3 className="text-lg font-semibold">Net Profit</h3>
                     <p className="text-xl font-semibold">₹{netProfit.toFixed(2)}</p>
                 </div>
