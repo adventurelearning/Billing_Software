@@ -99,11 +99,11 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
       {/* Bill Info */}
       <div style={{ marginBottom: '3mm' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Bill No: {billData.billNumber || 'N/A'}</span>
+          <span>Bill No: {billData.billNumber }</span>
           <span>Date: {new Date(billData.date || new Date()).toLocaleDateString('en-IN')}</span>
         </div>
-        <div>Customer: {billData.customer?.name || 'Walk-in Customer'}</div>
-        <div>Phone: {billData.customer?.contact || 'N/A'}</div>
+        <div>Customer: {billData.customer?.name }</div>
+        <div>Phone: {billData.customer?.contact }</div>
         <div>Cashier Name: {billData.cashier?.cashierName}</div>
       </div>
 

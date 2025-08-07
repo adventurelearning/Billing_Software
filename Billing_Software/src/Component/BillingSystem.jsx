@@ -252,6 +252,8 @@ const BillingSystem = ({
 
       await printBill(savedBill, e);
 
+      
+
       toast.success('Bill saved and printed successfully!');
       resetForm();
     } catch (error) {
