@@ -12,11 +12,11 @@
             "electron/**"
         ],
         "directories": {
-            "buildResources": "public"
+            "buildResources": "assets"
         },
         "win": {
             "target": "nsis",
-            "icon": "public/icon.ico"
+            "icon": "assets/icon.ico"
         }
     },
     "scripts": {
