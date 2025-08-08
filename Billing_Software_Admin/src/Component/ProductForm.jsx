@@ -368,6 +368,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     mrpPrice: '0',
                     discount: '0',
                     netPrice: '0',
+                    gstCategory: 'GST',
                     gst: '0',
                     sgst: '0',
                     totalPrice: '0',
@@ -383,7 +384,8 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     batchNumber: '',
                     manufactureDate: '',
                     manufactureLocation: '',
-                    totalConvertedQty: 0
+                    totalConvertedQty: 0,
+                    lowStockAlert: '0',
                 });
                 setUseManualPrice(false);
                 setManualPrice(0);
@@ -709,7 +711,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
             </div>
 
 
-                        {/* Inventory Section */}
+            {/* Inventory Section */}
             <div className="bg-white shadow rounded-lg p-4">
                 <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
                     Inventory & Units
