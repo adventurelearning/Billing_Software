@@ -26,6 +26,8 @@ const BillingSystem = ({
     contact: '',
     aadhaar: '',
     location: '',
+
+    
   });
   const [products, setProducts] = useState([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
