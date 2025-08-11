@@ -77,3 +77,57 @@ exports.getCompanyById = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+
+exports.updateCompany = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    // Handle file uploads if they exist
+    if (req.files?.logo) {
+      updateData.logoUrl = `${process.env.BASE_URL}/uploads/${req.files.logo[0].filename}`;
+    }
+    if (req.files?.signature) {
+      updateData.signatureUrl = `${process.env.BASE_URL}/uploads/${req.files.signature[0].filename}`;
+    }
+
+    const updatedCompany = await Company.findByIdAndUpdate(
+      id,
+      updateData,
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedCompany) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res.status(200).json({
+      message: "Company updated successfully",
+      company: updatedCompany,
+    });
+  } catch (err) {
+    console.error("Update error:", err);
+    res.status(500).json({ message: err.message || "Server error" });
+  }
+};
+
+// ✅ Delete company
+exports.deleteCompany = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedCompany = await Company.findByIdAndDelete(id);
+
+    if (!deletedCompany) {
+      return res.status(404).json({ message: "Company not found" });
+    }
+
+    res.status(200).json({
+      message: "Company deleted successfully",
+      company: deletedCompany,
+    });
+  } catch (err) {
+    console.error("Delete error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+};
