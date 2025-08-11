@@ -90,13 +90,13 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
 
   // Fetch product suggestions by name
   const fetchProductSuggestions = async (name) => {
-    if (name.length < 2) {
+    if (name.length < 1) { // Show suggestions from first character
       setNameSuggestions([]);
       return;
     }
 
     try {
-      const res = await Api.get(`/products/search?query=${name}`);
+      const res = await Api.get(`/products/search?query=${encodeURIComponent(name)}`);
       setNameSuggestions(res.data || []);
       setShowNameSuggestions(true);
     } catch (err) {
@@ -199,16 +199,17 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     }
   }, [product.code, editingIndex]);
 
-  // Handle name changes and fetch suggestions
   const handleNameChange = (e) => {
     const { value } = e.target;
     setProduct(prev => ({ ...prev, name: value }));
+    fetchProductSuggestions(value);
+  };
 
-    if (value.length > 1) {
-      fetchProductSuggestions(value);
-    } else {
-      setNameSuggestions([]);
-    }
+  // Handle selecting a suggestion
+  const handleSelectNameSuggestion = (suggestion) => {
+    fetchProductDetails(suggestion.productName, false);
+    setNameSuggestions([]);
+    setShowNameSuggestions(false);
   };
 
   useEffect(() => {
@@ -368,52 +369,52 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
       }
 
       const stockRes = await Api.get(`products/stock/${product.productCode}`);
-    const stockData = stockRes.data;
-    const availableQuantity = stockData.stock?.availableQuantity || 0;
+      const stockData = stockRes.data;
+      const availableQuantity = stockData.stock?.availableQuantity || 0;
 
-    let availableInRequestedUnit = availableQuantity;
-    let isAvailable = true;
-    let conversionRate = 1;
+      let availableInRequestedUnit = availableQuantity;
+      let isAvailable = true;
+      let conversionRate = 1;
 
-    if (unit === product.baseUnit) {
-      // For base unit, compare directly
-      isAvailable = availableQuantity >= quantity;
-      availableInRequestedUnit = availableQuantity;
-    } else if (unit === product.secondaryUnit) {
-      // For secondary unit, convert requested quantity to base units
-      conversionRate = product.conversionRate || 1;
-      const requestedQuantityInBase = quantity / conversionRate; // ✅ FIXED: Convert to base units
-      isAvailable = availableQuantity >= requestedQuantityInBase;
-      availableInRequestedUnit = availableQuantity * conversionRate; // Convert available to secondary units
-    } else {
-      // Handle other unit conversions (ml, gram, etc.)
-      if (unit === 'gram' && product.baseUnit === 'kg') {
-        const requestedQuantityInBase = quantity / 1000;
-        isAvailable = availableQuantity >= requestedQuantityInBase;
-        availableInRequestedUnit = availableQuantity * 1000;
-      } else if (unit === 'ml' && product.baseUnit === 'liter') {
-        const requestedQuantityInBase = quantity / 1000;
-        isAvailable = availableQuantity >= requestedQuantityInBase;
-        availableInRequestedUnit = availableQuantity * 1000;
-      } else {
-        // Default 1:1 conversion if no specific conversion exists
+      if (unit === product.baseUnit) {
+        // For base unit, compare directly
         isAvailable = availableQuantity >= quantity;
         availableInRequestedUnit = availableQuantity;
+      } else if (unit === product.secondaryUnit) {
+        // For secondary unit, convert requested quantity to base units
+        conversionRate = product.conversionRate || 1;
+        const requestedQuantityInBase = quantity / conversionRate; // ✅ FIXED: Convert to base units
+        isAvailable = availableQuantity >= requestedQuantityInBase;
+        availableInRequestedUnit = availableQuantity * conversionRate; // Convert available to secondary units
+      } else {
+        // Handle other unit conversions (ml, gram, etc.)
+        if (unit === 'gram' && product.baseUnit === 'kg') {
+          const requestedQuantityInBase = quantity / 1000;
+          isAvailable = availableQuantity >= requestedQuantityInBase;
+          availableInRequestedUnit = availableQuantity * 1000;
+        } else if (unit === 'ml' && product.baseUnit === 'liter') {
+          const requestedQuantityInBase = quantity / 1000;
+          isAvailable = availableQuantity >= requestedQuantityInBase;
+          availableInRequestedUnit = availableQuantity * 1000;
+        } else {
+          // Default 1:1 conversion if no specific conversion exists
+          isAvailable = availableQuantity >= quantity;
+          availableInRequestedUnit = availableQuantity;
+        }
       }
-    }
 
-    return {
-      isAvailable,
-      available: availableQuantity,
-      availableDisplay: availableInRequestedUnit,
-      unit,
-      conversionRate
-    };
-  } catch (err) {
-    console.error('Error checking stock:', err);
-    return { isAvailable: false, available: 0, availableDisplay: 0 };
-  }
-};
+      return {
+        isAvailable,
+        available: availableQuantity,
+        availableDisplay: availableInRequestedUnit,
+        unit,
+        conversionRate
+      };
+    } catch (err) {
+      console.error('Error checking stock:', err);
+      return { isAvailable: false, available: 0, availableDisplay: 0 };
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -494,12 +495,6 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
 
   const handleRemove = (index) => {
     onRemove(index);
-  };
-
-  const handleSelectNameSuggestion = (suggestion) => {
-    fetchProductDetails(suggestion.productName, false);
-    setNameSuggestions([]);
-    setShowNameSuggestions(false);
   };
 
   const filteredProducts = products.filter(
@@ -690,7 +685,7 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {showNameSuggestions && nameSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-hidden">
                   {nameSuggestions.map((item, index) => (
                     <div
                       key={index}
@@ -698,12 +693,12 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                       onClick={() => handleSelectNameSuggestion(item)}
                     >
                       <div className="font-medium">{item.productName}</div>
+                      <div className="text-xs text-gray-500">{item.productCode}</div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
             {/* Unit Selection */}
             <div className="col-span-1">
               <label className="block text-xs font-medium text-gray-700 mb-1">Unit</label>
