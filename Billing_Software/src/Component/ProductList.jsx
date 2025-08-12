@@ -202,15 +202,46 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
   const handleNameChange = (e) => {
     const { value } = e.target;
     setProduct(prev => ({ ...prev, name: value }));
-    fetchProductSuggestions(value);
+
+    // Only show suggestions if we're not editing and input has value
+    if (value.trim() && editingIndex === null) {
+      fetchProductSuggestions(value);
+    } else {
+      setNameSuggestions([]);
+    }
   };
 
+
   // Handle selecting a suggestion
-  const handleSelectNameSuggestion = (suggestion) => {
-    fetchProductDetails(suggestion.productName, false);
-    setNameSuggestions([]);
-    setShowNameSuggestions(false);
+  const handleSelectNameSuggestion = async (suggestion) => {
+    try {
+      // Clear the code first to prevent auto-fetch
+      setProduct(prev => ({ ...prev, code: '' }));
+
+      // Set the name immediately for better UX
+      setProduct(prev => ({
+        ...prev,
+        name: suggestion.productName,
+        code: suggestion.productCode // Set code from suggestion
+      }));
+
+      // Now fetch full product details
+      await fetchProductDetails(suggestion.productCode, true);
+
+      // Clear suggestions
+      setNameSuggestions([]);
+      setShowNameSuggestions(false);
+
+      // Focus on quantity field
+      setTimeout(() => {
+        quantityInputRef.current?.focus();
+      }, 100);
+    } catch (error) {
+      console.error('Error selecting suggestion:', error);
+      toast.error("Failed to load product details");
+    }
   };
+
 
   useEffect(() => {
     setLocalTransportCharge(transportCharge);
@@ -679,18 +710,21 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 name="name"
                 value={product.name}
                 onChange={handleNameChange}
-                onFocus={() => setShowNameSuggestions(true)}
+                onFocus={() => product.name && setShowNameSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowNameSuggestions(false), 200)}
                 ref={productNameInputRef}
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {showNameSuggestions && nameSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-hidden">
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
                   {nameSuggestions.map((item, index) => (
                     <div
                       key={index}
                       className="px-3 py-1 hover:bg-blue-50 cursor-pointer border-b border-gray-100 text-sm"
-                      onClick={() => handleSelectNameSuggestion(item)}
+                      onMouseDown={(e) => {
+                        e.preventDefault(); // Prevent input blur
+                        handleSelectNameSuggestion(item);
+                      }}
                     >
                       <div className="font-medium">{item.productName}</div>
                       <div className="text-xs text-gray-500">{item.productCode}</div>
