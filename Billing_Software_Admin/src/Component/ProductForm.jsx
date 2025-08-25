@@ -161,16 +161,25 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
             processedValue = formatSupplierName(value);
         }
 
-        // Special handling for numeric fields to remove leading zeros
+        // Special handling for numeric fields
         const numericFields = [
             'mrp', 'discount', 'gst', 'sgst', 'stockQuantity',
             'conversionRate', 'sellerPrice', 'mrpPrice', 'quantity', 'perUnitPrice'
         ];
 
         if (numericFields.includes(name)) {
-            // Remove leading zeros when user starts typing
-            if (value.length > 1 && value.startsWith('0') && !value.startsWith('0.')) {
+            // Allow only numbers and a single decimal point
+            const regex = /^[0-9]*\.?[0-9]*$/;
+
+            if (!regex.test(value)) {
+                return; // Skip update if invalid
+            }
+
+            // Handle leading zeros (but allow "0.x" cases)
+            if (value.length > 1 && value.startsWith('0') && !value.includes('.')) {
                 processedValue = value.replace(/^0+/, '') || '0';
+            } else {
+                processedValue = value;
             }
         }
 
@@ -185,17 +194,17 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                 const gst = parseFloat(updatedData.gst) || 0;
                 const sgst = parseFloat(updatedData.sgst) || 0;
 
-                // Calculate net price after discount (but don't use it for total price)
+                // Calculate net price after discount
                 const netPrice = mrp - (mrp * (discount / 100));
 
-                // Calculate GST amounts (for display purposes only)
+                // Calculate GST amounts
                 const gstAmount = mrp * (gst / 100);
                 const sgstAmount = mrp * (sgst / 100);
 
-                // Total price remains the MRP (sales price)
+                // Total price remains the MRP
                 const totalPrice = mrp;
 
-                // Calculate profit (seller price is the cost price)
+                // Calculate profit
                 const profit = totalPrice - sellerPrice;
 
                 updatedData.netPrice = netPrice.toFixed(2);
@@ -209,9 +218,9 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                 const rate = parseFloat(updatedData.conversionRate) || 0;
 
                 if (updatedData.secondaryUnit) {
-                    updatedData.totalConvertedQty = stockQty * rate;
+                    updatedData.totalConvertedQty = (stockQty * rate).toFixed(2);
                 } else {
-                    updatedData.totalConvertedQty = 0;
+                    updatedData.totalConvertedQty = '0';
                 }
             }
 
@@ -359,6 +368,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     mrpPrice: '0',
                     discount: '0',
                     netPrice: '0',
+                    gstCategory: 'GST',
                     gst: '0',
                     sgst: '0',
                     totalPrice: '0',
@@ -374,7 +384,8 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     batchNumber: '',
                     manufactureDate: '',
                     manufactureLocation: '',
-                    totalConvertedQty: 0
+                    totalConvertedQty: 0,
+                    lowStockAlert: '0',
                 });
                 setUseManualPrice(false);
                 setManualPrice(0);
@@ -582,10 +593,9 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                                 name="perUnitPrice"
                                 value={formData.perUnitPrice}
                                 onChange={handleChange}
-                                inputMode="numeric"
-                                pattern="[0-9]*"
+                                inputMode="decimal"
+                                pattern="[0-9.]*"
                                 className="no-arrows w-full pl-7 pr-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                placeholder="0.00"
                             />
                         </div>
                     </div>
@@ -701,7 +711,7 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
             </div>
 
 
-                        {/* Inventory Section */}
+            {/* Inventory Section */}
             <div className="bg-white shadow rounded-lg p-4">
                 <h3 className="text-md font-semibold text-gray-800 mb-3 pb-2 border-b border-gray-200">
                     Inventory & Units

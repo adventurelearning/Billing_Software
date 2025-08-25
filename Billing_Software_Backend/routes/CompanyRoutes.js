@@ -6,8 +6,10 @@ const path = require("path");
 // Import controllers
 const {
   registerCompany,
-  getAllCompanies,     // ✅ Add this function from controller
-  getCompanyById       // ✅ Optional: fetch single company
+  getAllCompanies,
+  getCompanyById,
+  updateCompany,
+  deleteCompany
 } = require("../controllers/CompanyController");
 
 // Multer setup
@@ -32,5 +34,17 @@ router.get("/", getAllCompanies);
 
 // ✅ Optional - Get a company by ID
 router.get("/:id", getCompanyById);
+
+router.put(
+  "/:id",
+  upload.fields([
+    { name: "logo", maxCount: 1 },
+    { name: "signature", maxCount: 1 },
+  ]),
+  updateCompany
+);
+
+// ✅ DELETE - Delete company
+router.delete("/:id", deleteCompany);
 
 module.exports = router;

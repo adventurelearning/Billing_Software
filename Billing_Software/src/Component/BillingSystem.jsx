@@ -26,6 +26,8 @@ const BillingSystem = ({
     contact: '',
     aadhaar: '',
     location: '',
+
+    
   });
   const [products, setProducts] = useState([]);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -251,6 +253,8 @@ const BillingSystem = ({
       const savedBill = response.data.bill;
 
       await printBill(savedBill, e);
+
+      
 
       toast.success('Bill saved and printed successfully!');
       resetForm();

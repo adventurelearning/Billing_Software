@@ -15,6 +15,8 @@ router.get('/calculate-price/:code', async (req, res) => {
     }
 
     let price = 0;
+
+    
     
     if (unit === product.baseUnit) {
       price = product.basePrice * quantity;
@@ -164,16 +166,21 @@ router.get('/search', async (req, res) => {
   try {
     const query = req.query.query;
     
-    if (!query || query.length < 2) {
-      return res.status(400).json({ error: 'Search query must be at least 2 characters' });
+    if (!query) {
+      return res.status(400).json({ error: 'Search query is required' });
     }
+    
+    // Escape special regex characters
+    const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     
     const products = await AdminProduct.find({
       $or: [
-        { productCode: { $regex: query, $options: 'i' } },
-        { productName: { $regex: query, $options: 'i' } }
+        { productName: { $regex: new RegExp(escapedQuery, 'i') } },
+        { productCode: { $regex: new RegExp(escapedQuery, 'i') } }
       ]
-    }).limit(10); // Limit to 10 results
+    })
+    .limit(10) // Limit to 10 results
+    .sort({ productName: 1 }); // Sort by name
     
     res.json(products);
   } catch (err) {
@@ -183,6 +190,7 @@ router.get('/search', async (req, res) => {
     });
   }
 });
+
 router.patch('/reduce-stock/:code', async (req, res) => {
   const { quantity } = req.body;
 

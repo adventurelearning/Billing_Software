@@ -27,7 +27,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to the Billing Software API');
 });
 // MongoDB connection
-const mongoURI = 'mongodb+srv://Dinakaran:dinakaran@mongodb.4h29m.mongodb.net/billingdb?retryWrites=true&w=majority&appName=Mongodb';
+const mongoURI = 'mongodb+srv://adventureecom:Advecom123@cluster0.go5hqht.mongodb.net/ATS_Billing?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(mongoURI)
   .then(async () => {
     console.log('✅ MongoDB connected');

@@ -99,11 +99,11 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
       {/* Bill Info */}
       <div style={{ marginBottom: '3mm' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-          <span>Bill No: {billData.billNumber || 'N/A'}</span>
+          <span>Bill No: {billData.billNumber }</span>
           <span>Date: {new Date(billData.date || new Date()).toLocaleDateString('en-IN')}</span>
         </div>
-        <div>Customer: {billData.customer?.name || 'Walk-in Customer'}</div>
-        <div>Phone: {billData.customer?.contact || 'N/A'}</div>
+        <div>Customer: {billData.customer?.name }</div>
+        <div>Phone: {billData.customer?.contact }</div>
         <div>Cashier Name: {billData.cashier?.cashierName}</div>
       </div>
 
@@ -114,7 +114,8 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
             <tr>
               <th style={{ borderBottom: '1px solid #000', padding: '1mm', textAlign: 'left', fontSize: '11px' }}>Item</th>
               <th style={{ borderBottom: '1px solid #000', padding: '1mm', textAlign: 'left', fontSize: '11px' }}>Qty</th>
-              <th style={{ borderBottom: '1px solid #000', padding: '1mm', textAlign: 'right', fontSize: '11px' }}>Amt</th>
+              <th style={{ borderBottom: '1px solid #000', padding: '1mm', textAlign: 'center', fontSize: '11px' }}>Amt</th>
+              <th style={{ borderBottom: '1px solid #000', padding: '1mm', textAlign: 'right', fontSize: '11px' }}>Total Amt</th>
             </tr>
           </thead>
           <tbody>
@@ -125,7 +126,10 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
                   {product.quantity} {product.unit}
                 </td>
                 <td style={{ borderBottom: '1px solid #ddd', padding: '1mm', textAlign: 'right', fontSize: '11px' }}>
-                  {formatCurrency(product.basicPrice * product.quantity)}
+                  {formatCurrency(product.basicPrice +product.gstAmount +product.sgstAmount)}
+                </td>
+                <td style={{ borderBottom: '1px solid #ddd', padding: '1mm', textAlign: 'right', fontSize: '11px' }}>
+                  {formatCurrency((product.basicPrice +product.gstAmount +product.sgstAmount) * product.quantity)}
                 </td>
               </tr>
             ))}
@@ -141,14 +145,14 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
               <span>Subtotal:</span>
               <span>{formatCurrency(totals.subtotal)}</span>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>CGST:</span>
               <span>{formatCurrency(totals.gstTotal)}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>SGST:</span>
               <span>{formatCurrency(totals.sgstTotal)}</span>
-            </div>
+            </div> */}
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Transport:</span>
               <span>{formatCurrency(totals.transport)}</span>

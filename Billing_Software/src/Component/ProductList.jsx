@@ -90,13 +90,13 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
 
   // Fetch product suggestions by name
   const fetchProductSuggestions = async (name) => {
-    if (name.length < 2) {
+    if (name.length < 1) { // Show suggestions from first character
       setNameSuggestions([]);
       return;
     }
 
     try {
-      const res = await Api.get(`/products/search?query=${name}`);
+      const res = await Api.get(`/products/search?query=${encodeURIComponent(name)}`);
       setNameSuggestions(res.data || []);
       setShowNameSuggestions(true);
     } catch (err) {
@@ -199,17 +199,49 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     }
   }, [product.code, editingIndex]);
 
-  // Handle name changes and fetch suggestions
   const handleNameChange = (e) => {
     const { value } = e.target;
     setProduct(prev => ({ ...prev, name: value }));
 
-    if (value.length > 1) {
+    // Only show suggestions if we're not editing and input has value
+    if (value.trim() && editingIndex === null) {
       fetchProductSuggestions(value);
     } else {
       setNameSuggestions([]);
     }
   };
+
+
+  // Handle selecting a suggestion
+  const handleSelectNameSuggestion = async (suggestion) => {
+    try {
+      // Clear the code first to prevent auto-fetch
+      setProduct(prev => ({ ...prev, code: '' }));
+
+      // Set the name immediately for better UX
+      setProduct(prev => ({
+        ...prev,
+        name: suggestion.productName,
+        code: suggestion.productCode // Set code from suggestion
+      }));
+
+      // Now fetch full product details
+      await fetchProductDetails(suggestion.productCode, true);
+
+      // Clear suggestions
+      setNameSuggestions([]);
+      setShowNameSuggestions(false);
+
+      // Focus on quantity field
+      setTimeout(() => {
+        quantityInputRef.current?.focus();
+      }, 100);
+    } catch (error) {
+      console.error('Error selecting suggestion:', error);
+      toast.error("Failed to load product details");
+    }
+  };
+
 
   useEffect(() => {
     setLocalTransportCharge(transportCharge);
@@ -367,12 +399,10 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
         return { isAvailable: false, available: 0, availableDisplay: 0 };
       }
 
-      // Get the stock information
       const stockRes = await Api.get(`products/stock/${product.productCode}`);
       const stockData = stockRes.data;
       const availableQuantity = stockData.stock?.availableQuantity || 0;
 
-      // Calculate available quantity in the requested unit
       let availableInRequestedUnit = availableQuantity;
       let isAvailable = true;
       let conversionRate = 1;
@@ -382,11 +412,26 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
         isAvailable = availableQuantity >= quantity;
         availableInRequestedUnit = availableQuantity;
       } else if (unit === product.secondaryUnit) {
-        // For secondary unit, convert to base unit for comparison
+        // For secondary unit, convert requested quantity to base units
         conversionRate = product.conversionRate || 1;
-        const requestedQuantityInBase = quantity;
+        const requestedQuantityInBase = quantity / conversionRate; // ✅ FIXED: Convert to base units
         isAvailable = availableQuantity >= requestedQuantityInBase;
-        availableInRequestedUnit = availableQuantity * conversionRate;
+        availableInRequestedUnit = availableQuantity * conversionRate; // Convert available to secondary units
+      } else {
+        // Handle other unit conversions (ml, gram, etc.)
+        if (unit === 'gram' && product.baseUnit === 'kg') {
+          const requestedQuantityInBase = quantity / 1000;
+          isAvailable = availableQuantity >= requestedQuantityInBase;
+          availableInRequestedUnit = availableQuantity * 1000;
+        } else if (unit === 'ml' && product.baseUnit === 'liter') {
+          const requestedQuantityInBase = quantity / 1000;
+          isAvailable = availableQuantity >= requestedQuantityInBase;
+          availableInRequestedUnit = availableQuantity * 1000;
+        } else {
+          // Default 1:1 conversion if no specific conversion exists
+          isAvailable = availableQuantity >= quantity;
+          availableInRequestedUnit = availableQuantity;
+        }
       }
 
       return {
@@ -481,12 +526,6 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
 
   const handleRemove = (index) => {
     onRemove(index);
-  };
-
-  const handleSelectNameSuggestion = (suggestion) => {
-    fetchProductDetails(suggestion.productName, false);
-    setNameSuggestions([]);
-    setShowNameSuggestions(false);
   };
 
   const filteredProducts = products.filter(
@@ -671,26 +710,29 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 name="name"
                 value={product.name}
                 onChange={handleNameChange}
-                onFocus={() => setShowNameSuggestions(true)}
+                onFocus={() => product.name && setShowNameSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowNameSuggestions(false), 200)}
                 ref={productNameInputRef}
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {showNameSuggestions && nameSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-auto">
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
                   {nameSuggestions.map((item, index) => (
                     <div
                       key={index}
                       className="px-3 py-1 hover:bg-blue-50 cursor-pointer border-b border-gray-100 text-sm"
-                      onClick={() => handleSelectNameSuggestion(item)}
+                      onMouseDown={(e) => {
+                        e.preventDefault(); // Prevent input blur
+                        handleSelectNameSuggestion(item);
+                      }}
                     >
                       <div className="font-medium">{item.productName}</div>
+                      <div className="text-xs text-gray-500">{item.productCode}</div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-
             {/* Unit Selection */}
             <div className="col-span-1">
               <label className="block text-xs font-medium text-gray-700 mb-1">Unit</label>

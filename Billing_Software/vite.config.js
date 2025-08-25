@@ -9,6 +9,12 @@ export default defineConfig({
   },
   base: './', // Keep this!
   build: {
-    outDir: 'dist',
-  },
+    minify: 'terser',  // smaller than esbuild for production
+    terserOptions: {
+      compress: {
+        drop_console: true,   // remove console.log in prod
+        drop_debugger: true
+      }
+    }
+  }
 });
