@@ -299,10 +299,10 @@ const SellerExpenseList = () => {
     const LoadingSkeleton = () => (
         <div className="space-y-4">
             {[...Array(5)].map((_, i) => (
-                <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-lg p-4 animate-pulse">
+                <div key={i} className="bg-gray-100 rounded-lg p-4 animate-pulse">
                     <div className="flex justify-between">
-                        <div className="h-6 w-1/3 bg-gray-300 dark:bg-gray-700 rounded"></div>
-                        <div className="h-6 w-1/4 bg-gray-300 dark:bg-gray-700 rounded"></div>
+                        <div className="h-6 w-1/3 bg-gray-300 rounded"></div>
+                        <div className="h-6 w-1/4 bg-gray-300 rounded"></div>
                     </div>
                 </div>
             ))}
@@ -312,7 +312,7 @@ const SellerExpenseList = () => {
     const EmptyState = () => (
         <div className="text-center py-12">
             <svg
-                className="mx-auto h-24 w-24 text-gray-400 dark:text-gray-600"
+                className="mx-auto h-24 w-24 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -325,8 +325,8 @@ const SellerExpenseList = () => {
                     d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                 ></path>
             </svg>
-            <h3 className="mt-2 text-lg font-medium text-gray-900 dark:text-gray-100">No seller expenses found</h3>
-            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+            <h3 className="mt-2 text-lg font-medium text-gray-900">No seller expenses found</h3>
+            <p className="mt-1 text-sm text-gray-500">
                 Try adjusting your search or filter to find what you're looking for.
             </p>
         </div>
@@ -375,7 +375,7 @@ const SellerExpenseList = () => {
 
     if (error) {
         return (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative dark:bg-red-900 dark:border-red-700 dark:text-red-100" role="alert">
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                 <strong className="font-bold">Error!</strong>
                 <span className="block sm:inline"> {error}</span>
             </div>
@@ -387,11 +387,11 @@ const SellerExpenseList = () => {
             {/* Payment Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 dark:bg-gray-800">
-                        <h3 className="text-lg font-semibold mb-4 dark:text-white">Record Payment</h3>
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+                        <h3 className="text-lg font-semibold mb-4">Record Payment</h3>
                         
                         <div className="mb-4">
-                            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Total Amount: 
                                 <span className="ml-2 font-semibold">
                                     {formatCurrency(
@@ -406,24 +406,24 @@ const SellerExpenseList = () => {
                         </div>
 
                         {paymentStatus[currentSellerKey]?.paidAmount > 0 && (
-                            <div className="mb-3 p-3 bg-blue-50 rounded-md dark:bg-blue-900/30">
-                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                            <div className="mb-3 p-3 bg-blue-50 rounded-md">
+                                <p className="text-sm text-blue-700">
                                     Already Paid: {formatCurrency(paymentStatus[currentSellerKey].paidAmount)}
                                 </p>
-                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                                <p className="text-sm text-blue-700">
                                     Balance: {formatCurrency(paymentStatus[currentSellerKey].balanceAmount)}
                                 </p>
                             </div>
                         )}
                         
                         <div className="mb-4">
-                            <label htmlFor="paymentAmount" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                            <label htmlFor="paymentAmount" className="block text-sm font-medium text-gray-700 mb-1">
                                 Amount to Pay
                             </label>
                             <input
                                 type="number"
                                 id="paymentAmount"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={paymentAmount}
                                 onChange={(e) => {
                                     const maxAmount = paymentStatus[currentSellerKey]?.balanceAmount || 
@@ -450,7 +450,7 @@ const SellerExpenseList = () => {
                                         ).products
                                     )}
                             />
-                            <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                            <p className="text-xs text-gray-500 mt-1">
                                 Maximum payable: {formatCurrency(
                                     paymentStatus[currentSellerKey]?.balanceAmount || 
                                     calculateTotalAmount(
@@ -463,12 +463,12 @@ const SellerExpenseList = () => {
                         </div>
                         
                         <div className="mb-4">
-                            <label htmlFor="paymentNotes" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                            <label htmlFor="paymentNotes" className="block text-sm font-medium text-gray-700 mb-1">
                                 Notes (Optional)
                             </label>
                             <textarea
                                 id="paymentNotes"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={paymentNotes}
                                 onChange={(e) => setPaymentNotes(e.target.value)}
                                 rows="3"
@@ -479,7 +479,7 @@ const SellerExpenseList = () => {
                         <div className="flex justify-end space-x-3">
                             <button
                                 onClick={() => setShowPaymentModal(false)}
-                                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500"
+                                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300"
                             >
                                 Cancel
                             </button>
@@ -502,14 +502,14 @@ const SellerExpenseList = () => {
             {/* Product History Modal */}
             {showProductHistory && selectedProduct && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full p-6 dark:bg-gray-800 max-h-screen overflow-y-auto">
+                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full p-6 max-h-screen overflow-y-auto">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-lg font-semibold dark:text-white">
+                            <h3 className="text-lg font-semibold">
                                 Product History - {selectedProduct.productName}
                             </h3>
                             <button
                                 onClick={() => setShowProductHistory(false)}
-                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                                className="text-gray-500 hover:text-gray-700"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -518,7 +518,7 @@ const SellerExpenseList = () => {
                         </div>
 
                         <div className="mb-4">
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                            <p className="text-sm text-gray-600">
                                 Product Code: {selectedProduct.productCode} | 
                                 Category: {selectedProduct.category} | 
                                 Base Unit: {selectedProduct.baseUnit}
@@ -526,68 +526,56 @@ const SellerExpenseList = () => {
                         </div>
 
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                <thead className="bg-gray-50 dark:bg-gray-700">
+                            <table className="min-w-full divide-y divide-gray-200">
+                                <thead className="bg-gray-50">
                                     <tr>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Date & Time
                                         </th>
-                                        {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Action
-                                        </th> */}
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Stock Qty
                                         </th>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Seller Price
                                         </th>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             MRP
                                         </th>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Profit/Unit
                                         </th>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Mfg Date
                                         </th>
-                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                             Expiry Date
                                         </th>
-                                        {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                                            Updated By
-                                        </th> */}
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                <tbody className="bg-white divide-y divide-gray-200">
                                     {selectedProduct.history && selectedProduct.history.map((historyItem, index) => (
-                                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                        <tr key={index} className="hover:bg-gray-50">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {formatDateTime(historyItem.timestamp)}
                                             </td>
-                                            {/* <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
-                                                {historyItem.action}
-                                            </td> */}
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {historyItem.stockQuantity}
                                             </td>
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {formatCurrency(historyItem.sellerPrice || 0)}
                                             </td>
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {formatCurrency(historyItem.mrp || 0)}
                                             </td>
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {formatCurrency((historyItem.mrp || 0) - (historyItem.sellerPrice || 0))}
                                             </td>
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {formatDate(historyItem.manufactureDate)}
                                             </td>
-                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                 {formatDate(historyItem.expiryDate)}
                                             </td>
-                                            {/* <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
-                                                {historyItem.updatedBy}
-                                            </td> */}
                                         </tr>
                                     ))}
                                 </tbody>
@@ -598,19 +586,19 @@ const SellerExpenseList = () => {
             )}
 
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-0">Seller Expense Management</h1>
+                <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Seller Expense Management</h1>
 
                 <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
                     <div className="relative w-full md:w-64">
                         <input
                             type="text"
                             placeholder="Search by seller or batch..."
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
+                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         <svg
-                            className="absolute right-3 top-3 h-5 w-5 text-gray-400 dark:text-gray-500"
+                            className="absolute right-3 top-3 h-5 w-5 text-gray-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -624,32 +612,26 @@ const SellerExpenseList = () => {
                             />
                         </svg>
                     </div>
-                    {/* <button
-                        onClick={exportToCSV}
-                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                    >
-                        Export to CSV
-                    </button> */}
                 </div>
             </div>
 
             <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4 mb-4">
                 <div className="flex items-center">
-                    <label htmlFor="startDate" className="mr-2 text-sm text-gray-600 dark:text-gray-300">From:</label>
+                    <label htmlFor="startDate" className="mr-2 text-sm text-gray-600">From:</label>
                     <input
                         type="date"
                         id="startDate"
-                        className="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-700"
+                        className="px-3 py-2 border border-gray-300 rounded-md"
                         value={dateRange.start}
                         onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
                     />
                 </div>
                 <div className="flex items-center">
-                    <label htmlFor="endDate" className="mr-2 text-sm text-gray-600 dark:text-gray-300">To:</label>
+                    <label htmlFor="endDate" className="mr-2 text-sm text-gray-600">To:</label>
                     <input
                         type="date"
                         id="endDate"
-                        className="px-3 py-2 border border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-700"
+                        className="px-3 py-2 border border-gray-300 rounded-md"
                         value={dateRange.end}
                         onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
                     />
@@ -681,9 +663,9 @@ const SellerExpenseList = () => {
                             : paymentInfo.balanceAmount || (currentTotalAmount - (paymentInfo.paidAmount || 0));
 
                         return (
-                            <div key={sellerKey} className="bg-white rounded-lg shadow overflow-hidden dark:bg-gray-800 dark:border dark:border-gray-700">
+                            <div key={sellerKey} className="bg-white rounded-lg shadow overflow-hidden">
                                 <div
-                                    className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                                    className="flex justify-between items-center p-4 cursor-pointer hover:bg-gray-50 transition-colors"
                                     onClick={() => toggleSellerDetails(sellerKey)}
                                 >
                                     <div className="flex items-center space-x-4">
@@ -691,19 +673,19 @@ const SellerExpenseList = () => {
                                             parseFloat(totalAmount) > 5000 ? 'bg-yellow-500' : 'bg-green-500'
                                             }`}></div>
                                         <div>
-                                            <h3 className="font-semibold text-lg text-gray-800 dark:text-white">{sellerGroup.supplierName}</h3>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">Batch: {sellerGroup.batchNumber}</p>
+                                            <h3 className="font-semibold text-lg text-gray-800">{sellerGroup.supplierName}</h3>
+                                            <p className="text-sm text-gray-600">Batch: {sellerGroup.batchNumber}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-4">
                                         <div className="text-right">
-                                            <p className="font-medium text-gray-800 dark:text-white">₹{totalAmount}</p>
-                                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                            <p className="font-medium text-gray-800">₹{totalAmount}</p>
+                                            <p className="text-sm text-gray-600">
                                                 {sellerGroup.products.length} items | Profit: ₹{totalProfit}
                                             </p>
                                         </div>
                                         <svg
-                                            className={`h-5 w-5 text-gray-500 dark:text-gray-400 transform transition-transform ${isExpanded ? 'rotate-180' : ''
+                                            className={`h-5 w-5 text-gray-500 transform transition-transform ${isExpanded ? 'rotate-180' : ''
                                                 }`}
                                             fill="none"
                                             viewBox="0 0 24 24"
@@ -715,47 +697,47 @@ const SellerExpenseList = () => {
                                 </div>
 
                                 {isExpanded && (
-                                    <div className="border-t border-gray-200 dark:border-gray-700">
+                                    <div className="border-t border-gray-200">
                                         <div className="overflow-x-auto">
-                                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                            <table className="min-w-full divide-y divide-gray-200">
+                                                <thead className="bg-gray-50">
                                                     <tr>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Product
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Code
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Category
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Qty
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Cost
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Sales Price
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Profit
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Added
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Mfg
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Expiry
                                                         </th>
-                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                             Actions
                                                         </th>
                                                     </tr>
                                                 </thead>
-                                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                                <tbody className="bg-white divide-y divide-gray-200">
                                                     {sellerGroup.products.map((product) => {
                                                         const profitPerUnit = (product.mrp - product.sellerPrice) || 0;
                                                         const totalSellerPrice = (product.sellerPrice * product.addedStock).toFixed(2);
@@ -763,59 +745,59 @@ const SellerExpenseList = () => {
                                                         const totalProfit = (product.totalProfit || (profitPerUnit * product.addedStock)).toFixed(2);
 
                                                         return (
-                                                            <tr key={`${product._id}-${product.addedStock}`} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                                            <tr key={`${product._id}-${product.addedStock}`} className="hover:bg-gray-50">
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                                                    <div className="text-sm font-medium text-gray-900">
                                                                         {product.productName}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">{product.productCode}</div>
+                                                                    <div className="text-sm text-gray-900">{product.productCode}</div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         {product.category}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         <span className="font-medium">{product.addedStock}</span> {product.baseUnit}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         ₹{totalSellerPrice}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         ₹{totalSalesPrice}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className={`text-sm font-medium ${totalProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                                    <div className={`text-sm font-medium ${totalProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                                                         ₹{totalProfit}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         {formatDate(product.timestamp)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         {formatDate(product.manufactureDate)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className="text-sm text-gray-900 dark:text-gray-200">
+                                                                    <div className="text-sm text-gray-900">
                                                                         {formatDate(product.expiryDate)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                                     <button
                                                                         onClick={() => viewProductHistory(product)}
-                                                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
+                                                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200"
                                                                     >
                                                                         History
                                                                     </button>
@@ -824,19 +806,19 @@ const SellerExpenseList = () => {
                                                         );
                                                     })}
                                                 </tbody>
-                                                <tfoot className="bg-gray-50 dark:bg-gray-700">
+                                                <tfoot className="bg-gray-50">
                                                     <tr>
-                                                        <td colSpan="3" className="px-6 py-3 text-right text-sm font-medium text-gray-500 dark:text-gray-300">
+                                                        <td colSpan="3" className="px-6 py-3 text-right text-sm font-medium text-gray-500">
                                                             Total
                                                         </td>
-                                                        <td className="px-6 py-3 text-sm text-gray-900 dark:text-gray-200">
+                                                        <td className="px-6 py-3 text-sm text-gray-900">
                                                             {sellerGroup.products.reduce((sum, p) => sum + p.addedStock, 0)}
                                                         </td>
-                                                        <td className="px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white">
+                                                        <td className="px-6 py-3 text-sm font-semibold text-gray-900">
                                                             ₹{totalAmount}
                                                         </td>
                                                         <td></td>
-                                                        <td className="px-6 py-3 text-sm font-semibold text-green-600 dark:text-green-400">
+                                                        <td className="px-6 py-3 text-sm font-semibold text-green-600">
                                                             ₹{totalProfit}
                                                         </td>
                                                         <td colSpan="4"></td>
@@ -847,27 +829,27 @@ const SellerExpenseList = () => {
 
                                         {/* Payment History Section */}
                                         {history.length > 0 && (
-                                            <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                                                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2">Payment History</h4>
+                                            <div className="px-6 py-4 border-t border-gray-200">
+                                                <h4 className="font-medium text-gray-700 mb-2">Payment History</h4>
                                                 <div className="overflow-x-auto">
-                                                    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                        <thead className="bg-gray-50 dark:bg-gray-700">
+                                                    <table className="min-w-full divide-y divide-gray-200">
+                                                        <thead className="bg-gray-50">
                                                             <tr>
-                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Amount</th>
-                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Notes</th>
+                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                                                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                                        <tbody className="bg-white divide-y divide-gray-200">
                                                             {history.map((payment, index) => (
                                                                 <tr key={index}>
-                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                                         {formatDateTime(payment.date)}
                                                                     </td>
-                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                                         ₹{payment.amount.toFixed(2)}
                                                                     </td>
-                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                                    <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
                                                                         {payment.notes || '-'}
                                                                     </td>
                                                                 </tr>
@@ -878,10 +860,10 @@ const SellerExpenseList = () => {
                                             </div>
                                         )}
 
-                                        <div className="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
-                                            <div className="text-sm text-gray-500 dark:text-gray-400">
+                                        <div className="px-6 py-3 bg-gray-50 border-t border-gray-200 flex justify-between items-center">
+                                            <div className="text-sm text-gray-500">
                                                 {balanceAmount > 0 && (
-                                                    <span className="ml-4 text-red-600 dark:text-red-400">
+                                                    <span className="ml-4 text-red-600">
                                                         Balance: ₹{Math.max(balanceAmount, 0).toFixed(2)}
                                                     </span>
                                                 )}
