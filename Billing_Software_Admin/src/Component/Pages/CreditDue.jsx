@@ -373,11 +373,11 @@ const CreditDue = () => {
             font-weight: 700;
             color: #1e293b;
           }
-          .ant-modal-close-x {
-            width: 48px;
-            height: 48px;
-            line-height: 48px;
-          }
+          // .ant-modal-close-x {
+          //   width: 48px;
+          //   height: 48px;
+          //   line-height: 48px;
+          // }
           .ant-tag {
             border-radius: 9999px;
             padding: 0.25rem 0.75rem;
