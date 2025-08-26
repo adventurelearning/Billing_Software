@@ -13,6 +13,7 @@ const Admin = require('./models/Admin');
 const app = express();
 const customerRoutes = require('./routes/customerRoutes');
 const sellerbillRoutes = require('./routes/sellerBills');
+const expensesRoutes = require('./routes/expenses');
 // Middleware
 // app.use(cors({
 //   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -65,6 +66,7 @@ app.use('/api/companies', companyRoutes);
 app.use('/api/credentials', credentialRoutes);
 app.use('/api/customers', customerRoutes);
 app.use('/api/seller-bills', sellerbillRoutes);
+app.use('/api/expenses', expensesRoutes);
 // Server
 
 app.use((err, req, res, next) => {

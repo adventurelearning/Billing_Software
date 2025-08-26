@@ -72,7 +72,8 @@ const SideNavbar = ({ activeItem, setActivePage }) => {
     { icon: FiUsers, label: 'Customers' },
     { icon: FiPieChart, label: 'ProfitReport' },
     { icon: FiArchive, label: 'Expense Menu' },
-    { icon: FiUser, label: 'Admin Management' },
+   { icon: FiUser, label: 'Expenditure' },
+    { icon: FiUser, label: 'Admin Management' },    
   ];
 
   const handleLogout = () => {
