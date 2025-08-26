@@ -681,7 +681,7 @@ const BillingReport = ({ user }) => {
                         title: 'Product',
                         dataIndex: 'product',
                         key: 'product',
-                        render: (product) => product?.name || 'Unknown Product',
+                        render: (_, record) => record.name || "product",
                       },
                       {
                         title: 'Price',
@@ -712,7 +712,7 @@ const BillingReport = ({ user }) => {
 
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <Row gutter={16}>
-                    <Col span={12}>
+                    {/* <Col span={12}>
                       <div className="mb-2">
                         <Text strong>Subtotal:</Text> ₹{selectedBill.subTotal?.toFixed(2) || '0.00'}
                       </div>
@@ -724,14 +724,18 @@ const BillingReport = ({ user }) => {
                       <div className="mb-2">
                         <Text strong>Tax:</Text> ₹{selectedBill.taxAmount?.toFixed(2) || '0.00'}
                       </div>
-                    </Col>
-                    <Col span={12}>
+                    </Col> */}
+                    <Col span={8}>
                       <div className="mb-2">
                         <Text strong>Grand Total:</Text> ₹{selectedBill.grandTotal?.toFixed(2) || '0.00'}
                       </div>
+                      </Col>
+                       <Col span={8}>
                       <div className="mb-2">
                         <Text strong>Paid Amount:</Text> ₹{selectedBill.paidAmount?.toFixed(2) || '0.00'}
                       </div>
+                      </Col>
+                       <Col span={8}>
                       <div className="mb-2">
                         <Text strong>Pending Amount:</Text>
                         <Tag color={selectedBill.unpaidAmountForThisBill > 0 ? 'red' : 'green'} className="ml-2">
