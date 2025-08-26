@@ -376,10 +376,10 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                                                     <>
                                                         {/* Totals Section */}
                                                         <div className="p-1 mb-1">
-                                                            <div className="flex justify-between mb-1">
+                                                            {/* <div className="flex justify-between mb-1">
                                                                 <span className="font-semibold" style={{ fontSize: '12px' }}>Subtotal:</span>
                                                                 <span style={{ fontSize: '12px' }}>{formatCurrency(totals.subtotal)}</span>
-                                                            </div>
+                                                            </div> */}
                                                             {/* <div className="flex justify-between mb-1">
                                                                 <span className="font-semibold " style={{ fontSize: '12px' }}>CGST:</span>
                                                                 <span style={{ fontSize: '12px' }}>{formatCurrency(totals.gstTotal)}</span>
@@ -388,18 +388,18 @@ const PrintableBill = ({ billData = {}, companyDetails = {} }) => {
                                                                 <span className="font-semibold " style={{ fontSize: '12px' }}>SGST:</span>
                                                                 <span style={{ fontSize: '12px' }}>{formatCurrency(totals.sgstTotal)}</span>
                                                             </div> */}
-                                                            <div className="flex justify-between mb-1 ">
+
+                                                            <div className="mt-1 mb-1 border-t border-black pt-1">
+                                                                <span className="font-bold text-md" style={{ fontSize: '12px' }}>{billData.isOutstandingPaymentOnly ? 'Total Credit:' : 'Grand Total:'}</span>
+                                                                <span className="font-bold float-right" style={{ fontSize: '12px' }}>{formatCurrency(totals.grandTotal)}</span>
+                                                            </div>
+                                                              <div className="flex justify-between mb-1 ">
                                                                 <span className="font-semibold" style={{ fontSize: '12px' }}>Delivery Charges:</span>
                                                                 <span style={{ fontSize: '12px' }}>{formatCurrency(totals.transport)}</span>
                                                             </div>
                                                             <div className="flex justify-between mb-1 ">
                                                                 <span className="font-semibold" style={{ fontSize: '12px' }}>Previous Credit:</span>
                                                                 <span style={{ fontSize: '12px' }}>{formatCurrency(totals.credit)}</span>
-                                                            </div>
-
-                                                            <div className="mt-1 mb-1 border-t border-black pt-1">
-                                                                <span className="font-bold text-md" style={{ fontSize: '12px' }}>{billData.isOutstandingPaymentOnly ? 'Total Credit:' : 'Grand Total:'}</span>
-                                                                <span className="font-bold float-right" style={{ fontSize: '12px' }}>{formatCurrency(totals.grandTotal)}</span>
                                                             </div>
 
                                                             {/* Payment Details Section */}

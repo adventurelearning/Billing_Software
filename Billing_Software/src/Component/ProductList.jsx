@@ -697,6 +697,7 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 value={product.code}
                 onChange={handleChange}
                 ref={productCodeInputRef}
+                autoComplete="off"
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
               />
@@ -713,10 +714,11 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 onFocus={() => product.name && setShowNameSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowNameSuggestions(false), 200)}
                 ref={productNameInputRef}
+                autoComplete="off"
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {showNameSuggestions && nameSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
                   {nameSuggestions.map((item, index) => (
                     <div
                       key={index}

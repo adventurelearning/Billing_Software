@@ -139,12 +139,16 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
 
       {/* Totals */}
       <div style={{ marginBottom: '3mm' }}>
-        {totals.hasProducts && (
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
+          <span>Grand Total:</span>
+          <span>{formatCurrency(totals.grandTotal)}</span>
+        </div>
+         {totals.hasProducts && (
           <>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>Subtotal:</span>
               <span>{formatCurrency(totals.subtotal)}</span>
-            </div>
+            </div> */}
             {/* <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span>CGST:</span>
               <span>{formatCurrency(totals.gstTotal)}</span>
@@ -162,10 +166,6 @@ const ThermalPrintableBill = ({ billData = {}, companyDetails = {} }) => {
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <span>Previous Credit:</span>
           <span>{formatCurrency(totals.credit)}</span>
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 'bold' }}>
-          <span>Grand Total:</span>
-          <span>{formatCurrency(totals.grandTotal)}</span>
         </div>
       </div>
 
