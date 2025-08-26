@@ -1,5 +1,5 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 import LoginPage from './Component/LoginPage';
 import SignupPage from './Component/Pages/SignupPage';
@@ -22,10 +22,8 @@ import BillingReports from './Component/Pages/BillingReports';
 import SellerBills from './Component/Pages/SellerBills';
 import Expenditure from './Component/Pages/Expenditure';
 
-
 const MainLayout = ({ activePage, setActivePage }) => (
   <div className="flex flex-col h-screen overflow-hidden">
-
     <TopNavbar setActivePage={setActivePage} />
     <div className="flex flex-1 overflow-hidden">
       <SideNavbar activeItem={activePage} setActivePage={setActivePage} />
@@ -51,9 +49,17 @@ const MainLayout = ({ activePage, setActivePage }) => (
   </div>
 );
 
-
 function App() {
-  const [activePage, setActivePage] = useState('Dashboard');
+  // Initialize state with value from localStorage or default to 'Dashboard'
+  const [activePage, setActivePage] = useState(() => {
+    const savedPage = localStorage.getItem('activePage');
+    return savedPage || 'Dashboard';
+  });
+
+  // Update localStorage whenever activePage changes
+  useEffect(() => {
+    localStorage.setItem('activePage', activePage);
+  }, [activePage]);
 
   return (
     <Router>
@@ -71,4 +77,5 @@ function App() {
     </Router>
   );
 }
+
 export default App;

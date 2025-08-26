@@ -1,5 +1,18 @@
 const mongoose = require('mongoose');
 
+const historySchema = new mongoose.Schema({
+  timestamp: { type: Date, default: Date.now },
+  stockQuantity: Number,
+  mrp: Number,
+  sellerPrice: Number,
+  incomingDate: Date,
+  expiryDate: Date,
+  manufactureDate: Date,
+  updatedBy: String,
+  action: String,
+  notes: String
+});
+
 const adminProductSchema = new mongoose.Schema({
   category: String,
   productName: { type: String, required: true },
@@ -7,8 +20,8 @@ const adminProductSchema = new mongoose.Schema({
   hsnCode: {type: String,trim: true},
   brand: String,
   mrp: { type: Number, required: true },
-  sellerPrice: { type: Number, required: true },  // Price at which you bought
-  profit: { type: Number, required: true },       // Calculated profit (MRP - SellerPrice)
+  sellerPrice: { type: Number, required: true },
+  profit: { type: Number, required: true },
   discount: { type: Number, default: 0 },
   netPrice: Number,
   mrpPrice:  { type: Number, required: true },
@@ -43,15 +56,15 @@ const adminProductSchema = new mongoose.Schema({
     bag: Number,
     packet: Number,
     bottle: Number
-  }
+  },
+  history: [historySchema] // Add history array
 }, { timestamps: true });
 
 adminProductSchema.pre('save', function(next) {
-  // Calculate overall quantity whenever stockQuantity or conversionRate changes
   if (this.isModified('stockQuantity') || this.isModified('conversionRate')) {
     this.overallQuantity = this.stockQuantity * (this.conversionRate || 1);
   }
   next();
 });
 
-module.exports = mongoose.model('AdminProduct', adminProductSchema);
+module.exports = mongoose.model('AdminProduct', adminProductSchema);                              
