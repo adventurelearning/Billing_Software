@@ -20,6 +20,7 @@ import SellerExpenseList from './Component/Pages/SellerExpenseList';
 import CreditDue from './Component/Pages/CreditDue';
 import BillingReports from './Component/Pages/BillingReports';
 import SellerBills from './Component/Pages/SellerBills';
+import Expenditure from './Component/Pages/Expenditure';
 
 
 const MainLayout = ({ activePage, setActivePage }) => (
@@ -44,6 +45,7 @@ const MainLayout = ({ activePage, setActivePage }) => (
         {activePage === 'Admin Management' && <AdminProfile />}
         {activePage === 'Seller Bills uploaded' && <SellerBills />}
         {activePage === 'User Management' && <UserManagement setActivePage={setActivePage} />}
+        {activePage ==='Expenditure' && <Expenditure/>}
       </main>
     </div>
   </div>
