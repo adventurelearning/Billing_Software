@@ -1,5 +1,5 @@
 const express = require('express');
-const mongoose = require('mongoose'); // Add this line
+const mongoose = require('mongoose');
 const router = express.Router();
 const AdminProduct = require('../models/AdminProduct');
 const StockQuantity = require('../models/StockQuantity');
@@ -16,8 +16,6 @@ router.get('/calculate-price/:code', async (req, res) => {
 
     let price = 0;
 
-    
-    
     if (unit === product.baseUnit) {
       price = product.basePrice * quantity;
     } else if (unit === product.secondaryUnit) {
@@ -67,6 +65,19 @@ router.post('/', async (req, res) => {
     if (req.body.secondaryUnit && conversionRate) {
       req.body.secondaryPrice = basePrice / conversionRate;
     }
+
+    // Create initial history entry
+    req.body.history = [{
+      timestamp: new Date(),
+      stockQuantity: req.body.stockQuantity || 0,
+      mrp: req.body.mrp || 0,
+      sellerPrice: req.body.sellerPrice || 0,
+      incomingDate: req.body.incomingDate || null,
+      expiryDate: req.body.expiryDate || null,
+      manufactureDate: req.body.manufactureDate || null,
+      updatedBy: req.user?.id || 'system',
+      action: 'CREATE'
+    }];
 
     const product = new AdminProduct(req.body);
     const savedProduct = await product.save();
@@ -135,13 +146,10 @@ router.get('/code/:code', async (req, res) => {
   }
 });
 
-// Add this new route to your existing product routes file
 router.get('/name/:name', async (req, res) => {
   try {
-    // Escape any regex special characters in the input
     const escapedName = req.params.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     
-    // Case-insensitive search for product name with flexible matching
     const product = await AdminProduct.findOne({ 
       productName: { 
         $regex: new RegExp(escapedName.trim().replace(/\s+/g, '\\s*'), 'i') 
@@ -161,7 +169,6 @@ router.get('/name/:name', async (req, res) => {
   }
 });
 
-// Add this search endpoint that searches by both code and name
 router.get('/search', async (req, res) => {
   try {
     const query = req.query.query;
@@ -170,7 +177,6 @@ router.get('/search', async (req, res) => {
       return res.status(400).json({ error: 'Search query is required' });
     }
     
-    // Escape special regex characters
     const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     
     const products = await AdminProduct.find({
@@ -179,8 +185,8 @@ router.get('/search', async (req, res) => {
         { productCode: { $regex: new RegExp(escapedQuery, 'i') } }
       ]
     })
-    .limit(10) // Limit to 10 results
-    .sort({ productName: 1 }); // Sort by name
+    .limit(10)
+    .sort({ productName: 1 });
     
     res.json(products);
   } catch (err) {
@@ -212,6 +218,20 @@ router.patch('/reduce-stock/:code', async (req, res) => {
       return res.status(400).json({ error: 'Not enough stock available' });
     }
 
+    // Add to history before updating
+    product.history.push({
+      timestamp: new Date(),
+      stockQuantity: product.stockQuantity - quantity,
+      mrp: product.mrp,
+      sellerPrice: product.sellerPrice,
+      incomingDate: product.incomingDate,
+      expiryDate: product.expiryDate,
+      manufactureDate: product.manufactureDate,
+      updatedBy: req.user?.id || 'system',
+      action: 'STOCK_REDUCE',
+      notes: `Reduced stock by ${quantity} ${product.baseUnit}`
+    });
+
     product.stockQuantity -= quantity;
     product.overallQuantity -= overallQuantityToReduce;
     
@@ -229,7 +249,6 @@ router.patch('/reduce-stock/:code', async (req, res) => {
   }
 });
 
-// Add this new route for stock availability check
 router.get('/check-stock/:productCode', async (req, res) => {
   try {
     const { unit, quantity } = req.query;
@@ -249,31 +268,25 @@ router.get('/check-stock/:productCode', async (req, res) => {
       });
     }
 
-    // Convert everything to base units for comparison
     const availableInBaseUnits = stock.availableQuantity;
     let requiredInBaseUnits = 0;
 
     if (unit === product.baseUnit) {
-      // If requesting in base unit, no conversion needed
       requiredInBaseUnits = quantity;
     } else if (unit === product.secondaryUnit) {
-      // If requesting in secondary unit, convert using conversion rate
       requiredInBaseUnits = quantity * (product.conversionRate || 1);
     } else {
-      // Handle other units (ml, gram, etc.)
       if (unit === 'gram' && product.baseUnit === 'kg') {
         requiredInBaseUnits = quantity / 1000;
       } else if (unit === 'ml' && product.baseUnit === 'liter') {
         requiredInBaseUnits = quantity / 1000;
       } else {
-        // If no conversion is defined, assume 1:1
         requiredInBaseUnits = quantity;
       }
     }
 
     const isAvailable = availableInBaseUnits >= requiredInBaseUnits;
 
-    // Calculate display value (how much is available in the requested unit)
     let availableDisplay = availableInBaseUnits;
     
     if (unit === product.secondaryUnit) {
@@ -297,7 +310,6 @@ router.get('/check-stock/:productCode', async (req, res) => {
   }
 });
 
-// Update the stock update endpoint
 router.put('/stock/:productCode', async (req, res) => {
   try {
     const { 
@@ -327,13 +339,32 @@ router.put('/stock/:productCode', async (req, res) => {
     }
 
     const addedStock = parseFloat(newStockAdded);
-    const prevStock = parseFloat(previousStock);
+    const prevStock = parseFloat(previousStock || product.stockQuantity);
+    const newTotalStock = addedStock;
+
+    // Add to history before updating - Ensure stockQuantity is a number
+    const historyEntry = {
+      timestamp: new Date(),
+      stockQuantity: newTotalStock, // This should be a number
+      mrp: mrp ? parseFloat(mrp) : product.mrp,
+      sellerPrice: sellerPrice ? parseFloat(sellerPrice) : product.sellerPrice,
+      incomingDate: new Date(),
+      expiryDate: expiryDate ? new Date(expiryDate) : product.expiryDate,
+      manufactureDate: manufactureDate ? new Date(manufactureDate) : product.manufactureDate,
+      updatedBy: req.user?.id || 'system',
+      action: 'STOCK_UPDATE',
+      notes: `Added ${addedStock} ${product.baseUnit} of stock`
+    };
 
     // Update product stock
     const updatedProduct = await AdminProduct.findByIdAndUpdate(
       product._id,
       { 
-        $inc: { stockQuantity: addedStock, overallQuantity: addedStock * (product.conversionRate || 1) },
+        $inc: { 
+          stockQuantity: addedStock, 
+          overallQuantity: addedStock * (product.conversionRate || 1) 
+        },
+        $push: { history: historyEntry }, // Use $push to add to history array
         ...(supplierName && { supplierName }),
         ...(batchNumber && { batchNumber }),
         ...(manufactureDate && { manufactureDate: new Date(manufactureDate) }),
@@ -347,7 +378,7 @@ router.put('/stock/:productCode', async (req, res) => {
     // Update stock quantity
     const stock = await StockQuantity.findOne({ productCode: req.params.productCode });
     if (stock) {
-      stock.totalQuantity += addedStock ;
+      stock.totalQuantity += addedStock;
       stock.availableQuantity += addedStock;
       await stock.save();
     } else {
@@ -368,13 +399,13 @@ router.put('/stock/:productCode', async (req, res) => {
       productName: product.productName,
       previousStock: prevStock,
       addedStock: addedStock,
-      newStock: prevStock + addedStock,
-      supplierName: supplierName || 'N/A',
-      batchNumber: batchNumber || 'N/A',
-      manufactureDate: manufactureDate ? new Date(manufactureDate) : null,
-      expiryDate: expiryDate ? new Date(expiryDate) : null,
-      mrp: mrp ? parseFloat(mrp) : 0,
-      sellerPrice: sellerPrice ? parseFloat(sellerPrice) : 0,
+      newStock: newTotalStock,
+      supplierName: supplierName || product.supplierName || 'N/A',
+      batchNumber: batchNumber || product.batchNumber || 'N/A',
+      manufactureDate: manufactureDate ? new Date(manufactureDate) : product.manufactureDate,
+      expiryDate: expiryDate ? new Date(expiryDate) : product.expiryDate,
+      mrp: mrp ? parseFloat(mrp) : product.mrp,
+      sellerPrice: sellerPrice ? parseFloat(sellerPrice) : product.sellerPrice,
       updatedBy: req.user?.id || 'system'
     });
 
@@ -401,7 +432,6 @@ router.get('/stock/:productCode', async (req, res) => {
   try {
     const productCode = req.params.productCode;
 
-    // Get product details
     const product = await AdminProduct.findOne({ productCode });
     if (!product) {
       return res.status(404).json({ 
@@ -410,13 +440,11 @@ router.get('/stock/:productCode', async (req, res) => {
       });
     }
 
-    // Get stock quantity
     const stock = await StockQuantity.findOne({ productCode });
     
-    // Get stock history (optional - you might want to limit/paginate this)
     const stockHistory = await StockHistory.find({ productCode })
-      .sort({ createdAt: -1 }) // newest first
-      .limit(50); // limit to 50 most recent entries
+      .sort({ createdAt: -1 })
+      .limit(50);
 
     res.json({
       success: true,
@@ -443,7 +471,6 @@ router.get('/stock/:productCode', async (req, res) => {
 
 router.get('/stock-history', async (req, res) => {
     try {
-        // Optional query parameters for filtering
         const { productCode, startDate, endDate } = req.query;
         
         let query = {};
@@ -459,8 +486,8 @@ router.get('/stock-history', async (req, res) => {
         }
         
         const history = await StockHistory.find(query)
-            .sort({ createdAt: -1 }) // Sort by most recent first
-            .lean(); // Convert to plain JS objects
+            .sort({ createdAt: -1 })
+            .lean();
         
         res.json(history);
     } catch (err) {
@@ -469,40 +496,57 @@ router.get('/stock-history', async (req, res) => {
     }
 });
 
-// Get seller expenses grouped by supplier and batch
 router.get('/seller-expenses', async (req, res) => {
     try {
         const { startDate, endDate, supplierName } = req.query;
         
         const matchStage = {
-            supplierName: { $exists: true, $ne: '' },
-            batchNumber: { $exists: true, $ne: '' }
+            "history.action": { $in: ["CREATE", "STOCK_UPDATE"] }
         };
         
-        // Add date filtering if provided
         if (startDate || endDate) {
-            matchStage.createdAt = {};
-            if (startDate) matchStage.createdAt.$gte = new Date(startDate);
-            if (endDate) matchStage.createdAt.$lte = new Date(endDate);
+            matchStage["history.timestamp"] = {};
+            if (startDate) matchStage["history.timestamp"].$gte = new Date(startDate);
+            if (endDate) matchStage["history.timestamp"].$lte = new Date(endDate);
         }
         
-        // Add supplier filtering if provided
         if (supplierName) {
             matchStage.supplierName = new RegExp(supplierName, 'i');
         }
         
         const pipeline = [
+            { $unwind: "$history" },
             { $match: matchStage },
             {
                 $group: {
                     _id: {
                         supplierName: "$supplierName",
-                        batchNumber: "$batchNumber"
-                        // Removed gstCategory from grouping
+                        batchNumber: "$batchNumber",
+                        historyId: "$history._id"
+                    },
+                    productName: { $first: "$productName" },
+                    productCode: { $first: "$productCode" },
+                    category: { $first: "$category" },
+                    baseUnit: { $first: "$baseUnit" },
+                    timestamp: { $first: "$history.timestamp" },
+                    stockQuantity: { $first: "$history.stockQuantity" },
+                    sellerPrice: { $first: "$history.sellerPrice" },
+                    mrp: { $first: "$history.mrp" },
+                    manufactureDate: { $first: "$history.manufactureDate" },
+                    expiryDate: { $first: "$history.expiryDate" },
+                    action: { $first: "$history.action" },
+                    updatedBy: { $first: "$history.updatedBy" }
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        supplierName: "$_id.supplierName",
+                        batchNumber: "$_id.batchNumber"
                     },
                     products: {
                         $push: {
-                            _id: "$_id",
+                            _id: "$_id.historyId",
                             productName: "$productName",
                             productCode: "$productCode",
                             category: "$category",
@@ -510,21 +554,20 @@ router.get('/seller-expenses', async (req, res) => {
                             addedStock: "$stockQuantity",
                             sellerPrice: "$sellerPrice",
                             mrp: "$mrp",
+                            profitPerUnit: { $subtract: ["$mrp", "$sellerPrice"] },
+                            totalProfit: { $multiply: [{ $subtract: ["$mrp", "$sellerPrice"] }, "$stockQuantity"] },
                             manufactureDate: "$manufactureDate",
                             expiryDate: "$expiryDate",
-                            createdAt: "$createdAt"
+                            timestamp: "$timestamp",
+                            action: "$action",
+                            updatedBy: "$updatedBy"
                         }
                     },
                     totalAmount: {
                         $sum: { $multiply: ["$stockQuantity", "$sellerPrice"] }
                     },
                     totalProfit: {
-                        $sum: {
-                            $multiply: [
-                                "$stockQuantity",
-                                { $subtract: ["$mrp", "$sellerPrice"] }
-                            ]
-                        }
+                        $sum: { $multiply: [{ $subtract: ["$mrp", "$sellerPrice"] }, "$stockQuantity"] }
                     }
                 }
             },
@@ -533,7 +576,6 @@ router.get('/seller-expenses', async (req, res) => {
                     _id: 0,
                     supplierName: "$_id.supplierName",
                     batchNumber: "$_id.batchNumber",
-                    // Removed gstCategory from projection as well
                     products: 1,
                     totalAmount: 1,
                     totalProfit: 1
@@ -555,7 +597,6 @@ router.get('/seller-expenses', async (req, res) => {
     }
 });
 
-// Add this to your productRoutes.js
 router.get('/seller-info', async (req, res) => {
   try {
     const { supplierName, brand } = req.query;
@@ -587,24 +628,67 @@ router.get('/seller-info', async (req, res) => {
   }
 });
 
-
-router.delete('/:id', async (req, res) => {
+router.put('/:id', async (req, res) => {
   try {
     const productId = req.params.id;
+    const updateData = req.body;
     
-    // First find the product to get its code
+    // Get the current product
     const product = await AdminProduct.findById(productId);
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
 
-    // Delete the product
+    // Create history entry for the update
+    const historyEntry = {
+      timestamp: new Date(),
+      stockQuantity: updateData.stockQuantity !== undefined ? updateData.stockQuantity : product.stockQuantity,
+      mrp: updateData.mrp !== undefined ? updateData.mrp : product.mrp,
+      sellerPrice: updateData.sellerPrice !== undefined ? updateData.sellerPrice : product.sellerPrice,
+      incomingDate: updateData.incomingDate !== undefined ? updateData.incomingDate : product.incomingDate,
+      expiryDate: updateData.expiryDate !== undefined ? updateData.expiryDate : product.expiryDate,
+      manufactureDate: updateData.manufactureDate !== undefined ? updateData.manufactureDate : product.manufactureDate,
+      updatedBy: req.user?.id || 'system',
+      action: 'UPDATE'
+    };
+
+    // Add to history array
+    updateData.$push = { history: historyEntry };
+
+    // Update the product
+    const updatedProduct = await AdminProduct.findByIdAndUpdate(
+      productId,
+      updateData,
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: 'Product updated successfully',
+      product: updatedProduct
+    });
+  } catch (err) {
+    console.error('Error updating product:', err);
+    res.status(500).json({ 
+      error: 'Failed to update product',
+      details: err.message
+    });
+  }
+});
+
+router.delete('/:id', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    
+    const product = await AdminProduct.findById(productId);
+    if (!product) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
     await AdminProduct.findByIdAndDelete(productId);
     
-    // Also delete the corresponding stock quantity record
     await StockQuantity.findOneAndDelete({ productCode: product.productCode });
     
-    // Add a record to stock history for audit purposes
     const stockHistory = new StockHistory({
       productId: product._id,
       productCode: product.productCode,

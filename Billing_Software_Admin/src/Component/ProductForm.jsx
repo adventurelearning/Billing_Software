@@ -508,18 +508,6 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     Pricing Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                    {/* <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Select Unit</label>
-                        <select
-                            value={selectedUnit}
-                            onChange={(e) => setSelectedUnit(e.target.value)}
-                            className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                        >
-                            {unitTypes.map((unit) => (
-                                <option key={unit.value} value={unit.value}>{unit.label}</option>
-                            ))}
-                        </select>
-                    </div> */}
                     <div>
                         <label className="block text-xs font-medium text-gray-700 mb-1">MRP Price (₹)*</label>
                         <div className="relative">
@@ -599,25 +587,6 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                             />
                         </div>
                     </div>
-                    {/* 
-                    <div>
-                        <label className="block text-xs font-medium text-gray-700 mb-1">Discount (%)</label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                name="discount"
-                                value={formData.discount}
-                                onChange={handleChange}
-                                inputMode="numeric"
-                                pattern="[0-9]*"
-                                className="no-arrows w-full pr-7 pl-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                placeholder="0.0"
-                            />
-                            <div className="absolute inset-y-0 right-0 pr-2 flex items-center pointer-events-none">
-                                <span className="text-gray-500 text-sm">%</span>
-                            </div>
-                        </div>
-                    </div> */}
 
                     {/* GST Category Dropdown (Aligned Right) */}
                     <div>
@@ -881,8 +850,6 @@ const ProductForm = ({ onSubmit, product, onCancel }) => {
                     </div>
                 </div>
             </div>
-
-
 
             {/* Form Actions */}
             <div className="flex justify-end space-x-2 pt-2">

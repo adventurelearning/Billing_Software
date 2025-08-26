@@ -18,6 +18,8 @@ const SellerExpenseList = () => {
     const [paymentAmount, setPaymentAmount] = useState('');
     const [paymentNotes, setPaymentNotes] = useState('');
     const [paymentHistory, setPaymentHistory] = useState({});
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showProductHistory, setShowProductHistory] = useState(false);
     const itemsPerPage = 10;
 
     const navigate = useNavigate();
@@ -126,8 +128,7 @@ const SellerExpenseList = () => {
 
     const calculateTotalProfit = (products) => {
         return products.reduce((total, product) => {
-            const profitPerUnit = (product.mrp - product.sellerPrice) || 0;
-            return total + (profitPerUnit * product.addedStock);
+            return total + (product.totalProfit || 0);
         }, 0).toFixed(2);
     };
 
@@ -139,79 +140,79 @@ const SellerExpenseList = () => {
         setShowPaymentModal(true);
     };
 
-   const handlePaymentSubmit = () => {
-    if (!currentSellerKey) return;
+    const handlePaymentSubmit = () => {
+        if (!currentSellerKey) return;
 
-    const seller = filteredSellers.find(seller => 
-        `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
-    );
-    
-    if (!seller) return;
+        const seller = filteredSellers.find(seller => 
+            `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
+        );
+        
+        if (!seller) return;
 
-    const totalAmount = parseFloat(calculateTotalAmount(seller.products));
-    const paidAmount = parseFloat(paymentAmount) || 0;
-    
-    if (paidAmount <= 0) {
-        Swal.fire('Error', 'Payment amount must be greater than 0', 'error');
-        return;
-    }
-
-    const existingPayment = paymentStatus[currentSellerKey] || {
-        paidAmount: 0,
-        balanceAmount: totalAmount,
-        payments: []
-    };
-    
-    // Calculate maximum allowed payment
-    const maxAllowedPayment = existingPayment.balanceAmount;
-    
-    if (paidAmount > maxAllowedPayment) {
-        Swal.fire('Error', `Payment amount cannot exceed the balance of ${formatCurrency(maxAllowedPayment)}`, 'error');
-        return;
-    }
-
-    const newPaidAmount = existingPayment.paidAmount + paidAmount;
-    const newBalanceAmount = totalAmount - newPaidAmount;
-    const isFullyPaid = newBalanceAmount <= 0;
-
-    const paymentRecord = {
-        amount: paidAmount,
-        date: new Date().toISOString(),
-        notes: paymentNotes
-    };
-
-    const newStatus = { 
-        ...paymentStatus, 
-        [currentSellerKey]: {
-            isPaid: isFullyPaid,
-            paidAmount: newPaidAmount,
-            balanceAmount: newBalanceAmount,
-            lastPaymentDate: new Date().toISOString(),
-            payments: [...(existingPayment.payments || []), paymentRecord],
-            totalAmount: totalAmount
+        const totalAmount = parseFloat(calculateTotalAmount(seller.products));
+        const paidAmount = parseFloat(paymentAmount) || 0;
+        
+        if (paidAmount <= 0) {
+            Swal.fire('Error', 'Payment amount must be greater than 0', 'error');
+            return;
         }
+
+        const existingPayment = paymentStatus[currentSellerKey] || {
+            paidAmount: 0,
+            balanceAmount: totalAmount,
+            payments: []
+        };
+        
+        // Calculate maximum allowed payment
+        const maxAllowedPayment = existingPayment.balanceAmount;
+        
+        if (paidAmount > maxAllowedPayment) {
+            Swal.fire('Error', `Payment amount cannot exceed the balance of ${formatCurrency(maxAllowedPayment)}`, 'error');
+            return;
+        }
+
+        const newPaidAmount = existingPayment.paidAmount + paidAmount;
+        const newBalanceAmount = totalAmount - newPaidAmount;
+        const isFullyPaid = newBalanceAmount <= 0;
+
+        const paymentRecord = {
+            amount: paidAmount,
+            date: new Date().toISOString(),
+            notes: paymentNotes
+        };
+
+        const newStatus = { 
+            ...paymentStatus, 
+            [currentSellerKey]: {
+                isPaid: isFullyPaid,
+                paidAmount: newPaidAmount,
+                balanceAmount: newBalanceAmount,
+                lastPaymentDate: new Date().toISOString(),
+                payments: [...(existingPayment.payments || []), paymentRecord],
+                totalAmount: totalAmount
+            }
+        };
+
+        const newPaymentHistory = {
+            ...paymentHistory,
+            [currentSellerKey]: [
+                ...(paymentHistory[currentSellerKey] || []),
+                paymentRecord
+            ]
+        };
+
+        setPaymentStatus(newStatus);
+        setPaymentHistory(newPaymentHistory);
+        localStorage.setItem('sellerPaymentStatus', JSON.stringify(newStatus));
+        localStorage.setItem('sellerPaymentHistory', JSON.stringify(newPaymentHistory));
+        setShowPaymentModal(false);
+
+        Swal.fire(
+            'Payment Recorded',
+            `Payment of ₹${paidAmount.toFixed(2)} has been recorded. ${isFullyPaid ? 'Full payment completed.' : `Balance: ₹${newBalanceAmount.toFixed(2)}`}`,
+            'success'
+        );
     };
-
-    const newPaymentHistory = {
-        ...paymentHistory,
-        [currentSellerKey]: [
-            ...(paymentHistory[currentSellerKey] || []),
-            paymentRecord
-        ]
-    };
-
-    setPaymentStatus(newStatus);
-    setPaymentHistory(newPaymentHistory);
-    localStorage.setItem('sellerPaymentStatus', JSON.stringify(newStatus));
-    localStorage.setItem('sellerPaymentHistory', JSON.stringify(newPaymentHistory));
-    setShowPaymentModal(false);
-
-    Swal.fire(
-        'Payment Recorded',
-        `Payment of ₹${paidAmount.toFixed(2)} has been recorded. ${isFullyPaid ? 'Full payment completed.' : `Balance: ₹${newBalanceAmount.toFixed(2)}`}`,
-        'success'
-    );
-};
 
     const handleUnpaid = (sellerKey) => {
         Swal.fire({
@@ -266,7 +267,7 @@ const SellerExpenseList = () => {
                     `"${product.baseUnit}"`,
                     product.sellerPrice,
                     product.mrp,
-                    (product.mrp - product.sellerPrice) * product.addedStock,
+                    (product.totalProfit || 0),
                     `"${formatDate(product.createdAt)}"`,
                     payment.isPaid ? 'Paid' : payment.paidAmount ? `Partially Paid (${payment.paidAmount})` : 'Unpaid',
                     payment.paidAmount || 0,
@@ -281,6 +282,18 @@ const SellerExpenseList = () => {
         link.href = url;
         link.download = `seller-expenses-${new Date().toISOString().split('T')[0]}.csv`;
         link.click();
+    };
+
+    const viewProductHistory = async (product) => {
+        try {
+            // Fetch the full product details with history
+            const response = await api.get(`/products/code/${product.productCode}`);
+            setSelectedProduct(response.data);
+            setShowProductHistory(true);
+        } catch (err) {
+            console.error('Error fetching product history:', err);
+            Swal.fire('Error', 'Failed to fetch product history', 'error');
+        }
     };
 
     const LoadingSkeleton = () => (
@@ -373,121 +386,216 @@ const SellerExpenseList = () => {
         <div className="container mx-auto px-4 py-8">
             {/* Payment Modal */}
             {showPaymentModal && (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
-        <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 dark:bg-gray-800">
-            <h3 className="text-lg font-semibold mb-4 dark:text-white">Record Payment</h3>
-            
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
-                    Total Amount: 
-                    <span className="ml-2 font-semibold">
-                        {formatCurrency(
-                            calculateTotalAmount(
-                                filteredSellers.find(seller => 
-                                    `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
-                                ).products)
-                            )
-                        }
-                    </span>
-                </label>
-            </div>
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 dark:bg-gray-800">
+                        <h3 className="text-lg font-semibold mb-4 dark:text-white">Record Payment</h3>
+                        
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                                Total Amount: 
+                                <span className="ml-2 font-semibold">
+                                    {formatCurrency(
+                                        calculateTotalAmount(
+                                            filteredSellers.find(seller => 
+                                                `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
+                                            ).products)
+                                        )
+                                    }
+                                </span>
+                            </label>
+                        </div>
 
-            {paymentStatus[currentSellerKey]?.paidAmount > 0 && (
-                <div className="mb-3 p-3 bg-blue-50 rounded-md dark:bg-blue-900/30">
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Already Paid: {formatCurrency(paymentStatus[currentSellerKey].paidAmount)}
-                    </p>
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
-                        Balance: {formatCurrency(paymentStatus[currentSellerKey].balanceAmount)}
-                    </p>
+                        {paymentStatus[currentSellerKey]?.paidAmount > 0 && (
+                            <div className="mb-3 p-3 bg-blue-50 rounded-md dark:bg-blue-900/30">
+                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    Already Paid: {formatCurrency(paymentStatus[currentSellerKey].paidAmount)}
+                                </p>
+                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    Balance: {formatCurrency(paymentStatus[currentSellerKey].balanceAmount)}
+                                </p>
+                            </div>
+                        )}
+                        
+                        <div className="mb-4">
+                            <label htmlFor="paymentAmount" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                                Amount to Pay
+                            </label>
+                            <input
+                                type="number"
+                                id="paymentAmount"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                value={paymentAmount}
+                                onChange={(e) => {
+                                    const maxAmount = paymentStatus[currentSellerKey]?.balanceAmount || 
+                                        calculateTotalAmount(
+                                            filteredSellers.find(seller => 
+                                                `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
+                                            ).products
+                                        );
+                                    const enteredAmount = parseFloat(e.target.value);
+                                    
+                                    if (enteredAmount > maxAmount) {
+                                        setPaymentAmount(maxAmount);
+                                    } else if (e.target.value === '') {
+                                        setPaymentAmount('');
+                                    } else if (!isNaN(enteredAmount)) {
+                                        setPaymentAmount(enteredAmount);
+                                    }
+                                }}
+                                placeholder="Enter amount"
+                                max={paymentStatus[currentSellerKey]?.balanceAmount || 
+                                    calculateTotalAmount(
+                                        filteredSellers.find(seller => 
+                                            `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
+                                        ).products
+                                    )}
+                            />
+                            <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
+                                Maximum payable: {formatCurrency(
+                                    paymentStatus[currentSellerKey]?.balanceAmount || 
+                                    calculateTotalAmount(
+                                        filteredSellers.find(seller => 
+                                            `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
+                                        ).products
+                                    )
+                                )}
+                            </p>
+                        </div>
+                        
+                        <div className="mb-4">
+                            <label htmlFor="paymentNotes" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
+                                Notes (Optional)
+                            </label>
+                            <textarea
+                                id="paymentNotes"
+                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                                value={paymentNotes}
+                                onChange={(e) => setPaymentNotes(e.target.value)}
+                                rows="3"
+                                placeholder="Payment reference or notes..."
+                            />
+                        </div>
+                        
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => setShowPaymentModal(false)}
+                                className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handlePaymentSubmit}
+                                disabled={!paymentAmount || parseFloat(paymentAmount) <= 0}
+                                className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                                    !paymentAmount || parseFloat(paymentAmount) <= 0 
+                                        ? 'bg-blue-400 cursor-not-allowed' 
+                                        : 'bg-blue-600 hover:bg-blue-700'
+                                }`}
+                            >
+                                Record Payment
+                            </button>
+                        </div>
+                    </div>
                 </div>
             )}
-            
-            <div className="mb-4">
-                <label htmlFor="paymentAmount" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
-                    Amount to Pay
-                </label>
-                <input
-                    type="number"
-                    id="paymentAmount"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    value={paymentAmount}
-                    onChange={(e) => {
-                        const maxAmount = paymentStatus[currentSellerKey]?.balanceAmount || 
-                            calculateTotalAmount(
-                                filteredSellers.find(seller => 
-                                    `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
-                                ).products
-                            );
-                        const enteredAmount = parseFloat(e.target.value);
-                        
-                        if (enteredAmount > maxAmount) {
-                            // Don't allow values greater than the balance
-                            setPaymentAmount(maxAmount);
-                        } else if (e.target.value === '') {
-                            // Allow empty field
-                            setPaymentAmount('');
-                        } else if (!isNaN(enteredAmount)) {
-                            // Only set if it's a valid number
-                            setPaymentAmount(enteredAmount);
-                        }
-                    }}
-                    placeholder="Enter amount"
-                    max={paymentStatus[currentSellerKey]?.balanceAmount || 
-                        calculateTotalAmount(
-                            filteredSellers.find(seller => 
-                                `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
-                            ).products
-                        )}
-                />
-                <p className="text-xs text-gray-500 mt-1 dark:text-gray-400">
-                    Maximum payable: {formatCurrency(
-                        paymentStatus[currentSellerKey]?.balanceAmount || 
-                        calculateTotalAmount(
-                            filteredSellers.find(seller => 
-                                `${seller.supplierName}-${seller.batchNumber}` === currentSellerKey
-                            ).products
-                        )
-                    )}
-                </p>
-            </div>
-            
-            <div className="mb-4">
-                <label htmlFor="paymentNotes" className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300">
-                    Notes (Optional)
-                </label>
-                <textarea
-                    id="paymentNotes"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                    value={paymentNotes}
-                    onChange={(e) => setPaymentNotes(e.target.value)}
-                    rows="3"
-                    placeholder="Payment reference or notes..."
-                />
-            </div>
-            
-            <div className="flex justify-end space-x-3">
-                <button
-                    onClick={() => setShowPaymentModal(false)}
-                    className="px-4 py-2 text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 dark:text-gray-200 dark:bg-gray-600 dark:hover:bg-gray-500"
-                >
-                    Cancel
-                </button>
-                <button
-                    onClick={handlePaymentSubmit}
-                    disabled={!paymentAmount || parseFloat(paymentAmount) <= 0}
-                    className={`px-4 py-2 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                        !paymentAmount || parseFloat(paymentAmount) <= 0 
-                            ? 'bg-blue-400 cursor-not-allowed' 
-                            : 'bg-blue-600 hover:bg-blue-700'
-                    }`}
-                >
-                    Record Payment
-                </button>
-            </div>
-        </div>
-    </div>
-)}
+
+            {/* Product History Modal */}
+            {showProductHistory && selectedProduct && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full p-6 dark:bg-gray-800 max-h-screen overflow-y-auto">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold dark:text-white">
+                                Product History - {selectedProduct.productName}
+                            </h3>
+                            <button
+                                onClick={() => setShowProductHistory(false)}
+                                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <div className="mb-4">
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                                Product Code: {selectedProduct.productCode} | 
+                                Category: {selectedProduct.category} | 
+                                Base Unit: {selectedProduct.baseUnit}
+                            </p>
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead className="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Date & Time
+                                        </th>
+                                        {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Action
+                                        </th> */}
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Stock Qty
+                                        </th>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Seller Price
+                                        </th>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            MRP
+                                        </th>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Profit/Unit
+                                        </th>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Mfg Date
+                                        </th>
+                                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Expiry Date
+                                        </th>
+                                        {/* <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            Updated By
+                                        </th> */}
+                                    </tr>
+                                </thead>
+                                <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
+                                    {selectedProduct.history && selectedProduct.history.map((historyItem, index) => (
+                                        <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {formatDateTime(historyItem.timestamp)}
+                                            </td>
+                                            {/* <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {historyItem.action}
+                                            </td> */}
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {historyItem.stockQuantity}
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {formatCurrency(historyItem.sellerPrice || 0)}
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {formatCurrency(historyItem.mrp || 0)}
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {formatCurrency((historyItem.mrp || 0) - (historyItem.sellerPrice || 0))}
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {formatDate(historyItem.manufactureDate)}
+                                            </td>
+                                            <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {formatDate(historyItem.expiryDate)}
+                                            </td>
+                                            {/* <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
+                                                {historyItem.updatedBy}
+                                            </td> */}
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
                 <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4 md:mb-0">Seller Expense Management</h1>
@@ -516,12 +624,12 @@ const SellerExpenseList = () => {
                             />
                         </svg>
                     </div>
-                    <button
+                    {/* <button
                         onClick={exportToCSV}
                         className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
                     >
                         Export to CSV
-                    </button>
+                    </button> */}
                 </div>
             </div>
 
@@ -612,32 +720,20 @@ const SellerExpenseList = () => {
                                             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                                                 <thead className="bg-gray-50 dark:bg-gray-700">
                                                     <tr>
-                                                        <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                                                            onClick={() => requestSort('productName')}
-                                                        >
-                                                            Product <SortIndicator columnKey="productName" />
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                            Product
                                                         </th>
-                                                        <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                                                            onClick={() => requestSort('productCode')}
-                                                        >
-                                                            Code <SortIndicator columnKey="productCode" />
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                            Code
                                                         </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             Category
                                                         </th>
-                                                        <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                                                            onClick={() => requestSort('addedStock')}
-                                                        >
-                                                            Qty <SortIndicator columnKey="addedStock" />
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                            Qty
                                                         </th>
-                                                        <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                                                            onClick={() => requestSort('sellerPrice')}
-                                                        >
-                                                            Cost <SortIndicator columnKey="sellerPrice" />
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                            Cost
                                                         </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             Sales Price
@@ -645,11 +741,8 @@ const SellerExpenseList = () => {
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             Profit
                                                         </th>
-                                                        <th
-                                                            className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                                                            onClick={() => requestSort('createdAt')}
-                                                        >
-                                                            Added <SortIndicator columnKey="createdAt" />
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                            Added
                                                         </th>
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             Mfg
@@ -657,12 +750,17 @@ const SellerExpenseList = () => {
                                                         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                                             Expiry
                                                         </th>
+                                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                                            Actions
+                                                        </th>
                                                     </tr>
                                                 </thead>
                                                 <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
                                                     {sellerGroup.products.map((product) => {
                                                         const profitPerUnit = (product.mrp - product.sellerPrice) || 0;
-                                                        const totalProfit = (profitPerUnit * product.addedStock).toFixed(2);
+                                                        const totalSellerPrice = (product.sellerPrice * product.addedStock).toFixed(2);
+                                                        const totalSalesPrice = (product.mrp * product.addedStock).toFixed(2);
+                                                        const totalProfit = (product.totalProfit || (profitPerUnit * product.addedStock)).toFixed(2);
 
                                                         return (
                                                             <tr key={`${product._id}-${product.addedStock}`} className="hover:bg-gray-50 dark:hover:bg-gray-700">
@@ -686,22 +784,22 @@ const SellerExpenseList = () => {
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                                     <div className="text-sm text-gray-900 dark:text-gray-200">
-                                                                        ₹{product.sellerPrice.toFixed(2)}
+                                                                        ₹{totalSellerPrice}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                                     <div className="text-sm text-gray-900 dark:text-gray-200">
-                                                                        ₹{product.mrp?.toFixed(2) || 'N/A'}
+                                                                        ₹{totalSalesPrice}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
-                                                                    <div className={`text-sm font-medium ${profitPerUnit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+                                                                    <div className={`text-sm font-medium ${totalProfit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
                                                                         ₹{totalProfit}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                                     <div className="text-sm text-gray-900 dark:text-gray-200">
-                                                                        {formatDate(product.createdAt)}
+                                                                        {formatDate(product.timestamp)}
                                                                     </div>
                                                                 </td>
                                                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -713,6 +811,14 @@ const SellerExpenseList = () => {
                                                                     <div className="text-sm text-gray-900 dark:text-gray-200">
                                                                         {formatDate(product.expiryDate)}
                                                                     </div>
+                                                                </td>
+                                                                <td className="px-6 py-4 whitespace-nowrap">
+                                                                    <button
+                                                                        onClick={() => viewProductHistory(product)}
+                                                                        className="px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800"
+                                                                    >
+                                                                        History
+                                                                    </button>
                                                                 </td>
                                                             </tr>
                                                         );
@@ -733,7 +839,7 @@ const SellerExpenseList = () => {
                                                         <td className="px-6 py-3 text-sm font-semibold text-green-600 dark:text-green-400">
                                                             ₹{totalProfit}
                                                         </td>
-                                                        <td colSpan="3"></td>
+                                                        <td colSpan="4"></td>
                                                     </tr>
                                                 </tfoot>
                                             </table>
@@ -774,7 +880,6 @@ const SellerExpenseList = () => {
 
                                         <div className="px-6 py-3 bg-gray-50 dark:bg-gray-700 border-t border-gray-200 dark:border-gray-600 flex justify-between items-center">
                                             <div className="text-sm text-gray-500 dark:text-gray-400">
-                                                {/* GST: {sellerGroup.gstCategory} */}
                                                 {balanceAmount > 0 && (
                                                     <span className="ml-4 text-red-600 dark:text-red-400">
                                                         Balance: ₹{Math.max(balanceAmount, 0).toFixed(2)}

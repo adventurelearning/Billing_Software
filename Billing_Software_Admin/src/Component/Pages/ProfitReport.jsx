@@ -3,91 +3,52 @@ import api from '../../service/api';
 
 const ProfitReport = () => {
     const [products, setProducts] = useState([]);
-    const [stockHistory, setStockHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [filters, setFilters] = useState({
-        productCode: '',
-        startDate: '',
-        endDate: ''
-    });
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [showHistoryModal, setShowHistoryModal] = useState(false);
 
-    const calculateProfits = () => {
-        // Initial stock profit (from AdminProduct)
-        const initialProfit = products.reduce(
-            (sum, product) => sum + (product.profit || 0) * (product.stockQuantity || 0),
-            0
-        );
-
-        // Additional stock profit (from StockHistory)
-        const additionalProfit = stockHistory.reduce(
-            (sum, history) => {
-                const profitPerUnit = history.profit ||
-                    (history.mrpPrice - history.sellerPrice) || 0;
-                return history.addedStock > 0 ?
-                    sum + (profitPerUnit * history.addedStock) :
-                    sum
-            },
-            0
-        );
-
-        // Reductions (negative values from StockHistory)
-        const reductions = stockHistory.reduce(
-            (sum, history) => {
-                const profitPerUnit = history.profit ||
-                    (history.mrpPrice - history.sellerPrice) || 0;
-                return history.addedStock < 0 ?
-                    sum + Math.abs(profitPerUnit * history.addedStock) :
-                    sum
-            },
-            0
-        );
-
-        return {
-            initialProfit,
-            additionalProfit,
-            reductions,
-            totalProfit: initialProfit + additionalProfit,
-            netProfit: initialProfit + additionalProfit - reductions
-        };
+    // Calculate total profit for all products
+    const calculateTotalProfit = () => {
+        return products.reduce((total, product) => {
+            const historyProfit = calculateTotalHistoryProfit(product.history || []);
+            return total + historyProfit;
+        }, 0);
     };
 
+    // Calculate total profit from all history entries for a product
+    const calculateTotalHistoryProfit = (history) => {
+        return history.reduce((total, entry) => {
+            const profitPerUnit = (entry.mrp || 0) - (entry.sellerPrice || 0);
+            return total + (profitPerUnit * (entry.stockQuantity || 0));
+        }, 0);
+    };
 
-    const { initialProfit, additionalProfit, reductions, totalProfit, netProfit } = calculateProfits();
-
-    const fetchData = async () => {
+    const fetchProducts = async () => {
         try {
             setLoading(true);
-
-            // Build query string from filters
-            const queryParams = new URLSearchParams();
-            if (filters.productCode) queryParams.append('productCode', filters.productCode);
-            if (filters.startDate) queryParams.append('startDate', filters.startDate);
-            if (filters.endDate) queryParams.append('endDate', filters.endDate);
-
-            // Fetch data in parallel
-            const [productsRes, historyRes] = await Promise.all([
-                api.get(`/products`),
-                api.get(`/products/stock-history?${queryParams.toString()}`)
-            ]);
-
-            setProducts(productsRes.data);
-            setStockHistory(historyRes.data);
+            const response = await api.get('/products');
+            setProducts(response.data);
             setLoading(false);
         } catch (err) {
-            console.error('Error fetching data:', err);
+            console.error('Error fetching products:', err);
             setError(err.message);
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchData();
-    }, [filters]);
+        fetchProducts();
+    }, []);
 
-    const handleFilterChange = (e) => {
-        const { name, value } = e.target;
-        setFilters(prev => ({ ...prev, [name]: value }));
+    const openHistoryModal = (product) => {
+        setSelectedProduct(product);
+        setShowHistoryModal(true);
+    };
+
+    const closeHistoryModal = () => {
+        setShowHistoryModal(false);
+        setSelectedProduct(null);
     };
 
     if (loading) return <div className="p-4">Loading...</div>;
@@ -98,101 +59,53 @@ const ProfitReport = () => {
             <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-2">
                     <div className="flex justify-between items-center mb-2 md:mb-0 py-2">
-                        <h1 className="text-lg md:text-xl font-semibold text-gray-700  whitespace-nowrap bg-blue-100 p-2 rounded-md">Profit Report</h1>
+                        <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 p-2 rounded-md">
+                            Profit Report
+                        </h1>
                     </div>
                 </div>
-                </header>
-            {/* Filters */}
-            <div className="bg-white p-4 rounded-lg shadow mb-4 m-6 ">
-                <h3 className="text-lg font-semibold mb-3">Filters</h3>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Product Code</label>
-                        <input
-                            type="text"
-                            name="productCode"
-                            value={filters.productCode}
-                            onChange={handleFilterChange}
-                            className="w-full px-3 py-1 border border-gray-300 rounded-md"
-                            placeholder="Enter product code"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                        <input
-                            type="date"
-                            name="startDate"
-                            value={filters.startDate}
-                            onChange={handleFilterChange}
-                            className="w-full px-3 py-1 border border-gray-300 rounded-md"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                        <input
-                            type="date"
-                            name="endDate"
-                            value={filters.endDate}
-                            onChange={handleFilterChange}
-                            className="w-full px-3 py-1 border border-gray-300 rounded-md"
-                        />
-                    </div>
+            </header>
+
+            {/* Summary Card */}
+            <div className="p-4 m-4">
+                <div className="bg-purple-100 p-4 rounded-lg shadow">
+                    <h3 className="text-lg font-semibold">Total Profit</h3>
+                    <p className="text-2xl font-bold">₹{calculateTotalProfit().toFixed(2)}</p>
                 </div>
             </div>
 
-            {/* Summary Cards */}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4  mb-6 px-2 m-4">
-
-                <div className="bg-blue-100 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold">Initial Stock Profit</h3>
-                    <p className="text-xl font-semibold">₹{initialProfit.toFixed(2)}</p>
-                </div>
-                {/* <div className="bg-green-100 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold">Added Stock Profit</h3>
-                    <p className="text-xl font-semibold">₹{additionalProfit.toFixed(2)}</p>
-                </div>
-                <div className="bg-yellow-100 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold">Stock Reductions</h3>
-                    <p className="text-2xl font-bold">-₹{reductions.toFixed(2)}</p>
-                </div> */}
-                <div className="bg-purple-100 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold">Net Profit</h3>
-                    <p className="text-xl font-semibold">₹{netProfit.toFixed(2)}</p>
-                </div>
-            </div>
-
-            {/* Initial Stock Table */}
-            <div className="mb-8 px-2 m-4">
-                <h3 className="text-lg font-semibold mb-2">Initial Stock</h3>
+            {/* Products Table */}
+            <div className="p-4 m-4 bg-white rounded-lg shadow">
+                <h3 className="text-lg font-semibold mb-4">Product Profit Summary</h3>
                 <div className="overflow-x-auto">
                     <table className="min-w-full bg-white border border-gray-200">
                         <thead>
                             <tr className="bg-gray-100 text-base font-normal">
                                 <th className="py-2 px-4 border">Code</th>
-                                <th className="py-2 px-4 border">Product</th>
-                                <th className="py-2 px-4 border">Sales Price</th>
-                                <th className="py-2 px-4 border">Seller Price</th>
-                                <th className="py-2 px-4 border">Profit/Unit</th>
-                                <th className="py-2 px-4 border">Initial Qty</th>
+                                <th className="py-2 px-4 border">Product Name</th>
+                                <th className="py-2 px-4 border">Stock Qty</th>
                                 <th className="py-2 px-4 border">Total Profit</th>
+                                <th className="py-2 px-4 border">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {products.map((product) => {
-                                const profit = product.profit || (product.mrp - product.sellerPrice) || 0;
-                                const qty = product.stockQuantity || 0;
-                                const total = profit * qty;
-
+                                const totalProfit = calculateTotalHistoryProfit(product.history || []);
+                                
                                 return (
                                     <tr key={product._id} className="hover:bg-gray-50">
                                         <td className="py-2 px-4 border text-center">{product.productCode || '-'}</td>
                                         <td className="py-2 px-4 border">{product.productName || '-'}</td>
-                                        <td className="py-2 px-4 border text-right">₹{(product.mrp || 0).toFixed(2)}</td>
-                                        <td className="py-2 px-4 border text-right">₹{(product.sellerPrice || 0).toFixed(2)}</td>
-                                        <td className="py-2 px-4 border text-right">₹{profit.toFixed(2)}</td>
-                                        <td className="py-2 px-4 border text-center">{qty}</td>
-                                        <td className="py-2 px-4 border text-right font-medium">₹{total.toFixed(2)}</td>
+                                        <td className="py-2 px-4 border text-center">{product.stockQuantity || 0}</td>
+                                        <td className="py-2 px-4 border text-right font-medium">₹{totalProfit.toFixed(2)}</td>
+                                        <td className="py-2 px-4 border text-center">
+                                            <button
+                                                onClick={() => openHistoryModal(product)}
+                                                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm"
+                                            >
+                                                View History
+                                            </button>
+                                        </td>
                                     </tr>
                                 );
                             })}
@@ -201,58 +114,100 @@ const ProfitReport = () => {
                 </div>
             </div>
 
-            {/* Stock History Table */}
-            {/* <div>
-                <h3 className="text-lg font-semibold mb-2">Stock Movements</h3>
-                <div className="overflow-x-auto">
-                    <table className="min-w-full bg-white border border-gray-200">
-                        <thead>
-                            <tr className="bg-gray-100">
-                                <th className="py-2 px-4 border">Date</th>
-                                <th className="py-2 px-4 border">Code</th>
-                                <th className="py-2 px-4 border">Product</th>
-                                <th className="py-2 px-4 border">Type</th>
-                                <th className="py-2 px-4 border">Qty</th>
-                                <th className="py-2 px-4 border">MRP</th>
-                                <th className="py-2 px-4 border">Seller Price</th>
-                                <th className="py-2 px-4 border">Profit/Unit</th>
-                                <th className="py-2 px-4 border">Total Profit</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {stockHistory.map((history) => {
-                                const date = new Date(history.createdAt).toLocaleDateString();
-                                const isAddition = history.addedStock > 0;
-                                const qty = Math.abs(history.addedStock);
-                                const profit = history.profit || (history.mrpPrice - history.sellerPrice) || 0;
-                                const total = profit * qty;
+            {/* History Modal */}
+            {showHistoryModal && selectedProduct && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-white rounded-lg shadow-lg w-full max-w-6xl max-h-screen overflow-auto">
+                        <div className="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 className="text-xl font-semibold">
+                                History for {selectedProduct.productName} ({selectedProduct.productCode})
+                            </h2>
+                            <button
+                                onClick={closeHistoryModal}
+                                className="text-gray-500 hover:text-gray-700 text-2xl"
+                            >
+                                &times;
+                            </button>
+                        </div>
+                        <div className="p-4">
+                            <div className="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-blue-50 p-4 rounded-lg">
+                                    <h3 className="text-lg font-semibold mb-2">Product Details</h3>
+                                    <div className="space-y-2">
+                                        <p><strong>Product Code:</strong> {selectedProduct.productCode}</p>
+                                        <p><strong>Product Name:</strong> {selectedProduct.productName}</p>
+                                        <p><strong>Current Stock:</strong> {selectedProduct.stockQuantity}</p>
+                                        <p><strong>Category:</strong> {selectedProduct.category || '-'}</p>
+                                        <p><strong>Brand:</strong> {selectedProduct.brand || '-'}</p>
+                                    </div>
+                                </div>
+                                <div className="bg-green-50 p-4 rounded-lg">
+                                    <h3 className="text-lg font-semibold mb-2">Current Pricing Details</h3>
+                                    <div className="space-y-2">
+                                        <p><strong>MRP:</strong> ₹{selectedProduct.mrp?.toFixed(2)}</p>
+                                        <p><strong>Seller Price:</strong> ₹{selectedProduct.sellerPrice?.toFixed(2)}</p>
+                                        <p><strong>Profit per Unit:</strong> ₹{((selectedProduct.mrp || 0) - (selectedProduct.sellerPrice || 0)).toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <h3 className="text-lg font-semibold mb-2">Stock History</h3>
+                            <div className="overflow-x-auto mb-4">
+                                <table className="min-w-full bg-white border border-gray-200">
+                                    <thead>
+                                        <tr className="bg-gray-100 text-base font-normal">
+                                            <th className="py-2 px-4 border">Date</th>
+                                            <th className="py-2 px-4 border">Stock Qty</th>
+                                            <th className="py-2 px-4 border">MRP</th>
+                                            <th className="py-2 px-4 border">Seller Price</th>
+                                            <th className="py-2 px-4 border">Profit/Unit</th>
+                                            <th className="py-2 px-4 border">Total Profit</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {selectedProduct.history?.map((history, index) => {
+                                            const profitPerUnit = (history.mrp || 0) - (history.sellerPrice || 0);
+                                            const totalProfit = profitPerUnit * (history.stockQuantity || 0);
+                                            const date = new Date(history.timestamp).toLocaleDateString();
+                                            
+                                            return (
+                                                <tr key={index} className="hover:bg-gray-50">
+                                                    <td className="py-2 px-4 border text-center">{date}</td>
+                                                    <td className="py-2 px-4 border text-center">{history.stockQuantity || 0}</td>
+                                                    <td className="py-2 px-4 border text-right">₹{(history.mrp || 0).toFixed(2)}</td>
+                                                    <td className="py-2 px-4 border text-right">₹{(history.sellerPrice || 0).toFixed(2)}</td>
+                                                    <td className="py-2 px-4 border text-right">₹{profitPerUnit.toFixed(2)}</td>
+                                                    <td className="py-2 px-4 border text-right font-medium">₹{totalProfit.toFixed(2)}</td>
+                                                </tr>
+                                            );
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
 
-                                return (
-                                    <tr key={history._id} className="hover:bg-gray-50">
-                                        <td className="py-2 px-4 border text-center">{date}</td>
-                                        <td className="py-2 px-4 border text-center">{history.productCode || '-'}</td>
-                                        <td className="py-2 px-4 border">{history.productName || '-'}</td>
-                                        <td className={`py-2 px-4 border text-center ${
-                                            isAddition ? 'text-green-600' : 'text-red-600'
-                                        }`}>
-                                            {isAddition ? 'Addition' : 'Reduction'}
-                                        </td>
-                                        <td className="py-2 px-4 border text-center">{qty}</td>
-                                        <td className="py-2 px-4 border text-right">₹{(history.mrpPrice || 0).toFixed(2)}</td>
-                                        <td className="py-2 px-4 border text-right">₹{(history.sellerPrice || 0).toFixed(2)}</td>
-                                        <td className="py-2 px-4 border text-right">₹{profit.toFixed(2)}</td>
-                                        <td className={`py-2 px-4 border text-right font-medium ${
-                                            isAddition ? 'text-green-600' : 'text-red-600'
-                                        }`}>
-                                            {isAddition ? '+' : '-'}₹{total.toFixed(2)}
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
+                            {/* Total Profit Calculation */}
+                            {selectedProduct.history && selectedProduct.history.length > 0 && (
+                                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                                    <h3 className="text-lg font-semibold mb-2">Total Profit</h3>
+                                        <div className="text-right">
+                                            <p className="text-xl font-bold">
+                                                ₹{calculateTotalHistoryProfit(selectedProduct.history).toFixed(2)}
+                                            </p>
+                                        </div>
+                                </div>
+                            )}
+                        </div>
+                        <div className="p-4 border-t border-gray-200 flex justify-end">
+                            <button
+                                onClick={closeHistoryModal}
+                                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+                            >
+                                Close
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            </div> */}
+            )}
         </div>
     );
 };
