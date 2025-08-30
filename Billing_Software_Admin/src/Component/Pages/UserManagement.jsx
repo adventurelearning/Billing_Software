@@ -114,55 +114,69 @@ const UserManagement = ({ setActivePage }) => {
     }));
   };
 
-  const handleFileChange = (e) => {
-    const { name, files } = e.target;
-    if (files && files[0]) {
-      const fileUrl = URL.createObjectURL(files[0]);
-      setFormData(prev => ({
-        ...prev,
-        [name]: fileUrl
-      }));
-    }
-  };
+ const handleFileChange = (e) => {
+  const { name, files } = e.target;
+  if (files && files[0]) {
+    // Create a preview URL for the image
+    const previewUrl = URL.createObjectURL(files[0]);
+    
+    setFormData(prev => ({
+      ...prev,
+      [name]: files[0], // Store the file object
+      [`${name}Preview`]: previewUrl // Store preview URL for display
+    }));
+  }
+};
 
   const handleCompanyUpdate = async () => {
-    try {
-      // Create form data for file uploads
-      const formDataToSend = new FormData();
-      for (const key in formData) {
-        if (key === 'logoUrl' || key === 'signatureUrl') {
-          // Handle file inputs separately if needed
-          continue;
-        }
+  try {
+    const formDataToSend = new FormData();
+    
+    // Append all form data
+    for (const key in formData) {
+      if (key !== 'logoUrl' && key !== 'signatureUrl') {
         formDataToSend.append(key, formData[key]);
       }
-
-      // Send the update request
-      const response = await api.put(`/companies/${latestCompany._id}`, formData);
-      
-      // Update local state with the response data
-      setLatestCompany(response.data);
-      setFormData({
-        businessName: response.data.businessName || "",
-        phoneNumber: response.data.phoneNumber || "",
-        gstin: response.data.gstin || "",
-        email: response.data.email || "",
-        businessType: response.data.businessType || "",
-        businessCategory: response.data.businessCategory || "",
-        state: response.data.state || "",
-        pincode: response.data.pincode || "",
-        address: response.data.address || "",
-        logoUrl: response.data.logoUrl || "",
-        signatureUrl: response.data.signatureUrl || ""
-      });
-      
-      setIsEditingCompany(false);
-      alert("Company updated successfully");
-    } catch (error) {
-      console.error("Error updating company:", error);
-      alert("Failed to update company. Please try again.");
     }
-  };
+
+    // Handle file uploads
+    if (formData.logoUrl instanceof File) {
+      formDataToSend.append('logo', formData.logoUrl);
+    }
+    if (formData.signatureUrl instanceof File) {
+      formDataToSend.append('signature', formData.signatureUrl);
+    }
+
+    // Send the update request
+    const response = await api.put(`/companies/${latestCompany._id}`, formDataToSend, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    
+    // Update local state with the response data
+    setLatestCompany(response.data);
+    setFormData({
+      businessName: response.data.businessName || "",
+      phoneNumber: response.data.phoneNumber || "",
+      gstin: response.data.gstin || "",
+      email: response.data.email || "",
+      businessType: response.data.businessType || "",
+      businessCategory: response.data.businessCategory || "",
+      state: response.data.state || "",
+      pincode: response.data.pincode || "",
+      address: response.data.address || "",
+      logoUrl: response.data.logoUrl || "",
+      signatureUrl: response.data.signatureUrl || ""
+    });
+    
+    setIsEditingCompany(false);
+    alert("Company updated successfully");
+  } catch (error) {
+    console.error("Error updating company:", error);
+    alert("Failed to update company. Please try again.");
+  }
+};
 
   const cancelEdit = () => {
     if (latestCompany) {
