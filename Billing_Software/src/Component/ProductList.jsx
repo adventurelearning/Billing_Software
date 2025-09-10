@@ -96,7 +96,9 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     }
 
     try {
-      const res = await Api.get(`/products/search?query=${encodeURIComponent(name)}`);
+      // Encode the search term to handle special characters
+      const encodedName = encodeURIComponent(name);
+      const res = await Api.get(`/products/search?query=${encodedName}`);
       setNameSuggestions(res.data || []);
       setShowNameSuggestions(true);
     } catch (err) {
@@ -110,7 +112,9 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     setIsLoading(true);
 
     try {
-      const endpoint = isCode ? `/products/code/${identifier}` : `/products/name/${identifier}`;
+      // Encode the identifier to handle special characters
+      const encodedIdentifier = encodeURIComponent(identifier);
+      const endpoint = isCode ? `/products/code/${encodedIdentifier}` : `/products/name/${encodedIdentifier}`;
       const res = await Api.get(endpoint);
       const productData = res.data;
 
@@ -392,7 +396,8 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
   const checkStockAvailability = async (productName, quantity, unit) => {
     try {
       // First get the product details including unit conversion rates
-      const productRes = await Api.get(`/products/name/${productName}`);
+      const encodedName = encodeURIComponent(productName);
+      const productRes = await Api.get(`/products/name/${encodedName}`);
       const product = productRes.data;
 
       if (!product) {
@@ -528,10 +533,23 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     onRemove(index);
   };
 
-  const filteredProducts = products.filter(
-    (item) => item.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Enhanced search function to handle special characters
+  const filteredProducts = products.filter((item) => {
+    // Create a normalized version of the search term (case insensitive)
+    const normalizedSearchTerm = searchTerm.toLowerCase().trim();
+    
+    // If search term is empty, show all products
+    if (!normalizedSearchTerm) return true;
+    
+    // Check if code matches (case insensitive)
+    const codeMatch = item.code.toLowerCase().includes(normalizedSearchTerm);
+    
+    // Check if name matches (case insensitive)
+    const nameMatch = item.name.toLowerCase().includes(normalizedSearchTerm);
+    
+    // Return true if either code or name matches
+    return codeMatch || nameMatch;
+  });
 
   const calculateTotal = () => {
     const productsTotal = filteredProducts.reduce((sum, item) => sum + item.totalPrice, 0);
@@ -697,6 +715,7 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 value={product.code}
                 onChange={handleChange}
                 ref={productCodeInputRef}
+                autoComplete="off"
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 required
               />
@@ -713,10 +732,11 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
                 onFocus={() => product.name && setShowNameSuggestions(true)}
                 onBlur={() => setTimeout(() => setShowNameSuggestions(false), 200)}
                 ref={productNameInputRef}
+                autoComplete="off"
                 className="w-full px-3 py-1 text-sm border border-gray-300 rounded-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
               {showNameSuggestions && nameSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
+                <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-sm shadow-lg max-h-60 overflow-y-auto">
                   {nameSuggestions.map((item, index) => (
                     <div
                       key={index}

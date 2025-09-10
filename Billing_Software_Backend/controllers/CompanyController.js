@@ -1,4 +1,5 @@
 const Company = require("../models/Company");
+const cloudinary = require('cloudinary').v2;
 
 // ✅ Register new company
 exports.registerCompany = async (req, res) => {
@@ -19,8 +20,34 @@ exports.registerCompany = async (req, res) => {
       gstNumber,
     } = req.body;
 
-    const logo = req.files?.logo?.[0] || null;
-    const signature = req.files?.signature?.[0] || null;
+    let logoUrl = null;
+    let signatureUrl = null;
+
+    // Upload logo to Cloudinary if exists
+    if (req.files?.logo) {
+      try {
+        const logoUpload = await cloudinary.uploader.upload(req.files.logo[0].path, {
+          folder: 'company-logos'
+        });
+        logoUrl = logoUpload.secure_url;
+      } catch (uploadError) {
+        console.error("Logo upload error:", uploadError);
+        return res.status(500).json({ message: "Failed to upload logo" });
+      }
+    }
+
+    // Upload signature to Cloudinary if exists
+    if (req.files?.signature) {
+      try {
+        const signatureUpload = await cloudinary.uploader.upload(req.files.signature[0].path, {
+          folder: 'company-signatures'
+        });
+        signatureUrl = signatureUpload.secure_url;
+      } catch (uploadError) {
+        console.error("Signature upload error:", uploadError);
+        return res.status(500).json({ message: "Failed to upload signature" });
+      }
+    }
 
     const newCompany = new Company({
       businessName: companyName,
@@ -32,9 +59,8 @@ exports.registerCompany = async (req, res) => {
       state,
       pincode: zip,
       address: businessAddress,
-      logoUrl: logo ? `${process.env.BASE_URL}/uploads/${logo.filename}` : null,
-      signatureUrl: signature ? `${process.env.BASE_URL}/uploads/${signature.filename}` : null,
-
+      logoUrl,
+      signatureUrl
     });
 
     await newCompany.save();
@@ -49,8 +75,6 @@ exports.registerCompany = async (req, res) => {
   }
 };
 
-
-
 // ✅ Get all companies
 exports.getAllCompanies = async (req, res) => {
   try {
@@ -62,9 +86,7 @@ exports.getAllCompanies = async (req, res) => {
   }
 };
 
-
-
-// ✅ Optional: Get a single company by ID
+// ✅ Get a single company by ID
 exports.getCompanyById = async (req, res) => {
   try {
     const company = await Company.findById(req.params.id);
@@ -78,18 +100,35 @@ exports.getCompanyById = async (req, res) => {
   }
 };
 
-
+// ✅ Update company
 exports.updateCompany = async (req, res) => {
   try {
     const { id } = req.params;
     const updateData = req.body;
 
-    // Handle file uploads if they exist
+    // Handle file uploads to Cloudinary
     if (req.files?.logo) {
-      updateData.logoUrl = `${process.env.BASE_URL}/uploads/${req.files.logo[0].filename}`;
+      try {
+        const logoUpload = await cloudinary.uploader.upload(req.files.logo[0].path, {
+          folder: 'company-logos'
+        });
+        updateData.logoUrl = logoUpload.secure_url;
+      } catch (uploadError) {
+        console.error("Logo upload error:", uploadError);
+        return res.status(500).json({ message: "Failed to upload logo" });
+      }
     }
+    
     if (req.files?.signature) {
-      updateData.signatureUrl = `${process.env.BASE_URL}/uploads/${req.files.signature[0].filename}`;
+      try {
+        const signatureUpload = await cloudinary.uploader.upload(req.files.signature[0].path, {
+          folder: 'company-signatures'
+        });
+        updateData.signatureUrl = signatureUpload.secure_url;
+      } catch (uploadError) {
+        console.error("Signature upload error:", uploadError);
+        return res.status(500).json({ message: "Failed to upload signature" });
+      }
     }
 
     const updatedCompany = await Company.findByIdAndUpdate(
@@ -116,11 +155,32 @@ exports.updateCompany = async (req, res) => {
 exports.deleteCompany = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedCompany = await Company.findByIdAndDelete(id);
-
-    if (!deletedCompany) {
+    const company = await Company.findById(id);
+    
+    if (!company) {
       return res.status(404).json({ message: "Company not found" });
     }
+
+    // Delete images from Cloudinary if they exist
+    if (company.logoUrl) {
+      try {
+        const publicId = company.logoUrl.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(`company-logos/${publicId}`);
+      } catch (error) {
+        console.error("Error deleting logo from Cloudinary:", error);
+      }
+    }
+    
+    if (company.signatureUrl) {
+      try {
+        const publicId = company.signatureUrl.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(`company-signatures/${publicId}`);
+      } catch (error) {
+        console.error("Error deleting signature from Cloudinary:", error);
+      }
+    }
+
+    const deletedCompany = await Company.findByIdAndDelete(id);
 
     res.status(200).json({
       message: "Company deleted successfully",

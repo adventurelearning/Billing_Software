@@ -5,6 +5,7 @@ import api from '../../service/api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ReactToPrint from 'react-to-print';
+import ProductForm from '../ProductForm';
 
 // ProductDetailsModal Component
 const ProductDetailsModal = ({ product, onClose }) => {
@@ -266,8 +267,30 @@ const ProductStockList = ({ setActivePage }) => {
     }
   };
 
-  const handleEdit = (productId) => {
-    console.log('Edit product with ID:', productId);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showProductForm, setShowProductForm] = useState(false);
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setShowProductForm(true);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProduct(null);
+    setShowProductForm(false);
+  };
+
+  const handleSubmitSuccess = (updatedProduct) => {
+    // Update the products list with the edited product
+    setProducts(prev => prev.map(p =>
+      p._id === updatedProduct._id ? updatedProduct : p
+    ));
+    setFilteredProducts(prev => prev.map(p =>
+      p._id === updatedProduct._id ? updatedProduct : p
+    ));
+    setEditingProduct(null);
+    setShowProductForm(false);
+    toast.success('Product updated successfully!');
   };
 
   const handleViewDetails = (product) => {
@@ -315,6 +338,8 @@ const ProductStockList = ({ setActivePage }) => {
     printWindow.focus();
     setTimeout(() => printWindow.print(), 500);
   };
+
+
 
   return (
     <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
@@ -483,18 +508,27 @@ const ProductStockList = ({ setActivePage }) => {
                         </button>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                        <button
-                          className="text-red-600 hover:text-red-900"
-                          onClick={() => handleDelete(product._id)}
-                          title="Delete Product"
-                          disabled={isDeleting}
-                        >
-                          {isDeleting ? (
-                            <span className="inline-block h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
-                          ) : (
-                            <FiTrash2 className="inline" />
-                          )}
-                        </button>
+                        <div className="flex justify-center space-x-2">
+                          <button
+                            className="text-blue-600 hover:text-blue-900"
+                            onClick={() => handleEdit(product)}
+                            title="Edit Product"
+                          >
+                            <FiEdit className="inline" />
+                          </button>
+                          <button
+                            className="text-red-600 hover:text-red-900"
+                            onClick={() => handleDelete(product._id)}
+                            title="Delete Product"
+                            disabled={isDeleting}
+                          >
+                            {isDeleting ? (
+                              <span className="inline-block h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin"></span>
+                            ) : (
+                              <FiTrash2 className="inline" />
+                            )}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))
@@ -508,6 +542,31 @@ const ProductStockList = ({ setActivePage }) => {
               </tbody>
             </table>
           </div>
+
+          {showProductForm && (
+            <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center z-50 p-4">
+              <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-xl font-bold">
+                    {editingProduct ? 'Edit Product' : 'Add New Product'}
+                  </h2>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <ProductForm
+                  onSubmit={handleSubmitSuccess}
+                  product={editingProduct}
+                  onCancel={handleCancelEdit}
+                />
+              </div>
+            </div>
+          )}
 
           {/* Pagination */}
           {filteredProducts.length > itemsPerPage && (
