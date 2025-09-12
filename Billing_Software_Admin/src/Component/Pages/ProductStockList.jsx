@@ -116,7 +116,7 @@ const PrintableProducts = React.forwardRef(({ products, filterType }, ref) => {
   const currentDate = new Date().toLocaleDateString();
 
   return (
-    <div ref={ref} className="p-4">
+    <div ref={ref} className="p-4 ">
       <div className="text-center mb-4">
         <h1 className="text-xl font-bold">Product Stock Report</h1>
         <p className="text-sm">Filter: {filterType}</p>
@@ -346,10 +346,10 @@ const ProductStockList = ({ setActivePage }) => {
 
       {/* Header and Controls */}
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+        <div className="max-w-7xl mx-auto px-2 ">
           <div className="py-2">
             {/* Title Row - more compact */}
-            <div className="flex justify-between items-center mb-1">
+            <div className="flex justify-between items-center py-1">
               <h1 className="text-lg sm:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-2 py-1 rounded-md">
                 Product Stock List
               </h1>

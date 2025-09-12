@@ -51,7 +51,7 @@ app.get('/', (req, res) => {
 });
 
 // MongoDB connection
-const mongoURI = 'mongodb+srv://adventureecom:Advecom123@cluster0.go5hqht.mongodb.net/ATS_Billing?retryWrites=true&w=majority&appName=Cluster0';
+const mongoURI = 'mongodb+srv://adventureecom:Advecom123@cluster0.go5hqht.mongodb.net/ATS_Tech?retryWrites=true&w=majority&appName=Cluster0';
 mongoose.connect(mongoURI)
   .then(async () => {
     console.log('✅ MongoDB connected');

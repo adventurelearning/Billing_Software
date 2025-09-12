@@ -1,0 +1,16 @@
+{
+  "name": "billing_software",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "concurrently \"npm run server\" \"npm run admin\" \"npm run client\"",
+    "server": "cd \"Billing_Software_Backend\" && npm start",
+    "admin": "cd Billing_Software_Admin && npm run dev",
+    "client": "cd Billing_Software && npm run dev"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

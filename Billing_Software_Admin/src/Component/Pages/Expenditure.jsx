@@ -47,7 +47,7 @@ const Expenditure = () => {
       setLoading(true);
       const response = await api.get(`/expenses/date/${date}`);
       setFilteredExpenses(response.data);
-      
+
       // Calculate total amount for the selected date
       const total = response.data.reduce((sum, expense) => sum + expense.amount, 0);
       setTotalAmount(total);
@@ -61,7 +61,7 @@ const Expenditure = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!selectedDate || !amount || !description) {
       alert('Please fill all fields');
       return;
@@ -75,21 +75,21 @@ const Expenditure = () => {
       };
 
       const response = await api.post('/expenses', newExpense);
-      
+
       // Update state with the new expense
       setExpenses([...expenses, response.data]);
-      
+
       // If we're currently viewing the date of the new expense, update that view too
       if (dateToView === selectedDate) {
         setFilteredExpenses([...filteredExpenses, response.data]);
         setTotalAmount(totalAmount + parseFloat(amount));
       }
-      
+
       // Reset form
       setSelectedDate('');
       setAmount('');
       setDescription('');
-      
+
       alert('Expense added successfully!');
     } catch (error) {
       console.error('Error adding expense:', error);
@@ -104,20 +104,20 @@ const Expenditure = () => {
 
     try {
       await api.delete(`/expenses/${id}`);
-      
+
       // Remove from all expenses
       const updatedExpenses = expenses.filter(expense => expense._id !== id);
       setExpenses(updatedExpenses);
-      
+
       // If we're viewing expenses for a specific date, update the filtered list
       if (dateToView) {
         const filtered = filteredExpenses.filter(expense => expense._id !== id);
         setFilteredExpenses(filtered);
-        
+
         const total = filtered.reduce((sum, expense) => sum + expense.amount, 0);
         setTotalAmount(total);
       }
-      
+
       alert('Expense deleted successfully!');
     } catch (error) {
       console.error('Error deleting expense:', error);
@@ -131,10 +131,12 @@ const Expenditure = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6">
-        <h1 className="text-3xl font-bold text-center text-blue-600 mb-8">Personal Expense</h1>
-        
+   <div className="max-w-7xl mx-auto px-2">
+  <div className="items-center mb-2 md:mb-0 py-2">
+    <h1 className="inline-block text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-3 py-1 rounded-md">
+      Personal Expense
+    </h1>
+
         {/* Input Form */}
         <form onSubmit={handleSubmit} className="mb-8 p-6 bg-blue-50 rounded-lg">
           <h2 className="text-xl font-semibold text-gray-700 mb-4">Add New Expense</h2>
@@ -176,7 +178,7 @@ const Expenditure = () => {
           </div>
           <button
             type="submit"
-            className="mt-4 w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
+            className="mt-4 w-fit bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition duration-200"
             disabled={loading}
           >
             {loading ? 'Saving...' : 'Save Expense'}
@@ -211,7 +213,7 @@ const Expenditure = () => {
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">
               Expenses for {formatDate(dateToView)}
             </h2>
-            
+
             {loading ? (
               <p className="text-gray-500 text-center py-4">Loading expenses...</p>
             ) : filteredExpenses.length === 0 ? (
@@ -223,7 +225,7 @@ const Expenditure = () => {
                     Total for {formatDate(dateToView)}: ₹{totalAmount.toFixed(2)}
                   </p>
                 </div>
-                
+
                 <div className="space-y-4">
                   {filteredExpenses.map((expense) => (
                     <div key={expense._id} className="p-4 border border-gray-200 rounded-lg flex justify-between items-center">
@@ -252,7 +254,7 @@ const Expenditure = () => {
         {!dateToView && (
           <div className="mt-8 p-6 bg-white border border-gray-200 rounded-lg">
             <h2 className="text-2xl font-semibold text-gray-800 mb-4">All Expenses</h2>
-            
+
             {loading ? (
               <p className="text-gray-500 text-center py-4">Loading expenses...</p>
             ) : expenses.length === 0 ? (

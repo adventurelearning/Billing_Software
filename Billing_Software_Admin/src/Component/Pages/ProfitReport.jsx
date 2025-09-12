@@ -57,9 +57,9 @@ const ProfitReport = () => {
     return (
         <div className="font-sans text-gray-900 min-h-screen bg-gray-50">
             <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-                <div className="max-w-7xl mx-auto px-2">
-                    <div className="flex justify-between items-center mb-2 md:mb-0 py-2">
-                        <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 p-2 rounded-md">
+                <div className="max-w-7xl mx-auto p-2">
+                    <div className="flex justify-between items-center mb-2 md:mb-0 ">
+                        <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-2 rounded-md">
                             Profit Report
                         </h1>
                     </div>

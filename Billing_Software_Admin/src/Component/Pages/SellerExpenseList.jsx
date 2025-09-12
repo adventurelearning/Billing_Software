@@ -383,7 +383,7 @@ const SellerExpenseList = () => {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-2 py-2">
             {/* Payment Modal */}
             {showPaymentModal && (
                 <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -586,7 +586,7 @@ const SellerExpenseList = () => {
             )}
 
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                <h1 className="text-3xl font-bold text-gray-800 mb-4 md:mb-0">Seller Expense Management</h1>
+                <h1 className="inline-block text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-3 py-1 rounded-md">Seller Expense Management</h1>
 
                 <div className="flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-4">
                     <div className="relative w-full md:w-64">

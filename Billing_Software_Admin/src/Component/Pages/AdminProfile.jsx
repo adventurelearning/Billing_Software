@@ -77,8 +77,8 @@ const AdminProfile = () => {
   const [showUserModal, setShowUserModal] = useState(false);
 
 return (
-  <div className="w-full p-4  sm:p-5 bg-white rounded-xl shadow-lg">
-    <h1 className="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">Admin Management</h1>
+  <div className="w-full p-2 bg-white rounded-xl ">
+     <h1 className="inline-block text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-2 py-2 rounded-md">Admin Management</h1>
 
     <div className="flex flex-wrap justify-between items-center gap-4">
       <div className="flex flex-wrap gap-2">

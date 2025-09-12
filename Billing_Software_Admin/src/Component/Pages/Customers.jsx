@@ -414,7 +414,7 @@ return (
       {/* Header */}
       <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10 py-1">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 p-2">
-          <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-4 py-2 rounded-md">
+          <h1 className="text-lg md:text-xl font-semibold text-gray-700 whitespace-nowrap bg-blue-100 px-2 py-1 rounded-md">
             Customers Details
           </h1>
 
