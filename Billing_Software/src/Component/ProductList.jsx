@@ -452,30 +452,73 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    if (!product.code || !product.quantity) {
-      toast.error("Product code and quantity are required!");
-      return;
-    }
+  if (!product.code || !product.quantity) {
+    toast.error("Product code and quantity are required!");
+    return;
+  }
 
-    const quantityValue = parseFloat(product.quantity);
-    if (isNaN(quantityValue) || quantityValue <= 0) {
-      toast.error("Please enter a valid quantity!");
-      return;
-    }
+  const quantityValue = parseFloat(product.quantity);
+  if (isNaN(quantityValue) || quantityValue <= 0) {
+    toast.error("Please enter a valid quantity!");
+    return;
+  }
 
-    // Check stock availability
+  // Get the selected unit (default to base unit if not selected)
+  const selectedUnit = product.selectedUnit || product.baseUnit;
+
+  // Check if product with same code AND same unit already exists in the list
+  const existingProductIndex = products.findIndex(
+    (item) => item.code === product.code && item.unit === selectedUnit
+  );
+
+  if (existingProductIndex !== -1 && editingIndex === null) {
+    // Product with same code and unit exists and we're not in edit mode - update the quantity
+    const existingProduct = products[existingProductIndex];
+    
+    // Check stock availability for the additional quantity
     const stockCheck = await checkStockAvailability(
       product.name,
-      quantityValue,
-      product.selectedUnit || product.baseUnit
+      quantityValue + existingProduct.quantity, // Total quantity after update
+      selectedUnit
     );
 
     if (!stockCheck.isAvailable) {
       const availableInRequestedUnit = stockCheck.availableDisplay.toFixed(2);
-      const requestedUnit = product.selectedUnit || product.baseUnit;
+      const requestedUnit = selectedUnit;
+
+      await Swal.fire({
+        title: 'Insufficient Stock',
+        html: `Only <b>${availableInRequestedUnit} ${requestedUnit}</b> available for <b>${product.name}</b>`,
+        icon: 'warning',
+        confirmButtonText: 'OK',
+        confirmButtonColor: '#3085d6',
+      });
+      return;
+    }
+
+    // Update the existing product
+    const updatedProduct = {
+      ...existingProduct,
+      quantity: existingProduct.quantity + quantityValue,
+      totalPrice: existingProduct.totalPrice + product.totalPrice
+    };
+
+    onEdit(existingProductIndex, updatedProduct);
+    toast.success(`Updated quantity for ${product.name} (${selectedUnit})`);
+  } else {
+    // Either product doesn't exist with this unit or we're editing - proceed with normal flow
+    const stockCheck = await checkStockAvailability(
+      product.name,
+      quantityValue,
+      selectedUnit
+    );
+
+    if (!stockCheck.isAvailable) {
+      const availableInRequestedUnit = stockCheck.availableDisplay.toFixed(2);
+      const requestedUnit = selectedUnit;
 
       await Swal.fire({
         title: 'Insufficient Stock',
@@ -496,7 +539,7 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
       gstAmount: product.gstAmount,
       sgstAmount: product.sgstAmount,
       totalPrice: product.totalPrice,
-      unit: product.selectedUnit || product.baseUnit,
+      unit: selectedUnit, // Use the selected unit
       isManualPrice: product.isManualPrice,
       availableStock: stockCheck.available,
       hsnCode: product.hsnCode
@@ -505,18 +548,21 @@ function ProductList({ products, onAdd, onEdit, onRemove, transportCharge, payme
     if (editingIndex !== null) {
       onEdit(editingIndex, newProduct);
       setEditingIndex(null);
+      toast.success(`Updated ${product.name} (${selectedUnit})`);
     } else {
       onAdd(newProduct);
+      toast.success(`Added ${product.name} (${selectedUnit})`);
     }
+  }
 
-    setProduct(initialProduct);
-    setNameSuggestions([]);
+  setProduct(initialProduct);
+  setNameSuggestions([]);
 
-    // Focus on product code input after submission
-    setTimeout(() => {
-      productCodeInputRef.current?.focus();
-    }, 0);
-  };
+  // Focus on product code input after submission
+  setTimeout(() => {
+    productCodeInputRef.current?.focus();
+  }, 0);
+};
 
   const handleEdit = (index) => {
     const productToEdit = products[index];
